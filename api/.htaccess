@@ -1,0 +1,131 @@
+RewriteEngine On
+
+#RewriteCond %{HTTPS} off
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+ 
+Options -Indexes
+
+RewriteCond %{REQUEST_URI} /+[^\.]+$ 
+RewriteRule ^(.+[^/])$ %{REQUEST_URI}/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^sign-in/$ src/auth/sign-in.php [NC]
+RewriteRule ^sign-up/$ src/auth/sign-up.php [NC]
+RewriteRule ^verify-otp/$ src/auth/otp.php [NC]
+RewriteRule ^send-otp/$ src/auth/send-otp.php [NC]
+RewriteRule ^check-link/$ src/auth/check-link.php [NC]
+RewriteRule ^check-password-link/$ src/auth/check-password-link.php [NC]
+RewriteRule ^resend-otp/$ src/auth/resend-otp.php [NC]
+RewriteRule ^reset-password/$ src/auth/reset-password.php [NC]
+RewriteRule ^contact-us/$ src/auth/contact-us.php [NC]
+
+RewriteRule ^get-categories/$ src/category/get.php [NC]
+RewriteRule ^save-category/$ src/category/save.php [NC]
+RewriteRule ^update-category/$ src/category/update.php [NC]
+RewriteRule ^delete-category/$ src/category/delete.php [NC]
+RewriteRule ^get-public-categories/$ src/category/public-categories.php [NC]
+RewriteRule ^get-category/([0-9]+)/$ src/category/single.php?id=$1 [NC]
+RewriteRule ^activate-category/$ src/category/activate.php [NC]
+RewriteRule ^bulk-activate-categories/$ src/category/bulk-activate.php [NC] 
+
+RewriteRule ^get-products/$ src/product/get.php [NC]
+RewriteRule ^get-product-stats/$ src/product/get-stats.php [NC]
+RewriteRule ^save-product/$ src/product/save.php [NC]
+RewriteRule ^update-product/$ src/product/update.php [NC]
+RewriteRule ^delete-product/$ src/product/delete.php [NC]
+RewriteRule ^get-home-products/$ src/product/get-home.php [NC]
+RewriteRule ^get-store-products/$ src/product/get-store.php [NC]
+RewriteRule ^get-inventory/$ src/product/get-inventory.php [NC]
+RewriteRule ^inventory-adjust/$ src/product/inventory-adjust.php [NC]
+RewriteRule ^get-deal-products/$ src/product/get-deal.php [NC]
+RewriteRule ^get-cart-items/$ src/product/get-cart-items.php [NC]
+RewriteRule ^get-product/([0-9]+)/$ src/product/single.php?id=$1 [NC]
+RewriteRule ^delete-product-image/$ src/product/delete-image.php [NC]
+
+RewriteRule ^get-wishlist/$ src/wishlist/get.php [NC]
+RewriteRule ^clear-wishlist/$ src/wishlist/clear.php [NC]
+RewriteRule ^toggle-wishlist/$ src/wishlist/toggle.php [NC]
+RewriteRule ^delete-wishlist/$ src/wishlist/delete.php [NC]
+
+RewriteRule ^get-discounts/$ src/discounts/get.php [NC]
+RewriteRule ^save-discount/$ src/discounts/save.php [NC]
+RewriteRule ^update-discount/$ src/discounts/update.php [NC]
+RewriteRule ^delete-discount/$ src/discounts/delete.php [NC]
+RewriteRule ^generate-discount/$ src/discounts/generate.php [NC]
+RewriteRule ^toggle-discount/$ src/discounts/toggle.php [NC]
+RewriteRule ^check-discount/$ src/discounts/check.php [NC]
+RewriteRule ^get-discount/([0-9]+)/$ src/discounts/single.php?id=$1 [NC]
+
+RewriteRule ^update-settings/$ src/settings/update.php [NC]
+RewriteRule ^get-settings/$ src/settings/get.php [NC]
+
+RewriteRule ^get-addresses/$ src/address/get.php [NC]
+RewriteRule ^save-address/$ src/address/save.php [NC]
+RewriteRule ^update-address/$ src/address/update.php [NC]
+RewriteRule ^delete-address/$ src/address/delete.php [NC]
+RewriteRule ^make-default-address/$ src/address/make-default.php [NC]
+
+RewriteRule ^get-pickup-locations/$ src/pickup-location/get.php [NC]
+RewriteRule ^save-pickup-location/$ src/pickup-location/save.php [NC]
+RewriteRule ^update-pickup-location/$ src/pickup-location/update.php [NC]
+RewriteRule ^toggle-pickup-location/$ src/pickup-location/toggle.php [NC]
+RewriteRule ^delete-pickup-location/$ src/pickup-location/delete.php [NC]
+RewriteRule ^get-pickup-location/([0-9]+)/$ src/pickup-location/single.php?id=$1 [NC]
+
+RewriteRule ^shipment-price/$ src/order/shipment-price.php [NC]
+RewriteRule ^save-order/$ src/order/save.php [NC]
+RewriteRule ^my-orders/$ src/order/my-orders.php [NC]
+RewriteRule ^admin-orders/$ src/order/admin-orders.php [NC]
+RewriteRule ^process-pos/$ src/order/process-pos.php [NC]
+RewriteRule ^admin-order/([0-9]+)/$ src/order/admin-order-details.php?id=$1 [NC]
+RewriteRule ^update-order/$ src/order/update-order.php [NC]
+RewriteRule ^create-payment-intent/$ src/order/payment-intent.php [NC]
+RewriteRule ^create-order/$ src/order/create.php [NC]
+RewriteRule ^confirm-cash-order/$ src/order/confirm-cash.php [NC]
+RewriteRule ^confirm-payment/$ src/order/confirm-payment.php [NC]
+RewriteRule ^update-payment-status/$ src/order/update-payment-status.php [NC]
+RewriteRule ^get-order-details/([0-9]+)/$ src/order/details.php?id=$1 [NC]
+RewriteRule ^get-order/([0-9]+)/$ src/order/single.php?id=$1 [NC]
+RewriteRule ^update-order-status/$ src/order/update-order-status.php [NC]
+ 
+RewriteRule ^test-stripe-connection/$ src/test-connections/stripe.php [NC]
+RewriteRule ^test-shipping-connection/$ src/test-connections/shipping.php [NC]
+
+RewriteRule ^get-dashboard/$ src/get-dashboard.php [NC]
+RewriteRule ^get-admin-dashboard/$ src/dashboard/admin.php [NC] 
+RewriteRule ^get-analysis/$ src/dashboard/get-analysis.php [NC]
+
+RewriteRule ^get-notifications/$ src/notification/get.php [NC]
+RewriteRule ^update-notifications/$ src/notification/update.php [NC]
+
+RewriteRule ^get-profile/$ src/profile/get.php [NC]
+RewriteRule ^update-profile/$ src/profile/update.php [NC]
+RewriteRule ^delete-my-account/$ src/profile/delete-my-account.php [NC]
+RewriteRule ^delete-user/$ src/profile/delete.php [NC]
+RewriteRule ^convert-to-customer/$ src/profile/convert-to-customer.php [NC]
+RewriteRule ^convert-to-staff/$ src/profile/convert-to-staff.php [NC]
+RewriteRule ^add-user/$ src/profile/add.php [NC]
+RewriteRule ^update-pics/$ src/profile/pics.php [NC]
+RewriteRule ^change-password/$ src/profile/password.php [NC]
+RewriteRule ^get-customers/$ src/profile/get-customers.php [NC]
+RewriteRule ^update-user-status/$ src/profile/update-status.php [NC]
+RewriteRule ^update-staff/$ src/profile/update-staff-status.php [NC]
+RewriteRule ^get-staffs/$ src/profile/get-staffs.php [NC]
+
+RewriteRule ^track-visitors/$ src/track/visitors.php [NC]
+RewriteRule ^track-event/$ src/track/events.php [NC]
+
+RewriteRule ^get-roles/$ src/roles/get.php [NC]
+RewriteRule ^save-role/$ src/roles/save.php [NC]
+RewriteRule ^update-role/$ src/roles/update.php [NC]
+RewriteRule ^delete-role/$ src/roles/delete.php [NC]
+RewriteRule ^get-permissions/$ src/roles/get-permissions.php [NC]
+RewriteRule ^remove-staff-access/$ src/roles/remove-staff-access.php [NC]
+RewriteRule ^assign-staff-access/$ src/roles/assign-staff-access.php [NC]
+RewriteRule ^get-role/([0-9]+)/$ src/roles/single.php?id=$1 [NC]
+RewriteRule ^remove-all-staff-access/$ src/roles/remove-all-staff-access.php [NC]
+RewriteRule ^get-permissions/([0-9]+)/$ src/roles/get-permissions.php?id=$1 [NC]
+RewriteRule ^get-permissions-details/([0-9]+)/$ src/roles/get-permissions-details.php?id=$1 [NC]
+
