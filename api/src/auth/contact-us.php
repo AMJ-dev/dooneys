@@ -3,12 +3,9 @@ require_once dirname(__DIR__, 2).'/include/set-header.php';
 
 try {
     // Get site branding
-    $stmt = $conn->prepare("SELECT comp_name, comp_email, comp_phone, contact_notifications FROM store_settings LIMIT 1");
-    $stmt->execute();
-    $site_settings = $stmt->fetch(PDO::FETCH_OBJ);
-    $brandName = htmlspecialchars($site_settings->comp_name ?? "Doonneys Beauty");
-    $supportEmail = htmlspecialchars($site_settings->comp_email ?? "support@doonneys.com");
-    $supportPhone = htmlspecialchars($site_settings->comp_phone ?? "");
+    $brandName = htmlspecialchars($comp_name ?? "Doonneys Beauty");
+    $supportEmail = htmlspecialchars($comp_email ?? "support@doonneys.com");
+    $supportPhone = htmlspecialchars($comp_phone ?? "");
 
     $required = ["name", "email", "message"];
     foreach ($required as $r) {
@@ -247,7 +244,6 @@ try {
                         Reference: #{$referenceId} • Submitted: {$currentDate} at {$currentTime}
                     </p>
                     <div style="display: flex; justify-content: center; gap: 20px; margin: 10px 0; @media (max-width: 600px) { flex-direction: column; gap: 10px; }">
-                        <a href="{$privacyUrl}" style="color: hsl(30,15%,65%); text-decoration: none; font-size: 11px;">Privacy Policy</a>
                         <a href="mailto:{$supportEmail}" style="color: hsl(30,15%,65%); text-decoration: none; font-size: 11px;">Contact Support</a>
                     </div>
                     <p style="color: hsl(30,15%,65%); margin: 10px 0 0 0; font-size: 11px;">
@@ -404,3 +400,4 @@ try {
 } catch (Exception $e) {
     echo json_encode(["error" => true, "data" => "We encountered an error. Please try again or contact us directly."]);
 }
+

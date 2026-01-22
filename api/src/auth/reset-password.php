@@ -1,13 +1,9 @@
 <?php
     require_once dirname(__DIR__, 2)."/include/set-header.php";
     
-    // Get site branding
-    $stmt = $conn->prepare("SELECT comp_name, comp_email, comp_phone, security_notifications FROM store_settings LIMIT 1");
-    $stmt->execute();
-    $site_settings = $stmt->fetch(PDO::FETCH_OBJ);
-    $brandName = htmlspecialchars($site_settings->comp_name ?? "Doonneys Beauty");
-    $supportEmail = htmlspecialchars($site_settings->comp_email ?? "support@doonneys.com");
-    $supportPhone = htmlspecialchars($site_settings->comp_phone ?? "");
+    $brandName = htmlspecialchars($comp_name ?? "Doonneys Beauty");
+    $supportEmail = htmlspecialchars($comp_email ?? "support@doonneys.com");
+    $supportPhone = htmlspecialchars($comp_phone ?? "");
     
     if($_POST["where"] == "send-link"){
         $check_user = $conn->prepare("SELECT id, first_name, last_name, email, mobile_number FROM users WHERE email=:email");

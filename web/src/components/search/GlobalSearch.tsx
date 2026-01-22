@@ -4,27 +4,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, ArrowRight, Package, Tag, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { products, categories } from "@/data/products";
 import { cn } from "@/lib/utils";
+import { format_currency, resolveSrc } from "@/lib/functions";
+import { http } from "@/lib/httpClient";
+import { ApiResp } from "@/lib/types";
+import { str_to_url } from "@/lib/functions";
 
 interface SearchResult {
-  type: "product" | "category" | "page";
+  type: "product" | "category";
   id: string;
   title: string;
   subtitle?: string;
   image?: string;
   url: string;
 }
-
-const pages = [
-  { id: "home", title: "Home", url: "/" },
-  { id: "shop", title: "Shop All Products", url: "/shop" },
-  { id: "deals", title: "Deals & New Arrivals", url: "/deals" },
-  { id: "about", title: "About Us", url: "/about" },
-  { id: "contact", title: "Contact & Appointments", url: "/contact" },
-  { id: "cart", title: "Shopping Cart", url: "/cart" },
-  { id: "account", title: "My Account", url: "/account" },
-];
 
 interface GlobalSearchProps {
   isOpen: boolean;
@@ -34,13 +27,17 @@ interface GlobalSearchProps {
 const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
+      setQuery("");
+      setResults([]);
     }
   }, [isOpen]);
 
@@ -50,55 +47,63 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
       return;
     }
 
-    const searchTerm = query.toLowerCase();
-    const searchResults: SearchResult[] = [];
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
 
-    // Search products
-    products.forEach((product) => {
-      if (
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm)
-      ) {
-        searchResults.push({
-          type: "product",
-          id: product.id,
-          title: product.name,
-          subtitle: `${product.category} • $${product.price.toFixed(2)}`,
-          image: product.image,
-          url: `/product/${product.id}`,
-        });
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    setLoading(true);
+
+    const fetchResults = async () => {
+      try {
+        const res = await http.post("/search-products/", { query }, { signal: controller.signal });
+        const resp: ApiResp = res.data;
+        
+        if (!resp.error && resp.data && !controller.signal.aborted) {
+          const formattedResults: SearchResult[] = resp.data.map((item: any) => {
+            if (item.type === "product") {
+              return {
+                type: "product",
+                id: item.id,
+                title: item.name,
+                subtitle: `${item.category_name} • ${format_currency(item.price)}`,
+                image: item.image,
+                url: `/product/${item.id}/${str_to_url(item.name)}`,
+              };
+            } else {
+              return {
+                type: "category",
+                id: item.id,
+                title: item.name,
+                subtitle: "Browse category",
+                url: `/category/${item.id}/${str_to_url(item.name)}`,
+              };
+            }
+          });
+          setResults(formattedResults);
+          setSelectedIndex(0);
+        }
+      } catch (error: any) {
+        if (error.name !== "AbortError" && error.code !== "ERR_CANCELED") {
+          console.error("Search error:", error);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
-    });
+    };
 
-    // Search categories
-    categories.forEach((category) => {
-      if (category.name.toLowerCase().includes(searchTerm)) {
-        searchResults.push({
-          type: "category",
-          id: category.id,
-          title: category.name,
-          subtitle: "Browse category",
-          url: `/category/${category.slug}`,
-        });
-      }
-    });
+    const debounceTimer = setTimeout(() => {
+      fetchResults();
+    }, 300);
 
-    // Search pages
-    pages.forEach((page) => {
-      if (page.title.toLowerCase().includes(searchTerm)) {
-        searchResults.push({
-          type: "page",
-          id: page.id,
-          title: page.title,
-          subtitle: "Page",
-          url: page.url,
-        });
-      }
-    });
-
-    setResults(searchResults.slice(0, 10));
-    setSelectedIndex(0);
+    return () => {
+      clearTimeout(debounceTimer);
+      controller.abort();
+    };
   }, [query]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -161,7 +166,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Search products, categories, pages..."
+                  placeholder="Search products, categories..."
                   className="border-0 focus-visible:ring-0 text-lg p-0"
                 />
                 <Button variant="ghost" size="icon" onClick={onClose}>
@@ -169,7 +174,13 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                 </Button>
               </div>
 
-              {results.length > 0 && (
+              {loading && query.trim() && (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Searching...
+                </div>
+              )}
+
+              {!loading && results.length > 0 && (
                 <div className="max-h-[400px] overflow-auto p-2">
                   {results.map((result, index) => {
                     const Icon = getIcon(result.type);
@@ -186,7 +197,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                       >
                         {result.image ? (
                           <img
-                            src={result.image}
+                            src={resolveSrc(result.image)}
                             alt=""
                             className="w-12 h-12 rounded-lg object-cover"
                           />
@@ -210,7 +221,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                 </div>
               )}
 
-              {query && results.length === 0 && (
+              {!loading && query.trim() && results.length === 0 && (
                 <div className="p-8 text-center">
                   <Package className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
                   <p className="text-muted-foreground">
@@ -219,7 +230,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                 </div>
               )}
 
-              {!query && (
+              {/* {!query.trim() && (
                 <div className="p-4">
                   <p className="text-sm text-muted-foreground mb-3">
                     Quick links
@@ -237,7 +248,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
             </div>
           </motion.div>
         </>

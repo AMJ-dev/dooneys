@@ -590,7 +590,7 @@ CREATE TABLE `page_views` (
   KEY `session_id` (`session_id`),
   KEY `created_at` (`created_at`),
   CONSTRAINT `page_views_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `sessions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1304 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1311 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `page_views` VALUES
@@ -1896,7 +1896,14 @@ INSERT INTO `page_views` VALUES
 (1300,1319,'/admin/analytics','null','2026-01-22 14:55:17'),
 (1301,1320,'/admin/analytics','null','2026-01-22 14:55:30'),
 (1302,1321,'/admin/analytics','null','2026-01-22 14:57:45'),
-(1303,1322,'/admin/analytics','null','2026-01-22 15:11:49');
+(1303,1322,'/admin/analytics','null','2026-01-22 15:11:49'),
+(1304,1323,'/','null','2026-01-22 15:15:55'),
+(1305,1324,'/','null','2026-01-22 15:18:58'),
+(1306,1325,'/category/2/wigs','null','2026-01-22 15:33:40'),
+(1307,1326,'/product/2/blonde-ombre-wig--loose-wave','null','2026-01-22 15:34:01'),
+(1308,1327,'/contact','null','2026-01-22 15:34:37'),
+(1309,1328,'/contact','http://localhost:8080/contact','2026-01-22 15:34:55'),
+(1310,1329,'/contact','http://localhost:8080/contact','2026-01-22 15:35:30');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -2332,7 +2339,7 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`id`),
   KEY `visitor_id` (`visitor_id`),
   CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`visitor_id`) REFERENCES `visitors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1323 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1330 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `sessions` VALUES
@@ -3657,7 +3664,14 @@ INSERT INTO `sessions` VALUES
 (1319,1319,'2026-01-22 14:55:17','2026-01-22 14:55:17'),
 (1320,1320,'2026-01-22 14:55:30','2026-01-22 14:55:30'),
 (1321,1321,'2026-01-22 14:57:45','2026-01-22 14:57:45'),
-(1322,1322,'2026-01-22 15:11:49','2026-01-22 15:11:49');
+(1322,1322,'2026-01-22 15:11:49','2026-01-22 15:11:49'),
+(1323,1323,'2026-01-22 15:15:55','2026-01-22 15:15:55'),
+(1324,1324,'2026-01-22 15:18:58','2026-01-22 15:18:58'),
+(1325,1325,'2026-01-22 15:33:40','2026-01-22 15:33:40'),
+(1326,1326,'2026-01-22 15:34:01','2026-01-22 15:34:01'),
+(1327,1327,'2026-01-22 15:34:37','2026-01-22 15:34:37'),
+(1328,1328,'2026-01-22 15:34:55','2026-01-22 15:34:55'),
+(1329,1329,'2026-01-22 15:35:30','2026-01-22 15:35:30');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -3789,7 +3803,7 @@ CREATE TABLE `visitors` (
   UNIQUE KEY `anon_id` (`anon_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `visitors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1323 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1330 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `visitors` VALUES
@@ -5114,7 +5128,14 @@ INSERT INTO `visitors` VALUES
 (1319,'de2e8e56-10be-4d37-a323-dc5a66e04d73',1,'2026-01-22 14:55:17','2026-01-22 14:55:17'),
 (1320,'0d13261b-308a-4157-8e41-62be8d89f179',1,'2026-01-22 14:55:30','2026-01-22 14:55:30'),
 (1321,'14cc34dc-ed08-4c06-b2ce-5a9583017397',1,'2026-01-22 14:57:45','2026-01-22 14:57:45'),
-(1322,'99d259ea-951f-45e3-907b-46edfd5fc678',1,'2026-01-22 15:11:49','2026-01-22 15:11:49');
+(1322,'99d259ea-951f-45e3-907b-46edfd5fc678',1,'2026-01-22 15:11:49','2026-01-22 15:11:49'),
+(1323,'f70375c6-6ae1-47ae-92d7-ceef19d0381f',1,'2026-01-22 15:15:55','2026-01-22 15:15:55'),
+(1324,'568b74e4-6309-4608-9552-964534a5e156',1,'2026-01-22 15:18:58','2026-01-22 15:18:58'),
+(1325,'3375b912-ea09-4888-a848-3e11366f5ee9',1,'2026-01-22 15:33:40','2026-01-22 15:33:40'),
+(1326,'8287ca65-7c15-49c8-a574-c5adb63e19cd',1,'2026-01-22 15:34:01','2026-01-22 15:34:01'),
+(1327,'62903663-15c6-41d3-af56-250fdc69ef0a',1,'2026-01-22 15:34:37','2026-01-22 15:34:37'),
+(1328,'0867b599-2af3-4aea-bfe2-50cde90d91c5',1,'2026-01-22 15:34:55','2026-01-22 15:34:55'),
+(1329,'275912a8-71f8-420f-9b67-d84762d23563',1,'2026-01-22 15:35:30','2026-01-22 15:35:30');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;

@@ -163,14 +163,6 @@ const AdminLayout = () => {
               >
                 <Menu className="h-5 w-5" />
               </Button>
-
-              <div className="relative hidden sm:block">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search..."
-                  className="w-64 pl-9 bg-muted/50"
-                />
-              </div>
             </div>
 
             <div className="flex items-center gap-3">
