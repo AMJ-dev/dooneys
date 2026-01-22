@@ -112,8 +112,6 @@ const Contact = () => {
             alt={`${comp_name} Store Interior`}
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/40" />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10" />
         </motion.div>
         
         <div className="container relative z-10">

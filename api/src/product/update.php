@@ -11,7 +11,7 @@
         if ($id <= 0) throw new Exception("Invalid product ID");
 
         if (trim($_POST['name'] ?? '') === '') throw new Exception("Product name required");
-        if (trim($_POST['sku'] ?? '') === '') throw new Exception("SKU required");
+        // if (trim($_POST['sku'] ?? '') === '') throw new Exception("SKU required");
         if ((float)($_POST['price'] ?? 0) <= 0) throw new Exception("Invalid price");
 
         $conn->prepare("

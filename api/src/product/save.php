@@ -13,7 +13,7 @@
         $price       = (float)($_POST['price'] ?? 0);
 
         if ($name === '') throw new Exception("Product name is required");
-        if ($sku === '') throw new Exception("SKU is required");
+        // if ($sku === '') throw new Exception("SKU is required");
         if ($category_id <= 0) throw new Exception("Invalid category");
         if ($price <= 0) throw new Exception("Price must be greater than zero");
 

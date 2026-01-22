@@ -49,7 +49,7 @@ import { toast } from "react-toastify";
 import { cn } from "@/lib/utils";
 import { http } from "@/lib/httpClient";
 import { ApiResp } from "@/lib/types";
-import { resolveSrc, gen_random_string } from "@/lib/functions";
+import { resolveSrc, gen_random_string, format_currency } from "@/lib/functions";
 import usePermissions from "@/hooks/usePermissions";
 
 interface CategoryFromAPI {
@@ -1144,9 +1144,9 @@ return (
                               <div className="text-xs text-muted-foreground">
                                 <span>Total: </span>
                                 <span className="font-medium text-primary">
-                                  ${(parseFloat(basePrice) + parseFloat(priceModifier)).toFixed(2)}
+                                  {format_currency(parseFloat(basePrice) + parseFloat(priceModifier))}
                                 </span>
-                                <span className="text-muted-foreground"> (Base: ${parseFloat(basePrice).toFixed(2)})</span>
+                                <span className="text-muted-foreground"> (Base: {format_currency(parseFloat(basePrice))})</span>
                               </div>
                             )}
                           </div>
@@ -1387,7 +1387,7 @@ return (
                                         </div>
                                         {basePrice && priceModifier && !isNaN(parseFloat(priceModifier)) && (
                                           <p className="text-xs text-muted-foreground">
-                                            Total: ${(parseFloat(basePrice) + parseFloat(priceModifier)).toFixed(2)}
+                                            Total: {format_currency(parseFloat(basePrice) + parseFloat(priceModifier))}
                                           </p>
                                         )}
                                       </div>
@@ -1460,7 +1460,7 @@ return (
                                         <div className="text-xs text-muted-foreground pt-2 border-t border-primary/10">
                                           <span>Final price: </span>
                                           <span className="font-medium text-foreground">
-                                            ${(parseFloat(basePrice) + modifier).toFixed(2)}
+                                            {format_currency(parseFloat(basePrice) + modifier)}
                                           </span>
                                         </div>
                                       )}
@@ -1479,7 +1479,7 @@ return (
                                             />
                                             {basePrice && option.price_modifier && !isNaN(parseFloat(option.price_modifier)) && (
                                               <span className="text-xs text-muted-foreground whitespace-nowrap">
-                                                → ${(parseFloat(basePrice) + parseFloat(option.price_modifier)).toFixed(2)}
+                                                → {format_currency(parseFloat(basePrice) + parseFloat(option.price_modifier))}
                                               </span>
                                             )}
                                           </div>
@@ -1590,18 +1590,18 @@ return (
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">Base Price</span>
-                          <span className="font-medium">${parseFloat(basePrice).toFixed(2)}</span>
+                          <span className="font-medium">{format_currency(parseFloat(basePrice))}</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">With Selected Modifiers</span>
                           <span className="text-lg font-semibold text-primary">
-                            ${(parseFloat(basePrice) + activeVariants
+                            {format_currency(parseFloat(basePrice) + activeVariants
                               .filter(v => !v.isRemoved)
                               .flatMap(v => v.options.filter(o => !o.isRemoved))
                               .reduce((sum, option) => {
                                 const modifier = parseFloat(option.price_modifier || "0") || 0;
                                 return sum + modifier;
-                              }, 0)).toFixed(2)}
+                              }, 0))}
                           </span>
                         </div>
                         <div className="pt-2">
@@ -1804,7 +1804,7 @@ const AdminProductForm = () => {
     if (!formData.name.trim()) errors.push("Product name is required");
     if (!formData.category_id) errors.push("Category is required");
     if (!formData.price) errors.push("Price is required");
-    if (!formData.sku.trim()) errors.push("SKU is required");
+    // if (!formData.sku.trim()) errors.push("SKU is required");
     if (productImages.filter(img => !img.isRemoved).length === 0) errors.push("At least one product image is required");
     
     if (errors.length > 0) {
@@ -2773,23 +2773,23 @@ const AdminProductForm = () => {
                     <div className="text-right">
                       <div className="flex items-center gap-1">
                         <span className="font-semibold text-lg">
-                          ${previewPrice.toFixed(2)}
+                          {format_currency(previewPrice)}
                         </span>
                         {previewPrice !== parseFloat(formData.price || "0") && (
                           <Badge variant="outline" className="text-xs h-5">
                             {previewPrice > parseFloat(formData.price || "0") ? "+" : ""}
-                            ${Math.abs(previewPrice - parseFloat(formData.price || "0")).toFixed(2)}
+                            {format_currency(Math.abs(previewPrice - parseFloat(formData.price || "0")))}
                           </Badge>
                         )}
                       </div>
                       <div className="space-y-1">
                         {formData.originalPrice && (
                           <span className="text-sm text-muted-foreground line-through">
-                            ${parseFloat(formData.originalPrice).toFixed(2)}
+                            {format_currency(parseFloat(formData.originalPrice))}
                           </span>
                         )}
                         <div className="text-xs text-muted-foreground">
-                          Base: ${formData.price ? parseFloat(formData.price).toFixed(2) : "0.00"}
+                          Base: {formData.price ? format_currency(parseFloat(formData.price)) : "0.00"}
                         </div>
                       </div>
                     </div>
@@ -2831,7 +2831,7 @@ const AdminProductForm = () => {
                               .map(opt => {
                                 const modifier = parseFloat(opt.price_modifier || "0");
                                 const sign = modifier > 0 ? "+" : modifier < 0 ? "-" : "";
-                                const priceText = modifier !== 0 ? ` (${sign}$${Math.abs(modifier).toFixed(2)})` : "";
+                                const priceText = modifier !== 0 ? ` (${sign}${format_currency(Math.abs(modifier))})` : "";
                                 return `${opt.value}${priceText}`;
                               })
                               .join(', ');
