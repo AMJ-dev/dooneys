@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 import { motion } from "framer-motion";
 import {
   AreaChart,
@@ -25,7 +25,6 @@ import {
   Target,
   PieChart as PieChartIcon,
   TrendingUp as TrendingUpIcon,
-  Filter,
   Award,
   Crown,
   ArrowUpRight,
@@ -45,11 +44,13 @@ import { ApiResp } from "@/lib/types";
 import { toast } from "react-toastify";
 import { format_currency } from "@/lib/functions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "react-router-dom";
+import usePermissions from "@/hooks/usePermissions";
 
 type Metric = {
   label: string;
   value: string;
-  icon: any;
+  icon: string;
   color: string;
   bgColor: string;
   borderColor: string;
@@ -97,7 +98,17 @@ type AnalyticsData = {
 
 const COLORS = ["hsl(var(--primary))", "hsl(var(--secondary))", "#8B5CF6", "#F59E0B", "#10B981"];
 
+const ICON_MAP = {
+  DollarSign,
+  ShoppingBag,
+  Eye,
+  Users,
+};
+
 const AdminAnalytics = () => {
+  const navigate = useNavigate();
+  const { view_analytics: can_view_analytics } = usePermissions(['view_analytics']);
+
   const [dateRange, setDateRange] = useState("year");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<AnalyticsData | null>(null);
@@ -120,8 +131,11 @@ const AdminAnalytics = () => {
   };
 
   useEffect(() => {
+    if(!can_view_analytics) startTransition(() => navigate("/unauthorized"));
     fetchAnalyticsData();
   }, [dateRange]);
+
+  
 
   if (loading) {
     return (
@@ -213,7 +227,10 @@ const AdminAnalytics = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className={`p-3 rounded-xl bg-white shadow-sm border ${metric.borderColor}`}>
-                    <metric.icon className={`h-6 w-6 ${metric.color}`} />
+                    {(() => {
+                      const IconComponent = ICON_MAP[metric.icon as keyof typeof ICON_MAP];
+                      return IconComponent ? <IconComponent className={`h-6 w-6 ${metric.color}`} /> : null;
+                    })()}
                   </div>
                 </div>
                 <div className="space-y-2">

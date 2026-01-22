@@ -590,7 +590,7 @@ CREATE TABLE `page_views` (
   KEY `session_id` (`session_id`),
   KEY `created_at` (`created_at`),
   CONSTRAINT `page_views_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `sessions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1303 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1304 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `page_views` VALUES
@@ -1895,7 +1895,8 @@ INSERT INTO `page_views` VALUES
 (1299,1318,'/admin/analytics','null','2026-01-22 14:51:55'),
 (1300,1319,'/admin/analytics','null','2026-01-22 14:55:17'),
 (1301,1320,'/admin/analytics','null','2026-01-22 14:55:30'),
-(1302,1321,'/admin/analytics','null','2026-01-22 14:57:45');
+(1302,1321,'/admin/analytics','null','2026-01-22 14:57:45'),
+(1303,1322,'/admin/analytics','null','2026-01-22 15:11:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -2331,7 +2332,7 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`id`),
   KEY `visitor_id` (`visitor_id`),
   CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`visitor_id`) REFERENCES `visitors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1322 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1323 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `sessions` VALUES
@@ -3655,7 +3656,8 @@ INSERT INTO `sessions` VALUES
 (1318,1318,'2026-01-22 14:51:55','2026-01-22 14:51:55'),
 (1319,1319,'2026-01-22 14:55:17','2026-01-22 14:55:17'),
 (1320,1320,'2026-01-22 14:55:30','2026-01-22 14:55:30'),
-(1321,1321,'2026-01-22 14:57:45','2026-01-22 14:57:45');
+(1321,1321,'2026-01-22 14:57:45','2026-01-22 14:57:45'),
+(1322,1322,'2026-01-22 15:11:49','2026-01-22 15:11:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -3694,7 +3696,7 @@ CREATE TABLE `store_settings` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `store_settings` VALUES
-(1,'','','','','','','','','','','T5J 3A3','Edmonton','AB','CA',18.00,0,5.00,1,1,1,1,1,1,1,1,0,'2026-01-22 15:02:03','2026-01-09 13:12:52');
+(1,'sk_test_51ImMraAzOXk7ItFuIdhygaGeYEk4USk7453RrPK5ifLmZwPHIGHYgeGXo2zc\nQ5TOiH2yT9urDmg2F8tVu7t6akrM002u5AzfEg','pk_test_51ImMraAzOXk7ItFujnwd5eJoNEEdpZuNIUqZmmYtcOC2cF8eOJwW9pML2zv\ntl2On4DTATVRxi7ztZyiBIinuTMQx00crS65cIL','','6d4a916436ce6b03','010766f729379043852f82','','','','','','T5J 3A3','Edmonton','AB','CA',18.00,0,5.00,1,1,1,1,1,1,1,1,0,'2026-01-22 15:09:52','2026-01-09 13:12:52');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -3787,7 +3789,7 @@ CREATE TABLE `visitors` (
   UNIQUE KEY `anon_id` (`anon_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `visitors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1322 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1323 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `visitors` VALUES
@@ -5111,7 +5113,8 @@ INSERT INTO `visitors` VALUES
 (1318,'8bd3723c-0794-4063-b988-78cdc1ff3207',1,'2026-01-22 14:51:55','2026-01-22 14:51:55'),
 (1319,'de2e8e56-10be-4d37-a323-dc5a66e04d73',1,'2026-01-22 14:55:17','2026-01-22 14:55:17'),
 (1320,'0d13261b-308a-4157-8e41-62be8d89f179',1,'2026-01-22 14:55:30','2026-01-22 14:55:30'),
-(1321,'14cc34dc-ed08-4c06-b2ce-5a9583017397',1,'2026-01-22 14:57:45','2026-01-22 14:57:45');
+(1321,'14cc34dc-ed08-4c06-b2ce-5a9583017397',1,'2026-01-22 14:57:45','2026-01-22 14:57:45'),
+(1322,'99d259ea-951f-45e3-907b-46edfd5fc678',1,'2026-01-22 15:11:49','2026-01-22 15:11:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
