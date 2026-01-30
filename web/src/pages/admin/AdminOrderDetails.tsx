@@ -556,12 +556,12 @@ const AdminOrderDetails = () => {
               @media print {
                 body {
                   font-family: 'Courier New', monospace;
-                  font-size: 11px;
-                  width: 58mm !important;
-                  max-width: 58mm !important;
+                  font-size: 11px !important;
+                  width: 57mm !important;
+                  max-width: 57mm !important;
                   margin: 0 !important;
-                  padding: 5px !important;
-                  line-height: 1.2;
+                  padding: 2mm !important;
+                  line-height: 1.1;
                   -webkit-print-color-adjust: exact;
                 }
                 * {
@@ -571,140 +571,228 @@ const AdminOrderDetails = () => {
                 }
                 .receipt-container {
                   width: 100% !important;
-                  max-width: 58mm !important;
+                  max-width: 53mm !important;
                   word-wrap: break-word;
                   overflow-wrap: break-word;
+                  word-break: break-word;
                 }
                 .header {
                   text-align: center;
-                  margin-bottom: 5px;
-                  border-bottom: 1px dashed #000;
-                  padding-bottom: 5px;
+                  margin-bottom: 2mm;
                 }
-                .logo {
+                .logo-main {
                   font-size: 12px;
                   font-weight: bold;
-                  margin-bottom: 2px;
+                  margin-bottom: 1mm;
                 }
-                .company-info {
-                  font-size: 8px;
+                .logo-sub {
+                  font-size: 9px;
+                  margin-bottom: 1mm;
                   color: #666;
-                  margin-bottom: 3px;
+                }
+                .order-type {
+                  font-size: 10px;
+                  font-weight: bold;
+                  text-transform: uppercase;
+                  margin: 1mm 0;
                 }
                 .divider {
                   border-top: 1px dashed #000;
-                  margin: 4px 0;
+                  margin: 2mm 0;
                 }
                 .divider-thick {
                   border-top: 2px solid #000;
-                  margin: 5px 0;
+                  margin: 3mm 0;
                 }
-                .item {
-                  display: flex;
-                  justify-content: space-between;
-                  margin: 3px 0;
-                  font-size: 9px;
-                  border-bottom: 1px dotted #ddd;
-                  padding-bottom: 2px;
+                .divider-total {
+                  border-top: 1px solid #333;
+                  margin: 1mm 0;
                 }
-                .item-header {
+                .section-title {
                   font-weight: bold;
                   font-size: 10px;
-                  background-color: #f5f5f5;
-                  padding: 2px 0;
-                  margin-top: 5px;
+                  text-transform: uppercase;
+                  margin-bottom: 1mm;
+                  text-align: center;
+                }
+                .info-row {
+                  display: flex;
+                  justify-content: space-between;
+                  margin: 1mm 0;
+                  font-size: 10px;
+                }
+                .info-row div:first-child {
+                  font-weight: bold;
+                  min-width: 40%;
+                }
+                .info-row div:last-child {
+                  text-align: right;
+                  min-width: 60%;
+                }
+                .truncate-text {
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                }
+                .items-section {
+                  margin: 2mm 0;
+                }
+                .item {
+                  margin: 2mm 0;
+                  padding-bottom: 1mm;
+                  border-bottom: 1px dotted #ccc;
+                  page-break-inside: avoid;
+                }
+                .item-main {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: flex-start;
+                  margin-bottom: 0.5mm;
                 }
                 .item-name {
+                  font-size: 10px;
+                  font-weight: bold;
                   flex: 1;
-                  max-width: 70%;
+                  line-height: 1.2;
                   word-break: break-word;
+                  white-space: normal;
+                  max-width: 70%;
                 }
-                .item-details {
-                  font-size: 8px;
+                .item-quantity {
+                  font-size: 10px;
+                  font-weight: bold;
+                  margin-left: 1mm;
+                  white-space: nowrap;
+                }
+                .item-price-row {
+                  display: flex;
+                  justify-content: space-between;
+                  font-size: 9px;
                   color: #666;
-                  margin-top: 1px;
                 }
-                .item-price {
+                .item-unit {
+                  flex: 1;
+                }
+                .item-total {
+                  font-weight: bold;
                   text-align: right;
                   min-width: 30%;
-                  font-weight: bold;
                 }
-                .total {
+                .payment-info {
+                  margin: 2mm 0;
+                }
+                .totals {
+                  margin: 2mm 0;
+                }
+                .total-item {
+                  display: flex;
+                  justify-content: space-between;
+                  margin: 1mm 0;
+                  font-size: 10px;
+                }
+                .total-amount {
                   font-weight: bold;
-                  font-size: 12px;
-                  margin-top: 3px;
+                  min-width: 35%;
+                  text-align: right;
+                }
+                .total-item.discount {
+                  color: #dc3545;
+                }
+                .total-item.paid {
+                  color: #28a745;
+                }
+                .grand-total {
+                  font-size: 11px;
+                  margin-top: 1mm;
+                  padding-top: 1mm;
+                  border-top: 1px solid #000;
                 }
                 .footer {
                   text-align: center;
-                  margin-top: 8px;
-                  font-size: 8px;
-                  color: #666;
-                  border-top: 1px dashed #000;
-                  padding-top: 5px;
+                  margin-top: 3mm;
+                  font-size: 9px;
+                  line-height: 1.2;
                 }
-                .variants {
-                  font-size: 8px;
-                  color: #666;
-                  margin-top: 1px;
-                }
-                .text-center {
-                  text-align: center;
-                }
-                .text-right {
-                  text-align: right;
-                }
-                .bold {
+                .thank-you {
                   font-weight: bold;
+                  font-size: 10px;
+                  margin-bottom: 1mm;
                 }
-                .mt-1 {
-                  margin-top: 1px;
+                .store-info {
+                  margin-bottom: 1mm;
+                  color: #666;
                 }
-                .mb-1 {
-                  margin-bottom: 1px;
+                .store-info div:first-child {
+                  font-weight: bold;
+                  font-size: 10px;
                 }
-                .mb-2 {
-                  margin-bottom: 2px;
+                .receipt-number {
+                  font-size: 8px;
+                  color: #888;
+                  margin-top: 1mm;
                 }
-                .line-through {
-                  text-decoration: line-through;
+                .print-date {
+                  font-size: 8px;
+                  color: #888;
+                  margin-top: 0.5mm;
                 }
-                .border-bottom {
-                  border-bottom: 1px solid #ddd;
-                  padding-bottom: 2px;
-                  margin-bottom: 2px;
+                
+                @page {
+                  margin: 0;
+                  size: 57mm auto;
                 }
-                .order-info {
-                  display: flex;
-                  justify-content: space-between;
-                  font-size: 9px;
-                  margin: 3px 0;
+                body, html {
+                  width: 57mm !important;
+                  min-width: 57mm !important;
+                  max-width: 57mm !important;
                 }
-                .customer-info {
-                  margin: 3px 0;
-                  font-size: 9px;
+                * {
+                  max-width: 53mm !important;
                 }
-                .payment-info {
-                  margin: 3px 0;
-                  font-size: 9px;
-                  background-color: #f9f9f9;
-                  padding: 2px;
-                  border-radius: 2px;
+                
+                .no-break {
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+              }
+              
+              @media screen {
+                body {
+                  background: white;
+                  padding: 10px;
+                }
+                .receipt-container {
+                  max-width: 57mm;
+                  margin: 0 auto;
+                  border: 1px solid #ccc;
+                  padding: 5px;
+                  box-shadow: 0 0 5px rgba(0,0,0,0.1);
                 }
               }
             </style>
           </head>
           <body>
             ${printReceiptRef.current.innerHTML}
+            <script>
+              window.onload = function() {
+                setTimeout(function() {
+                  window.print();
+                  setTimeout(function() {
+                    window.close();
+                  }, 500);
+                }, 250);
+              };
+              
+              window.onafterprint = function() {
+                setTimeout(function() {
+                  window.close();
+                }, 500);
+              };
+            </script>
           </body>
         </html>
       `);
       printWindow.document.close();
-      setTimeout(() => {
-        printWindow.print();
-        setTimeout(() => {
-          printWindow.close();
-        }, 100);
-      }, 250);
     }
   };
 
@@ -1153,7 +1241,6 @@ const AdminOrderDetails = () => {
           </div>
 
           <div className="space-y-4 sm:space-y-6">
-            {/* Updated Order Summary Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1192,7 +1279,6 @@ const AdminOrderDetails = () => {
                   </CardHeader>
                   <CardContent className="pt-6 relative z-10">
                     <div className="space-y-6">
-                      {/* Order Info */}
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <p className="text-xs text-muted-foreground font-medium">Order Number</p>
@@ -1220,7 +1306,6 @@ const AdminOrderDetails = () => {
 
                       <Separator className="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 h-0.5" />
 
-                      {/* Customer Info */}
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-primary" />
@@ -1245,7 +1330,6 @@ const AdminOrderDetails = () => {
 
                       <Separator className="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 h-0.5" />
 
-                      {/* Items List */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
@@ -1290,7 +1374,6 @@ const AdminOrderDetails = () => {
                                   </div>
                                 </div>
                                 
-                                {/* Product Details */}
                                 <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                                   <div className="space-y-1">
                                     {item.product.dimensions && (
@@ -1332,7 +1415,6 @@ const AdminOrderDetails = () => {
 
                       <Separator className="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 h-0.5" />
 
-                      {/* Totals */}
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
@@ -1361,19 +1443,22 @@ const AdminOrderDetails = () => {
                             <span className="text-sm text-muted-foreground">Subtotal</span>
                             <span className="font-medium">{format_currency(order.totals?.subtotal || 0)}</span>
                           </div>
-                          {order.totals.shipping && order.totals.shipping > 0 && (
+                          
+                          {order.totals?.shipping !== undefined && order.totals.shipping > 0 && (
                             <div className="flex justify-between items-center py-1">
                               <span className="text-sm text-muted-foreground">Shipping</span>
                               <span className="font-medium">{format_currency(order.totals.shipping)}</span>
                             </div>
                           )}
-                          {order.totals.tax && order.totals.tax > 0 && (
+                          
+                          {order.totals?.tax !== undefined && order.totals.tax > 0 && (
                             <div className="flex justify-between items-center py-1">
                               <span className="text-sm text-muted-foreground">Tax</span>
                               <span className="font-medium">{format_currency(order.totals.tax)}</span>
                             </div>
                           )}
-                          {order.totals?.discount && order.totals.discount > 0 && (
+                          
+                          {order.totals?.discount !== undefined && order.totals.discount > 0 && (
                             <div className="flex justify-between items-center py-1">
                               <span className="text-sm text-muted-foreground">Discount</span>
                               <span className="font-medium text-emerald-400">-{format_currency(order.totals.discount)}</span>
@@ -1389,7 +1474,7 @@ const AdminOrderDetails = () => {
                             </span>
                           </div>
                           
-                          {order.payment?.status === 'paid' && order.payment?.paidAmount && (
+                          {order.payment?.status === 'paid' && order.payment?.paidAmount !== undefined && (
                             <div className="flex justify-between items-center text-sm text-muted-foreground">
                               <span>Paid Amount</span>
                               <span className="font-medium text-emerald-400">{format_currency(order.payment.paidAmount)}</span>
@@ -1403,131 +1488,132 @@ const AdminOrderDetails = () => {
               </div>
             </motion.div>
 
-            {/* Hidden Printable Receipt */}
             <div className="hidden">
               <div ref={printReceiptRef} className="receipt-container">
                 <div className="header">
-                  <div className="logo bold text-center mb-1">DOONNEYS BEAUTY</div>
-                  <div className="company-info text-center mb-1">Premium Beauty Products</div>
-                  <div className="company-info text-center mb-1">Order Receipt</div>
+                  <div className="logo">
+                    <div className="logo-main">DOONNEYS BEAUTY</div>
+                    <div className="logo-sub">Premium Beauty & Cosmetics</div>
+                  </div>
                   <div className="divider"></div>
+                  <div className="order-type">{isPOSOrder ? "POS RECEIPT" : "ORDER RECEIPT"}</div>
                 </div>
                 
+                <div className="divider"></div>
+                
                 <div className="order-info">
-                  <div>
-                    <div className="bold">Order #:</div>
+                  <div className="info-row">
+                    <div><strong>ORDER #:</strong></div>
                     <div>{order.order.orderNumber}</div>
                   </div>
-                  <div className="text-right">
-                    <div className="bold">Date:</div>
-                    <div>{formatShortDate(order.order.createdAt)}</div>
+                  <div className="info-row">
+                    <div><strong>DATE:</strong></div>
+                    <div>{new Date(order.order.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</div>
+                  </div>
+                  <div className="info-row">
+                    <div><strong>TIME:</strong></div>
+                    <div>{new Date(order.order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
                 </div>
                 
                 <div className="divider"></div>
                 
                 <div className="customer-info">
-                  <div className="bold mb-1">Customer:</div>
-                  <div>{customerName}</div>
-                  {order.customer?.email && (
-                    <div className="item-details">Email: {order.customer.email}</div>
-                  )}
-                  {order.customer?.phone && (
-                    <div className="item-details">Phone: {order.customer.phone}</div>
-                  )}
+                  <div className="section-title">CUSTOMER</div>
+                  <div className="info-row">
+                    <div><strong>NAME:</strong></div>
+                    <div className="truncate-text">{customerName}</div>
+                  </div>
                 </div>
                 
                 <div className="divider"></div>
                 
-                <div className="item-header">ORDER ITEMS</div>
-                {order.items?.map((item, index) => (
-                  <div key={index} className="item">
-                    <div className="item-name">
-                      <div className="bold">{item.product.name}</div>
-                      <div className="item-details">Qty: {item.quantity} × {format_currency(item.product.price)}</div>
-                      {item.product.sku && (
-                        <div className="item-details">SKU: {item.product.sku}</div>
-                      )}
-                      {item.product.weight && (
-                        <div className="item-details">Weight: {item.product.weight}kg</div>
-                      )}
-                      {item.variants && item.variants.length > 0 && (
-                        <div className="variants">
-                          {item.variants.map((variant, vIndex) => (
-                            <div key={vIndex}>• {variant.variant_type}: {variant.option_value}</div>
-                          ))}
-                        </div>
-                      )}
+                <div className="items-section">
+                  <div className="section-title">ORDER ITEMS</div>
+                  {order.items?.map((item, index) => (
+                    <div key={index} className="item">
+                      <div className="item-main">
+                        <div className="item-name">{item.product.name}</div>
+                        <div className="item-quantity">×{item.quantity}</div>
+                      </div>
+                      <div className="item-price-row">
+                        <div className="item-unit">{format_currency(item.product.price)} × {item.quantity}</div>
+                        <div className="item-total">{format_currency(item.lineTotal)}</div>
+                      </div>
                     </div>
-                    <div className="item-price">
-                      {format_currency(item.lineTotal)}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
                 
                 <div className="divider-thick"></div>
                 
-                <div className="order-info">
-                  <div className="bold">Payment:</div>
-                  <div>{order.payment?.method || "Card"} • {paymentStatus?.label}</div>
-                </div>
-                
-                <div className="order-info">
-                  <div className="bold">Order Source:</div>
-                  <div>{isPOSOrder ? "POS" : "Web"}</div>
+                <div className="payment-info">
+                  <div className="section-title">PAYMENT</div>
+                  <div className="info-row">
+                    <div><strong>METHOD:</strong></div>
+                    <div>{order.payment?.method?.toUpperCase() || "CARD"}</div>
+                  </div>
+                  <div className="info-row">
+                    <div><strong>STATUS:</strong></div>
+                    <div>{order.payment?.status?.toUpperCase() || "PENDING"}</div>
+                  </div>
+                  <div className="info-row">
+                    <div><strong>SOURCE:</strong></div>
+                    <div>{isPOSOrder ? "POS" : "WEB"}</div>
+                  </div>
                 </div>
                 
                 <div className="divider"></div>
                 
-                <div className="item">
-                  <span>Subtotal:</span>
-                  <span>{format_currency(order.totals?.subtotal || 0)}</span>
+                <div className="totals">
+                  <div className="total-item">
+                    <div>SUBTOTAL</div>
+                    <div className="total-amount">{format_currency(order.totals?.subtotal || 0)}</div>
+                  </div>
+                  
+                  {order.totals?.tax !== undefined && order.totals.tax > 0 && (
+                    <div className="total-item">
+                      <div>TAX</div>
+                      <div className="total-amount">{format_currency(order.totals.tax)}</div>
+                    </div>
+                  )}
+                  
+                  {order.totals?.discount !== undefined && order.totals.discount > 0 && (
+                    <div className="total-item discount">
+                      <div>DISCOUNT</div>
+                      <div className="total-amount">-{format_currency(order.totals.discount)}</div>
+                    </div>
+                  )}
+                  
+                  <div className="divider-total"></div>
+                  
+                  <div className="total-item grand-total">
+                    <div><strong>TOTAL</strong></div>
+                    <div className="total-amount"><strong>{format_currency(order.totals?.grandTotal || 0)}</strong></div>
+                  </div>
+                  
+                  {order.payment?.status === 'paid' && order.payment?.paidAmount !== undefined && (
+                    <div className="total-item paid">
+                      <div>PAID</div>
+                      <div className="total-amount"><strong>{format_currency(order.payment.paidAmount)}</strong></div>
+                    </div>
+                  )}
                 </div>
-                {order.totals?.shipping && order.totals.shipping > 0 && (
-                  <div className="item">
-                    <span>Shipping:</span>
-                    <span>{format_currency(order.totals.shipping)}</span>
-                  </div>
-                )}
-                {order.totals?.tax && order.totals.tax > 0 && (
-                  <div className="item">
-                    <span>Tax:</span>
-                    <span>{format_currency(order.totals.tax)}</span>
-                  </div>
-                )}
-                {order.totals?.discount && order.totals.discount > 0 && (
-                  <div className="item">
-                    <span>Discount:</span>
-                    <span>-{format_currency(order.totals.discount)}</span>
-                  </div>
-                )}
-                
-                <div className="divider"></div>
-                
-                <div className="item total">
-                  <span>TOTAL:</span>
-                  <span>{format_currency(order.totals?.grandTotal || 0)}</span>
-                </div>
-                
-                {order.payment?.status === 'paid' && order.payment?.paidAmount && (
-                  <div className="item">
-                    <span>Paid Amount:</span>
-                    <span>{format_currency(order.payment.paidAmount)}</span>
-                  </div>
-                )}
                 
                 <div className="divider-thick"></div>
                 
                 <div className="footer">
-                  <div className="bold mb-1">Thank you for your order!</div>
-                  <div>DOONNEYS BEAUTY</div>
-                  <div>Premium Beauty & Cosmetics</div>
-                  <div className="mt-1">www.doonneys.com</div>
+                  <div className="thank-you">Thank you for your order!</div>
+                  <div className="store-info">
+                    <div>DOONNEYS BEAUTY</div>
+                    <div>www.doonneys.com</div>
+                  </div>
+                  <div className="divider"></div>
+                  <div className="receipt-number">RCPT: {order.order.orderNumber}</div>
+                  <div className="print-date">{new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>
                 </div>
               </div>
             </div>
 
-            {/* Customer/Recipient Card */}
             {!isPOSOrder && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -1642,7 +1728,6 @@ const AdminOrderDetails = () => {
               </motion.div>
             )}
 
-            {/* Payment & Shipping Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1727,7 +1812,6 @@ const AdminOrderDetails = () => {
         </div>
       </div>
 
-      {/* Status Update Dialog */}
       {can_process_orders && (
         <Dialog open={isStatusDialogOpen} onOpenChange={setIsStatusDialogOpen}>
           <DialogContent className="max-w-md p-0 rounded-3xl border-0 overflow-hidden bg-gradient-to-br from-white/40 via-white/30 to-white/40 backdrop-blur-3xl shadow-2xl">

@@ -301,7 +301,7 @@ CREATE TABLE `order_items` (
   PRIMARY KEY (`id`),
   KEY `fk_order_items_order` (`order_id`),
   CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `order_items` VALUES
@@ -364,7 +364,25 @@ INSERT INTO `order_items` VALUES
 (65,64,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 11:39:44'),
 (66,64,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 11:39:44'),
 (67,65,9,NULL,'Midnight Elegance Gown',120.00,0.00,1,120.00,'2026-01-30 13:19:25'),
-(68,65,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 13:19:25');
+(68,65,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 13:19:25'),
+(69,66,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:13:39'),
+(70,66,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:13:39'),
+(71,66,4,NULL,'Luxury Body Lotion Set',20.00,0.00,2,40.00,'2026-01-30 15:13:39'),
+(72,66,3,NULL,'Hair Growth Serum - Premium Formula',233.00,0.00,1,233.00,'2026-01-30 15:13:39'),
+(73,66,5,NULL,'Pre-Stretched Braiding Hair - Rainbow Pack',520.00,0.00,1,520.00,'2026-01-30 15:13:39'),
+(74,66,6,NULL,'Professional Titanium Flat Iron',128.00,0.00,1,128.00,'2026-01-30 15:13:39'),
+(75,67,4,NULL,'Luxury Body Lotion Set',20.00,0.00,1,20.00,'2026-01-30 15:14:01'),
+(76,67,3,NULL,'Hair Growth Serum - Premium Formula',233.00,0.00,1,233.00,'2026-01-30 15:14:01'),
+(77,67,5,NULL,'Pre-Stretched Braiding Hair - Rainbow Pack',520.00,0.00,1,520.00,'2026-01-30 15:14:01'),
+(78,68,3,NULL,'Hair Growth Serum - Premium Formula',233.00,0.00,1,233.00,'2026-01-30 15:14:23'),
+(79,68,4,NULL,'Luxury Body Lotion Set',20.00,0.00,1,20.00,'2026-01-30 15:14:23'),
+(80,69,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:21:39'),
+(81,70,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:39:15'),
+(82,70,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:39:15'),
+(83,71,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:44:07'),
+(84,71,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:44:07'),
+(85,72,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:45:49'),
+(86,72,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:45:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -378,7 +396,7 @@ CREATE TABLE `order_status_history` (
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`),
   CONSTRAINT `fk_order_status_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `order_status_history` VALUES
@@ -432,7 +450,14 @@ INSERT INTO `order_status_history` VALUES
 (48,62,'delivered','admin','POS Order Created','2026-01-19 21:51:22'),
 (49,63,'delivered','admin','POS Order Created','2026-01-19 22:03:29'),
 (50,64,'delivered','admin','POS Order Created','2026-01-30 11:39:44'),
-(51,65,'delivered','admin','POS Order Created','2026-01-30 13:19:25');
+(51,65,'delivered','admin','POS Order Created','2026-01-30 13:19:25'),
+(52,66,'delivered','admin','POS Order Created','2026-01-30 15:13:39'),
+(53,67,'delivered','admin','POS Order Created','2026-01-30 15:14:01'),
+(54,68,'delivered','admin','POS Order Created','2026-01-30 15:14:23'),
+(55,69,'delivered','admin','POS Order Created','2026-01-30 15:21:39'),
+(56,70,'delivered','admin','POS Order Created','2026-01-30 15:39:15'),
+(57,71,'delivered','admin','POS Order Created','2026-01-30 15:44:07'),
+(58,72,'delivered','admin','POS Order Created','2026-01-30 15:45:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -479,7 +504,7 @@ CREATE TABLE `orders` (
   KEY `fk_orders_created_by_admin` (`created_by_admin_id`),
   CONSTRAINT `fk_orders_created_by_admin` FOREIGN KEY (`created_by_admin_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_orders_pickup_location` FOREIGN KEY (`pickup_id`) REFERENCES `pickup_locations` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `orders` VALUES
@@ -531,7 +556,14 @@ INSERT INTO `orders` VALUES
 (62,'DN-260119025122-2D976F','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','card',NULL,NULL,NULL,NULL,23.00,0.00,4.14,0.00,NULL,27.14,'CAD','paid','delivered','2026-01-19 21:51:22','2026-01-19 21:51:22',NULL,NULL,NULL,NULL),
 (63,'DN-260119030329-3A8BC5','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','card',NULL,NULL,NULL,NULL,147.00,0.00,26.46,0.00,NULL,173.46,'CAD','paid','delivered','2026-01-19 22:03:29','2026-01-19 22:03:29',NULL,NULL,NULL,NULL),
 (64,'DN-260130043944-42A175','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,493.00,0.00,88.74,0.00,NULL,581.74,'CAD','paid','delivered','2026-01-30 11:39:44','2026-01-30 11:39:44',NULL,NULL,NULL,NULL),
-(65,'DN-260130061925-23ADDB','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,350.00,0.00,63.00,0.00,NULL,413.00,'CAD','paid','delivered','2026-01-30 13:19:25','2026-01-30 13:19:25',NULL,NULL,NULL,NULL);
+(65,'DN-260130061925-23ADDB','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,350.00,0.00,63.00,0.00,NULL,413.00,'CAD','paid','delivered','2026-01-30 13:19:25','2026-01-30 13:19:25',NULL,NULL,NULL,NULL),
+(66,'DN-260130081339-1F370D','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,1386.00,0.00,249.48,0.00,NULL,1635.48,'CAD','paid','delivered','2026-01-30 15:13:39','2026-01-30 15:13:39',NULL,NULL,NULL,NULL),
+(67,'DN-260130081401-EB9A63','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,773.00,0.00,139.14,0.00,NULL,912.14,'CAD','paid','delivered','2026-01-30 15:14:01','2026-01-30 15:14:01',NULL,NULL,NULL,NULL),
+(68,'DN-260130081423-61905C','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,253.00,0.00,45.54,0.00,NULL,298.54,'CAD','paid','delivered','2026-01-30 15:14:23','2026-01-30 15:14:23',NULL,NULL,NULL,NULL),
+(69,'DN-260130082139-D88B35','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,230.00,0.00,41.40,0.00,NULL,271.40,'CAD','paid','delivered','2026-01-30 15:21:39','2026-01-30 15:21:39',NULL,NULL,NULL,NULL),
+(70,'DN-260130083915-953124','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,465.00,0.00,83.70,0.00,NULL,548.70,'CAD','paid','delivered','2026-01-30 15:39:15','2026-01-30 15:39:15',NULL,NULL,NULL,NULL),
+(71,'DN-260130084407-ECF033','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,465.00,0.00,83.70,0.00,NULL,548.70,'CAD','paid','delivered','2026-01-30 15:44:07','2026-01-30 15:44:07',NULL,NULL,NULL,NULL),
+(72,'DN-260130084549-616976','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,465.00,0.00,83.70,0.00,NULL,548.70,'CAD','paid','delivered','2026-01-30 15:45:49','2026-01-30 15:45:49',NULL,NULL,NULL,NULL);
 commit;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8mb4;
@@ -601,7 +633,7 @@ CREATE TABLE `page_views` (
   KEY `session_id` (`session_id`),
   KEY `created_at` (`created_at`),
   CONSTRAINT `page_views_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `sessions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1413 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1424 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `page_views` VALUES
@@ -2016,7 +2048,18 @@ INSERT INTO `page_views` VALUES
 (1409,1428,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:36'),
 (1410,1429,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:40'),
 (1411,1430,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:49'),
-(1412,1431,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:40:22');
+(1412,1431,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:40:22'),
+(1413,1432,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 14:46:58'),
+(1414,1433,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 15:05:08'),
+(1415,1434,'/admin/order/65/guest-customer','null','2026-01-30 15:09:28'),
+(1416,1435,'/admin/pos','null','2026-01-30 15:13:01'),
+(1417,1436,'/admin/pos','null','2026-01-30 15:24:38'),
+(1418,1437,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:24:52'),
+(1419,1438,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:25:40'),
+(1420,1439,'/admin/pos','null','2026-01-30 15:26:33'),
+(1421,1440,'/admin/pos','null','2026-01-30 15:36:51'),
+(1422,1441,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:39:02'),
+(1423,1442,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:45:12');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -2055,7 +2098,7 @@ CREATE TABLE `payments` (
   KEY `payment_intent_id` (`payment_intent_id`),
   KEY `fk_payments_order` (`order_id`),
   CONSTRAINT `fk_payments_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `payments` VALUES
@@ -2086,7 +2129,14 @@ INSERT INTO `payments` VALUES
 (26,62,'cash',NULL,NULL,'cash',NULL,27.14,NULL,'CAD','paid','2026-01-19 21:51:22'),
 (27,63,'cash',NULL,NULL,'cash',NULL,173.46,NULL,'CAD','paid','2026-01-19 22:03:29'),
 (28,64,'cash',NULL,NULL,'cash',NULL,581.74,NULL,'CAD','paid','2026-01-30 11:39:44'),
-(29,65,'cash',NULL,NULL,'cash',NULL,413.00,NULL,'CAD','paid','2026-01-30 13:19:25');
+(29,65,'cash',NULL,NULL,'cash',NULL,413.00,NULL,'CAD','paid','2026-01-30 13:19:25'),
+(30,66,'cash',NULL,NULL,'cash',NULL,1635.48,NULL,'CAD','paid','2026-01-30 15:13:39'),
+(31,67,'cash',NULL,NULL,'cash',NULL,912.14,NULL,'CAD','paid','2026-01-30 15:14:01'),
+(32,68,'cash',NULL,NULL,'cash',NULL,298.54,NULL,'CAD','paid','2026-01-30 15:14:23'),
+(33,69,'cash',NULL,NULL,'cash',NULL,271.40,NULL,'CAD','paid','2026-01-30 15:21:39'),
+(34,70,'cash',NULL,NULL,'cash',NULL,548.70,NULL,'CAD','paid','2026-01-30 15:39:15'),
+(35,71,'cash',NULL,NULL,'cash',NULL,548.70,NULL,'CAD','paid','2026-01-30 15:44:07'),
+(36,72,'cash',NULL,NULL,'cash',NULL,548.70,NULL,'CAD','paid','2026-01-30 15:45:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -2324,12 +2374,12 @@ set autocommit=0;
 INSERT INTO `products` VALUES
 (1,'HD Lace Front Wig - Body Wave','Premium HD lace front wig with natural-looking hairline. Perfect for everyday wear or special occasions.',2,225.00,NULL,'5449000002938','active',0,0,1,1,30,10,0.02,21.00,13.00,32.00,'2026-01-08 04:03:43','2026-01-30 13:00:16'),
 (2,'Blonde Ombre Wig - Loose Wave','Stunning blonde ombre wig with gorgeous loose waves. A head-turner for any occasion.',2,125.00,NULL,'5449000297280','active',0,0,1,1,0,100,0.02,21.00,13.00,32.00,'2026-01-08 04:05:32','2026-01-30 13:00:33'),
-(3,'Hair Growth Serum - Premium Formula','Advanced hair growth serum with natural botanical extracts. Promotes thicker, healthier hair.',4,233.00,250.00,'250228345','active',0,0,1,1,19,10,0.02,21.00,13.00,32.00,'2026-01-08 04:07:31','2026-01-30 13:00:55'),
-(4,'Luxury Body Lotion Set','Indulgent body lotion and cream set for silky smooth skin. Long-lasting hydration.',5,20.00,NULL,'58IITBU4C072746','active',0,0,1,1,499,10,0.02,21.00,13.00,32.00,'2026-01-08 04:08:58','2026-01-30 13:01:38'),
-(5,'Pre-Stretched Braiding Hair - Rainbow Pack','Vibrant pre-stretched braiding hair in assorted colors. Easy to work with and long-lasting.',3,520.00,NULL,'4016779630689','active',0,1,1,1,4500,100,0.02,21.00,13.00,32.00,'2026-01-08 04:10:12','2026-01-30 13:02:24'),
-(6,'Professional Titanium Flat Iron','Professional-grade titanium flat iron for sleek, salon-quality results at home.',6,128.00,150.00,'703828=035','active',1,1,1,1,1199,500,0.02,21.00,13.00,32.00,'2026-01-08 04:11:44','2026-01-30 13:03:07'),
-(7,'Human Hair Bundles - Straight','Premium 100% human hair bundles. Silky straight texture that can be styled and colored.',4,235.00,NULL,'DON-968448','active',1,1,1,1,109,10,0.02,21.00,13.00,32.00,'2026-01-08 04:12:55','2026-01-30 11:39:44'),
-(8,'Deep Conditioning Treatment','Intensive deep conditioning treatment for dry and damaged hair. Restores moisture and shine.',4,230.00,400.00,'DON-534244','active',1,1,1,1,2297,300,0.02,21.00,13.00,32.00,'2026-01-08 06:39:05','2026-01-30 13:19:25'),
+(3,'Hair Growth Serum - Premium Formula','Advanced hair growth serum with natural botanical extracts. Promotes thicker, healthier hair.',4,233.00,250.00,'250228345','active',0,0,1,1,16,10,0.02,21.00,13.00,32.00,'2026-01-08 04:07:31','2026-01-30 15:14:23'),
+(4,'Luxury Body Lotion Set','Indulgent body lotion and cream set for silky smooth skin. Long-lasting hydration.',5,20.00,NULL,'58IITBU4C072746','active',0,0,1,1,495,10,0.02,21.00,13.00,32.00,'2026-01-08 04:08:58','2026-01-30 15:14:23'),
+(5,'Pre-Stretched Braiding Hair - Rainbow Pack','Vibrant pre-stretched braiding hair in assorted colors. Easy to work with and long-lasting.',3,520.00,NULL,'4016779630689','active',0,1,1,1,4498,100,0.02,21.00,13.00,32.00,'2026-01-08 04:10:12','2026-01-30 15:14:01'),
+(6,'Professional Titanium Flat Iron','Professional-grade titanium flat iron for sleek, salon-quality results at home.',6,128.00,150.00,'703828=035','active',1,1,1,1,1198,500,0.02,21.00,13.00,32.00,'2026-01-08 04:11:44','2026-01-30 15:13:39'),
+(7,'Human Hair Bundles - Straight','Premium 100% human hair bundles. Silky straight texture that can be styled and colored.',4,235.00,NULL,'DON-968448','active',1,1,1,1,105,10,0.02,21.00,13.00,32.00,'2026-01-08 04:12:55','2026-01-30 15:45:49'),
+(8,'Deep Conditioning Treatment','Intensive deep conditioning treatment for dry and damaged hair. Restores moisture and shine.',4,230.00,400.00,'DON-534244','active',1,1,1,1,2292,300,0.02,21.00,13.00,32.00,'2026-01-08 06:39:05','2026-01-30 15:45:49'),
 (9,'Midnight Elegance Gown','asknlk',6,120.00,NULL,'DON-152043','active',1,1,1,1,196,100,0.02,21.00,13.00,32.00,'2026-01-10 14:40:35','2026-01-30 13:19:25'),
 (10,'Midnight Elegance Gown','sdmlksmmlkm',8,23.00,NULL,'DON-368845','active',1,1,1,1,99,50,0.02,21.00,13.00,32.00,'2026-01-12 18:36:35','2026-01-30 11:39:44');
 commit;
@@ -2454,7 +2504,7 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`id`),
   KEY `visitor_id` (`visitor_id`),
   CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`visitor_id`) REFERENCES `visitors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1432 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1443 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `sessions` VALUES
@@ -3888,7 +3938,18 @@ INSERT INTO `sessions` VALUES
 (1428,1428,'2026-01-30 13:39:36','2026-01-30 13:39:36'),
 (1429,1429,'2026-01-30 13:39:40','2026-01-30 13:39:40'),
 (1430,1430,'2026-01-30 13:39:49','2026-01-30 13:39:49'),
-(1431,1431,'2026-01-30 13:40:22','2026-01-30 13:40:22');
+(1431,1431,'2026-01-30 13:40:22','2026-01-30 13:40:22'),
+(1432,1432,'2026-01-30 14:46:58','2026-01-30 14:46:58'),
+(1433,1433,'2026-01-30 15:05:08','2026-01-30 15:05:08'),
+(1434,1434,'2026-01-30 15:09:28','2026-01-30 15:09:28'),
+(1435,1435,'2026-01-30 15:13:01','2026-01-30 15:13:01'),
+(1436,1436,'2026-01-30 15:24:38','2026-01-30 15:24:38'),
+(1437,1437,'2026-01-30 15:24:52','2026-01-30 15:24:52'),
+(1438,1438,'2026-01-30 15:25:40','2026-01-30 15:25:40'),
+(1439,1439,'2026-01-30 15:26:33','2026-01-30 15:26:33'),
+(1440,1440,'2026-01-30 15:36:51','2026-01-30 15:36:51'),
+(1441,1441,'2026-01-30 15:39:02','2026-01-30 15:39:02'),
+(1442,1442,'2026-01-30 15:45:12','2026-01-30 15:45:12');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -4020,7 +4081,7 @@ CREATE TABLE `visitors` (
   UNIQUE KEY `anon_id` (`anon_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `visitors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1432 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1443 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `visitors` VALUES
@@ -5454,7 +5515,18 @@ INSERT INTO `visitors` VALUES
 (1428,'d9b1de81-40e0-4852-9388-421900765a29',1,'2026-01-30 13:39:36','2026-01-30 13:39:36'),
 (1429,'5a5d7c08-8f3c-442d-963d-76391581138f',1,'2026-01-30 13:39:40','2026-01-30 13:39:40'),
 (1430,'f1fcf1a3-5832-44b6-bdb1-cc3a936f264b',1,'2026-01-30 13:39:49','2026-01-30 13:39:49'),
-(1431,'8012b2b5-1533-4b40-a95f-87f21d67feac',1,'2026-01-30 13:40:22','2026-01-30 13:40:22');
+(1431,'8012b2b5-1533-4b40-a95f-87f21d67feac',1,'2026-01-30 13:40:22','2026-01-30 13:40:22'),
+(1432,'31553fba-488e-42ed-b620-a8f0bc7befea',1,'2026-01-30 14:46:58','2026-01-30 14:46:58'),
+(1433,'c8965d92-d380-4126-aebc-a6b51e57d681',1,'2026-01-30 15:05:08','2026-01-30 15:05:08'),
+(1434,'acfcf77e-292c-4a25-a13e-4efbc7c18e31',1,'2026-01-30 15:09:28','2026-01-30 15:09:28'),
+(1435,'2c99c996-dd8c-426b-95ca-e98e3f108f10',1,'2026-01-30 15:13:01','2026-01-30 15:13:01'),
+(1436,'f9e8f4e8-26f6-4055-a616-7d1ff9b0b76f',1,'2026-01-30 15:24:38','2026-01-30 15:24:38'),
+(1437,'811f52d0-0003-4e6e-af77-e1f576e46236',1,'2026-01-30 15:24:52','2026-01-30 15:24:52'),
+(1438,'56d7a7ab-5a51-4a72-8e95-51b2d3233dbc',1,'2026-01-30 15:25:40','2026-01-30 15:25:40'),
+(1439,'6c45ace4-68da-47cf-ae60-81b6b89d4391',1,'2026-01-30 15:26:33','2026-01-30 15:26:33'),
+(1440,'a92ac08c-8b2d-41d1-8cf3-2a5020f23250',1,'2026-01-30 15:36:51','2026-01-30 15:36:51'),
+(1441,'aab9619f-2ad7-4c0d-b7ed-f6acd0c53585',1,'2026-01-30 15:39:02','2026-01-30 15:39:02'),
+(1442,'b3317f56-4d9b-4e8c-af65-24eadcb7b277',1,'2026-01-30 15:45:12','2026-01-30 15:45:12');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
