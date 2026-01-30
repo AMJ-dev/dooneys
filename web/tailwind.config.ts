@@ -108,6 +108,11 @@ export default {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        scan: {
+          '0%': { transform: 'translateY(0) scaleX(1)' },
+          '50%': { transform: 'translateY(320px) scaleX(1.2)' },
+          '100%': { transform: 'translateY(640px) scaleX(1)' },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",

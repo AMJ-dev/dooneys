@@ -34,6 +34,7 @@
                 p.id,
                 p.name,
                 p.price,
+                p.sku,
                 p.original_price,
                 p.description,
                 p.in_stock,
@@ -115,6 +116,7 @@
                 $data["products"][] = [
                     "id" => (string)$pid,
                     "name" => $row['name'],
+                    "sku" => $row['sku'],
                     "slug" => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $row['name'])),
                     "price" => (float)$row['price'],
                     "originalPrice" => $row['original_price'] !== null ? (float)$row['original_price'] : null,

@@ -23,16 +23,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import logo from "@/assets/logo.png";
 import { comp_name } from "@/lib/constants";
 import usePermissions from "@/hooks/usePermissions";
-
-
-
-
 
 const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -49,7 +43,7 @@ const AdminLayout = () => {
     view_products,
     view_roles,
     view_staff,
-    view_pos,
+    manage_pos,
     manage_settings
     } = usePermissions([
     "view_analytics",
@@ -62,13 +56,13 @@ const AdminLayout = () => {
     "view_products",
     "view_roles",
     "view_staff",
-    "view_pos",
+    "manage_pos",
     "manage_settings"
   ]);
   const menuItems = [
     { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { to: "/admin/analytics", label: "Analytics", icon: BarChart3, permission: view_analytics },
-    { to: "/admin/pos", label: "Cashier / POS", icon: Receipt, permission: view_pos },
+    { to: "/admin/pos", label: "Cashier / POS", icon: Receipt, permission: manage_pos },
     { to: "/admin/orders", label: "Orders", icon: ShoppingCart, permission: view_orders },
     { to: "/admin/discounts", label: "Discounts", icon: BadgePercent, permission: view_discount },
     { to: "/admin/products", label: "Products", icon: Package, permission: view_products },

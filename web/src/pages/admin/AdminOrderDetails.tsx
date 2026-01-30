@@ -1,4 +1,4 @@
-import { useState, useEffect, startTransition } from "react";
+import { useState, useEffect, startTransition, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -56,6 +56,11 @@ import {
   Store as StoreIcon,
   Smartphone,
   Laptop,
+  Scissors,
+  Hash,
+  Ruler,
+  Scale,
+  BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -117,7 +122,6 @@ interface PaymentStatusConfig {
   glow: string;
 }
 
-// Define the order of status progression
 const STATUS_ORDER = ['pending', 'processing', 'packaging', 'shipped', 'ready_for_pickup', 'delivered'];
 
 const orderStatusConfig: Record<string, StatusConfig> = {
@@ -276,6 +280,13 @@ interface OrderItem {
     name: string;
     price: number;
     image: string;
+    sku?: string;
+    weight?: string;
+    dimensions?: {
+      height?: string;
+      width?: string;
+      depth?: string;
+    };
   };
   quantity: number;
   lineTotal: number;
@@ -372,6 +383,8 @@ const AdminOrderDetails = () => {
   const [selectedOrderStatus, setSelectedOrderStatus] = useState<string>("");
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
+  const printReceiptRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (id) {
       if(!can_view_orders){
@@ -400,7 +413,6 @@ const AdminOrderDetails = () => {
     }
   };
 
-  // Get the next possible statuses based on current status
   const getAvailableNextStatuses = (currentStatus: string) => {
     if (currentStatus === 'cancelled' || currentStatus === 'delivered') {
       return [];
@@ -409,23 +421,19 @@ const AdminOrderDetails = () => {
     const currentIndex = STATUS_ORDER.indexOf(currentStatus);
     if (currentIndex === -1) return [];
     
-    // Return all statuses from the next one to the end
     return STATUS_ORDER.slice(currentIndex + 1);
   };
 
-  // Check if order can be updated
   const canUpdateOrder = () => {
     if (!order?.order) return false;
     
     const currentOrderStatus = order.order.status.order;
     const currentPaymentStatus = order.payment?.status;
     
-    // Cannot update cancelled or delivered orders
     if (currentOrderStatus === 'cancelled' || currentOrderStatus === 'delivered') {
       return false;
     }
     
-    // Can only update if payment is paid
     if (currentPaymentStatus !== 'paid') {
       return false;
     }
@@ -436,13 +444,11 @@ const AdminOrderDetails = () => {
   const handleStatusUpdate = async () => {
     if (!order || !order.order || !id || !selectedOrderStatus) return;
     
-    // Validation checks
     if (!canUpdateOrder()) {
       toast.error("Order cannot be updated at this time");
       return;
     }
     
-    // Check if selected status is valid forward progression
     const currentStatus = order.order.status.order;
     const availableStatuses = getAvailableNextStatuses(currentStatus);
     
@@ -539,7 +545,255 @@ const AdminOrderDetails = () => {
   };
 
   const handlePrintReceipt = () => {
-    window.print();
+    const printWindow = window.open("", "_blank");
+    if (printWindow && printReceiptRef.current) {
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Receipt - Order #${order?.order?.orderNumber}</title>
+            <style>
+              @media print {
+                body {
+                  font-family: 'Courier New', monospace;
+                  font-size: 11px !important;
+                  width: 57mm !important;
+                  max-width: 57mm !important;
+                  margin: 0 !important;
+                  padding: 2mm !important;
+                  line-height: 1.1;
+                  -webkit-print-color-adjust: exact;
+                }
+                * {
+                  box-sizing: border-box;
+                  margin: 0;
+                  padding: 0;
+                }
+                .receipt-container {
+                  width: 100% !important;
+                  max-width: 53mm !important;
+                  word-wrap: break-word;
+                  overflow-wrap: break-word;
+                  word-break: break-word;
+                }
+                .header {
+                  text-align: center;
+                  margin-bottom: 2mm;
+                }
+                .logo-main {
+                  font-size: 12px;
+                  font-weight: bold;
+                  margin-bottom: 1mm;
+                }
+                .logo-sub {
+                  font-size: 9px;
+                  margin-bottom: 1mm;
+                  color: #666;
+                }
+                .order-type {
+                  font-size: 10px;
+                  font-weight: bold;
+                  text-transform: uppercase;
+                  margin: 1mm 0;
+                }
+                .divider {
+                  border-top: 1px dashed #000;
+                  margin: 2mm 0;
+                }
+                .divider-thick {
+                  border-top: 2px solid #000;
+                  margin: 3mm 0;
+                }
+                .divider-total {
+                  border-top: 1px solid #333;
+                  margin: 1mm 0;
+                }
+                .section-title {
+                  font-weight: bold;
+                  font-size: 10px;
+                  text-transform: uppercase;
+                  margin-bottom: 1mm;
+                  text-align: center;
+                }
+                .info-row {
+                  display: flex;
+                  justify-content: space-between;
+                  margin: 1mm 0;
+                  font-size: 10px;
+                }
+                .info-row div:first-child {
+                  font-weight: bold;
+                  min-width: 40%;
+                }
+                .info-row div:last-child {
+                  text-align: right;
+                  min-width: 60%;
+                }
+                .truncate-text {
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
+                }
+                .items-section {
+                  margin: 2mm 0;
+                }
+                .item {
+                  margin: 2mm 0;
+                  padding-bottom: 1mm;
+                  border-bottom: 1px dotted #ccc;
+                  page-break-inside: avoid;
+                }
+                .item-main {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: flex-start;
+                  margin-bottom: 0.5mm;
+                }
+                .item-name {
+                  font-size: 10px;
+                  font-weight: bold;
+                  flex: 1;
+                  line-height: 1.2;
+                  word-break: break-word;
+                  white-space: normal;
+                  max-width: 70%;
+                }
+                .item-quantity {
+                  font-size: 10px;
+                  font-weight: bold;
+                  margin-left: 1mm;
+                  white-space: nowrap;
+                }
+                .item-price-row {
+                  display: flex;
+                  justify-content: space-between;
+                  font-size: 9px;
+                  color: #666;
+                }
+                .item-unit {
+                  flex: 1;
+                }
+                .item-total {
+                  font-weight: bold;
+                  text-align: right;
+                  min-width: 30%;
+                }
+                .payment-info {
+                  margin: 2mm 0;
+                }
+                .totals {
+                  margin: 2mm 0;
+                }
+                .total-item {
+                  display: flex;
+                  justify-content: space-between;
+                  margin: 1mm 0;
+                  font-size: 10px;
+                }
+                .total-amount {
+                  font-weight: bold;
+                  min-width: 35%;
+                  text-align: right;
+                }
+                .total-item.discount {
+                  color: #dc3545;
+                }
+                .total-item.paid {
+                  color: #28a745;
+                }
+                .grand-total {
+                  font-size: 11px;
+                  margin-top: 1mm;
+                  padding-top: 1mm;
+                  border-top: 1px solid #000;
+                }
+                .footer {
+                  text-align: center;
+                  margin-top: 3mm;
+                  font-size: 9px;
+                  line-height: 1.2;
+                }
+                .thank-you {
+                  font-weight: bold;
+                  font-size: 10px;
+                  margin-bottom: 1mm;
+                }
+                .store-info {
+                  margin-bottom: 1mm;
+                  color: #666;
+                }
+                .store-info div:first-child {
+                  font-weight: bold;
+                  font-size: 10px;
+                }
+                .receipt-number {
+                  font-size: 8px;
+                  color: #888;
+                  margin-top: 1mm;
+                }
+                .print-date {
+                  font-size: 8px;
+                  color: #888;
+                  margin-top: 0.5mm;
+                }
+                
+                @page {
+                  margin: 0;
+                  size: 57mm auto;
+                }
+                body, html {
+                  width: 57mm !important;
+                  min-width: 57mm !important;
+                  max-width: 57mm !important;
+                }
+                * {
+                  max-width: 53mm !important;
+                }
+                
+                .no-break {
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+              }
+              
+              @media screen {
+                body {
+                  background: white;
+                  padding: 10px;
+                }
+                .receipt-container {
+                  max-width: 57mm;
+                  margin: 0 auto;
+                  border: 1px solid #ccc;
+                  padding: 5px;
+                  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+                }
+              }
+            </style>
+          </head>
+          <body>
+            ${printReceiptRef.current.innerHTML}
+            <script>
+              window.onload = function() {
+                setTimeout(function() {
+                  window.print();
+                  setTimeout(function() {
+                    window.close();
+                  }, 500);
+                }, 250);
+              };
+              
+              window.onafterprint = function() {
+                setTimeout(function() {
+                  window.close();
+                }, 500);
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    }
   };
 
   const isPOSOrder = order?.order_source === 'pos';
@@ -568,7 +822,6 @@ const AdminOrderDetails = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background/90 via-muted/20 to-background/90 p-3 sm:p-4 md:p-6">
         <div className="space-y-4 sm:space-y-6">
-          {/* Header skeleton */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Skeleton className="h-11 sm:h-12 w-11 sm:w-12 rounded-2xl" />
@@ -586,7 +839,6 @@ const AdminOrderDetails = () => {
             </div>
           </div>
 
-          {/* Main content skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="lg:col-span-2 space-y-4">
               <Skeleton className="h-64 sm:h-80 rounded-3xl" />
@@ -631,7 +883,6 @@ const AdminOrderDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background/90 via-muted/20 to-background/90 p-3 sm:p-4 md:p-6 relative overflow-hidden">
-      {/* Background gradient effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-r from-primary/10 via-accent/5 to-transparent rounded-full blur-3xl" />
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-r from-accent/10 via-primary/5 to-transparent rounded-full blur-3xl" />
@@ -639,7 +890,6 @@ const AdminOrderDetails = () => {
       </div>
 
       <div className="relative z-10">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -693,7 +943,6 @@ const AdminOrderDetails = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 mt-3 flex-wrap">
-                  {/* Order source badge */}
                   {isPOSOrder && (
                     <Badge className="bg-gradient-to-r from-orange-500/20 to-amber-400/10 text-orange-400 border-orange-400/30 flex items-center gap-2">
                       <StoreIcon className="h-3.5 w-3.5" />
@@ -724,7 +973,6 @@ const AdminOrderDetails = () => {
               </div>
             </div>
 
-            {/* Action buttons */}
             <div className="flex items-center gap-2 mt-2 sm:mt-0">
               <TooltipProvider>
                 <Tooltip>
@@ -749,29 +997,25 @@ const AdminOrderDetails = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-11 sm:h-12 w-11 sm:w-12 rounded-2xl border border-white/15 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl hover:from-white/20 hover:to-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20"
+                      variant="outline"
+                      className="h-11 sm:h-12 px-4 rounded-2xl border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-xl hover:from-primary/20 hover:to-primary/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20 group"
                       onClick={handlePrintReceipt}
                     >
-                      <Printer className="h-5 w-5" />
+                      <Printer className="h-5 w-5 mr-2 transition-transform group-hover:scale-110" />
+                      <span>Print Receipt</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="backdrop-blur-xl bg-white/30 border-white/20">
-                    Print Receipt
+                    Print receipt for thermal printer
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-
             </div>
           </div>
         </motion.div>
 
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Left Column - Order Journey & Items */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-            {/* Order Journey Card */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -900,7 +1144,6 @@ const AdminOrderDetails = () => {
               </div>
             </motion.div>
 
-            {/* Order Items Card */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -997,9 +1240,7 @@ const AdminOrderDetails = () => {
             </motion.div>
           </div>
 
-          {/* Right Column - Sidebar Cards */}
           <div className="space-y-4 sm:space-y-6">
-            {/* Order Summary Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1010,67 +1251,235 @@ const AdminOrderDetails = () => {
                 <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white/15 via-white/10 to-white/15 backdrop-blur-2xl shadow-2xl rounded-3xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
                   <CardHeader className="border-b border-white/20 relative z-10">
-                    <CardTitle className="flex items-center gap-3">
-                      <div className="p-3 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/30">
-                        <Receipt className="h-6 w-6 text-primary" />
-                      </div>
-                      <span className="text-xl font-display font-bold">Order Summary</span>
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-3">
+                        <div className="p-3 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/30">
+                          <Receipt className="h-6 w-6 text-primary" />
+                        </div>
+                        <span className="text-xl font-display font-bold">Order Summary</span>
+                      </CardTitle>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-10 w-10 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-xl"
+                              onClick={handlePrintReceipt}
+                            >
+                              <Printer className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="backdrop-blur-xl bg-white/30 border-white/20">
+                            Print receipt for thermal printer
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </CardHeader>
                   <CardContent className="pt-6 relative z-10">
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Order Number</p>
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <p className="text-xs text-muted-foreground font-medium">Order Number</p>
                           <div className="flex items-center gap-2">
-                            <p className="font-mono font-medium text-sm bg-gradient-to-r from-primary/20 to-accent/20 px-2 py-1 rounded-lg">
+                            <p className="font-mono font-bold text-base bg-gradient-to-r from-primary/20 to-accent/20 px-3 py-2 rounded-xl border border-primary/30">
                               #{order.order.orderNumber}
                             </p>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-7 w-7 rounded-lg bg-white/10 hover:bg-white/20"
+                              className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20"
                               onClick={() => handleCopyToClipboard(order.order.orderNumber)}
                             >
                               <Copy className="h-3.5 w-3.5" />
                             </Button>
                           </div>
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-muted-foreground">Order Date</p>
-                          <p className="font-medium text-sm">{formatShortDate(order.order.createdAt)}</p>
+                        <div className="space-y-2">
+                          <p className="text-xs text-muted-foreground font-medium">Order Date</p>
+                          <p className="font-semibold text-sm bg-gradient-to-r from-foreground/80 to-foreground/60 bg-clip-text text-transparent">
+                            {formatShortDate(order.order.createdAt)}
+                          </p>
                         </div>
                       </div>
 
-                      <Separator className="bg-white/20" />
+                      <Separator className="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 h-0.5" />
 
                       <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Subtotal</span>
-                          <span className="font-medium">{format_currency(order.totals?.subtotal || 0)}</span>
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-primary" />
+                          <p className="text-sm font-medium">Customer</p>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Shipping</span>
-                          <span className="font-medium">{format_currency(order.totals?.shipping || 0)}</span>
+                        <div className="space-y-2 pl-6">
+                          <p className="font-semibold">{customerName}</p>
+                          {order.customer?.email && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Mail className="h-3.5 w-3.5" />
+                              <span>{order.customer.email}</span>
+                            </div>
+                          )}
+                          {order.customer?.phone && (
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Phone className="h-3.5 w-3.5" />
+                              <span>{order.customer.phone}</span>
+                            </div>
+                          )}
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-muted-foreground">Tax</span>
-                          <span className="font-medium">{format_currency(order.totals?.tax || 0)}</span>
-                        </div>
-                        {order.totals?.discount && order.totals.discount > 0 && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Discount</span>
-                            <span className="font-medium text-emerald-400">-{format_currency(order.totals.discount)}</span>
+                      </div>
+
+                      <Separator className="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 h-0.5" />
+
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <ShoppingBag className="h-4 w-4 text-primary" />
+                            <p className="text-sm font-medium">Items ({order.items?.length || 0})</p>
                           </div>
-                        )}
+                          <Badge className="bg-primary/10 text-primary border-primary/20">
+                            {format_currency(order.totals?.subtotal || 0)}
+                          </Badge>
+                        </div>
                         
-                        <Separator className="bg-white/20" />
-                        
-                        <div className="flex justify-between items-center pt-2">
-                          <span className="font-bold text-lg">Total</span>
-                          <span className="font-display text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                            {format_currency(order.totals?.grandTotal || 0)}
-                          </span>
+                        <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                          {order.items?.map((item, index) => (
+                            <motion.div
+                              key={index}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="group/item p-3 rounded-xl bg-gradient-to-r from-white/10 via-white/5 to-white/10 backdrop-blur-sm border border-white/10 hover:border-primary/30 transition-all"
+                            >
+                              <div className="space-y-2">
+                                <div className="flex justify-between items-start">
+                                  <div className="space-y-1">
+                                    <p className="font-medium text-sm line-clamp-2">{item.product.name}</p>
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="text-xs h-5 bg-white/5">
+                                        SKU: {item.product.sku || "N/A"}
+                                      </Badge>
+                                      {item.product.weight && (
+                                        <Badge variant="outline" className="text-xs h-5 bg-white/5">
+                                          <Scale className="h-2.5 w-2.5 mr-1" />
+                                          {item.product.weight}kg
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="font-semibold text-primary">{format_currency(item.lineTotal)}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {format_currency(item.product.price)} × {item.quantity}
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                                  <div className="space-y-1">
+                                    {item.product.dimensions && (
+                                      <div className="flex items-center gap-1.5">
+                                        <Ruler className="h-3 w-3" />
+                                        <span>
+                                          {item.product.dimensions.height || "?"}×
+                                          {item.product.dimensions.width || "?"}×
+                                          {item.product.dimensions.depth || "?"} cm
+                                        </span>
+                                      </div>
+                                    )}
+                                    <div className="flex items-center gap-1.5">
+                                      <Hash className="h-3 w-3" />
+                                      <span>ID: {item.product.id}</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {item.variants && item.variants.length > 0 && (
+                                    <div className="space-y-1">
+                                      <p className="font-medium text-primary/80">Variants:</p>
+                                      {item.variants.slice(0, 2).map((variant, vIndex) => (
+                                        <div key={vIndex} className="flex items-center gap-1">
+                                          <Scissors className="h-2.5 w-2.5" />
+                                          <span>{variant.variant_type}: {variant.option_value}</span>
+                                        </div>
+                                      ))}
+                                      {item.variants.length > 2 && (
+                                        <p className="text-xs">+{item.variants.length - 2} more</p>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <Separator className="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 h-0.5" />
+
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium">Payment Method</p>
+                            <Badge className="bg-gradient-to-r from-primary/10 to-accent/10 text-white p-3 flex items-center gap-2">
+                              <CreditCard className="h-3.5 w-3.5" />
+                              {order.payment?.method || "Card"}
+                            </Badge>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium">Order Source</p>
+                            <Badge className={cn(
+                              "flex items-center gap-2 p-3",
+                              isPOSOrder 
+                                ? "bg-gradient-to-r from-orange-500/10 to-amber-400/10 text-white"
+                                : "bg-gradient-to-r from-blue-500/10 to-indigo-400/10 text-white"
+                            )}>
+                              {isPOSOrder ? <StoreIcon className="h-3.5 w-3.5" /> : <Laptop className="h-3.5 w-3.5" />}
+                              {isPOSOrder ? "POS" : "Web"}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center py-1">
+                            <span className="text-sm text-muted-foreground">Subtotal</span>
+                            <span className="font-medium">{format_currency(order.totals?.subtotal || 0)}</span>
+                          </div>
+                          
+                          {order.totals?.shipping !== undefined && order.totals.shipping > 0 && (
+                            <div className="flex justify-between items-center py-1">
+                              <span className="text-sm text-muted-foreground">Shipping</span>
+                              <span className="font-medium">{format_currency(order.totals.shipping)}</span>
+                            </div>
+                          )}
+                          
+                          {order.totals?.tax !== undefined && order.totals.tax > 0 && (
+                            <div className="flex justify-between items-center py-1">
+                              <span className="text-sm text-muted-foreground">Tax</span>
+                              <span className="font-medium">{format_currency(order.totals.tax)}</span>
+                            </div>
+                          )}
+                          
+                          {order.totals?.discount !== undefined && order.totals.discount > 0 && (
+                            <div className="flex justify-between items-center py-1">
+                              <span className="text-sm text-muted-foreground">Discount</span>
+                              <span className="font-medium text-emerald-400">-{format_currency(order.totals.discount)}</span>
+                            </div>
+                          )}
+                          
+                          <Separator className="bg-white/20" />
+                          
+                          <div className="flex justify-between items-center pt-2">
+                            <span className="font-bold text-lg">Total</span>
+                            <span className="font-display text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                              {format_currency(order.totals?.grandTotal || 0)}
+                            </span>
+                          </div>
+                          
+                          {order.payment?.status === 'paid' && order.payment?.paidAmount !== undefined && (
+                            <div className="flex justify-between items-center text-sm text-muted-foreground">
+                              <span>Paid Amount</span>
+                              <span className="font-medium text-emerald-400">{format_currency(order.payment.paidAmount)}</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -1079,7 +1488,132 @@ const AdminOrderDetails = () => {
               </div>
             </motion.div>
 
-            {/* Customer/Recipient Card - Conditionally shown */}
+            <div className="hidden">
+              <div ref={printReceiptRef} className="receipt-container">
+                <div className="header">
+                  <div className="logo">
+                    <div className="logo-main">DOONNEYS BEAUTY</div>
+                    <div className="logo-sub">Premium Beauty & Cosmetics</div>
+                  </div>
+                  <div className="divider"></div>
+                  <div className="order-type">{isPOSOrder ? "POS RECEIPT" : "ORDER RECEIPT"}</div>
+                </div>
+                
+                <div className="divider"></div>
+                
+                <div className="order-info">
+                  <div className="info-row">
+                    <div><strong>ORDER #:</strong></div>
+                    <div>{order.order.orderNumber}</div>
+                  </div>
+                  <div className="info-row">
+                    <div><strong>DATE:</strong></div>
+                    <div>{new Date(order.order.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</div>
+                  </div>
+                  <div className="info-row">
+                    <div><strong>TIME:</strong></div>
+                    <div>{new Date(order.order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                  </div>
+                </div>
+                
+                <div className="divider"></div>
+                
+                <div className="customer-info">
+                  <div className="section-title">CUSTOMER</div>
+                  <div className="info-row">
+                    <div><strong>NAME:</strong></div>
+                    <div className="truncate-text">{customerName}</div>
+                  </div>
+                </div>
+                
+                <div className="divider"></div>
+                
+                <div className="items-section">
+                  <div className="section-title">ORDER ITEMS</div>
+                  {order.items?.map((item, index) => (
+                    <div key={index} className="item">
+                      <div className="item-main">
+                        <div className="item-name">{item.product.name}</div>
+                        <div className="item-quantity">×{item.quantity}</div>
+                      </div>
+                      <div className="item-price-row">
+                        <div className="item-unit">{format_currency(item.product.price)} × {item.quantity}</div>
+                        <div className="item-total">{format_currency(item.lineTotal)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="divider-thick"></div>
+                
+                <div className="payment-info">
+                  <div className="section-title">PAYMENT</div>
+                  <div className="info-row">
+                    <div><strong>METHOD:</strong></div>
+                    <div>{order.payment?.method?.toUpperCase() || "CARD"}</div>
+                  </div>
+                  <div className="info-row">
+                    <div><strong>STATUS:</strong></div>
+                    <div>{order.payment?.status?.toUpperCase() || "PENDING"}</div>
+                  </div>
+                  <div className="info-row">
+                    <div><strong>SOURCE:</strong></div>
+                    <div>{isPOSOrder ? "POS" : "WEB"}</div>
+                  </div>
+                </div>
+                
+                <div className="divider"></div>
+                
+                <div className="totals">
+                  <div className="total-item">
+                    <div>SUBTOTAL</div>
+                    <div className="total-amount">{format_currency(order.totals?.subtotal || 0)}</div>
+                  </div>
+                  
+                  {order.totals?.tax !== undefined && order.totals.tax > 0 && (
+                    <div className="total-item">
+                      <div>TAX</div>
+                      <div className="total-amount">{format_currency(order.totals.tax)}</div>
+                    </div>
+                  )}
+                  
+                  {order.totals?.discount !== undefined && order.totals.discount > 0 && (
+                    <div className="total-item discount">
+                      <div>DISCOUNT</div>
+                      <div className="total-amount">-{format_currency(order.totals.discount)}</div>
+                    </div>
+                  )}
+                  
+                  <div className="divider-total"></div>
+                  
+                  <div className="total-item grand-total">
+                    <div><strong>TOTAL</strong></div>
+                    <div className="total-amount"><strong>{format_currency(order.totals?.grandTotal || 0)}</strong></div>
+                  </div>
+                  
+                  {order.payment?.status === 'paid' && order.payment?.paidAmount !== undefined && (
+                    <div className="total-item paid">
+                      <div>PAID</div>
+                      <div className="total-amount"><strong>{format_currency(order.payment.paidAmount)}</strong></div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="divider-thick"></div>
+                
+                <div className="footer">
+                  <div className="thank-you">Thank you for your order!</div>
+                  <div className="store-info">
+                    <div>DOONNEYS BEAUTY</div>
+                    <div>www.doonneys.com</div>
+                  </div>
+                  <div className="divider"></div>
+                  <div className="receipt-number">RCPT: {order.order.orderNumber}</div>
+                  <div className="print-date">{new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+              </div>
+            </div>
+
             {!isPOSOrder && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -1194,61 +1728,6 @@ const AdminOrderDetails = () => {
               </motion.div>
             )}
 
-            {/* POS Order Card - Shown only for POS orders */}
-            {isPOSOrder && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-amber-400/5 to-orange-500/5 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white/15 via-white/10 to-white/15 backdrop-blur-2xl shadow-2xl rounded-3xl">
-                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-amber-400/10" />
-                    <CardHeader className="border-b border-white/20 relative z-10">
-                      <CardTitle className="flex items-center gap-3">
-                        <div className="p-3 rounded-2xl bg-gradient-to-br from-orange-500/20 to-amber-400/20 border border-orange-500/30">
-                          <StoreIcon className="h-6 w-6 text-orange-400" />
-                        </div>
-                        <span className="text-xl font-display font-bold">Store Order</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-6 relative z-10">
-                      <div className="space-y-4">
-                        <div className="text-center">
-                          <div className="h-20 w-20 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-400/20 flex items-center justify-center mx-auto mb-4 ring-2 ring-white/20">
-                            <ShoppingCart className="h-10 w-10 text-orange-400" />
-                          </div>
-                          <h3 className="font-bold text-lg mb-2">In-Store Purchase</h3>
-                          <p className="text-sm text-muted-foreground mb-4">
-                            This order was created at the point of sale by store staff.
-                          </p>
-                          
-                          {order.customer && (
-                            <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm border border-white/10">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-12 w-12 ring-2 ring-white/20">
-                                  <AvatarImage src={resolveSrc(order.customer.pics)} />
-                                  <AvatarFallback className="bg-gradient-to-br from-orange-500/20 to-amber-400/20 text-sm">
-                                    {getInitials(order.customer.name)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className="font-medium">{order.customer.name}</p>
-                                  <p className="text-xs text-muted-foreground">Processed by Staff</p>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Payment & Shipping Card */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -1333,7 +1812,6 @@ const AdminOrderDetails = () => {
         </div>
       </div>
 
-      {/* Status Update Dialog */}
       {can_process_orders && (
         <Dialog open={isStatusDialogOpen} onOpenChange={setIsStatusDialogOpen}>
           <DialogContent className="max-w-md p-0 rounded-3xl border-0 overflow-hidden bg-gradient-to-br from-white/40 via-white/30 to-white/40 backdrop-blur-3xl shadow-2xl">
@@ -1469,55 +1947,6 @@ const AdminOrderDetails = () => {
           </DialogContent>
         </Dialog>
       )}
-
-      {/* Tracking Dialog (Placeholder) */}
-      <Dialog open={isTrackingDialogOpen} onOpenChange={setIsTrackingDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Add Tracking Information</DialogTitle>
-            <DialogDescription>
-              Add shipping carrier and tracking number for this order.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Carrier</label>
-              <input
-                type="text"
-                value={newCarrier}
-                onChange={(e) => setNewCarrier(e.target.value)}
-                placeholder="e.g., FedEx, UPS, DHL"
-                className="w-full rounded-lg border bg-white/10 backdrop-blur-sm px-3 py-2"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tracking Number</label>
-              <input
-                type="text"
-                value={newTrackingNumber}
-                onChange={(e) => setNewTrackingNumber(e.target.value)}
-                placeholder="Enter tracking number"
-                className="w-full rounded-lg border bg-white/10 backdrop-blur-sm px-3 py-2"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsTrackingDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={() => {
-                toast.success("Tracking information added!");
-                setIsTrackingDialogOpen(false);
-                setNewCarrier("");
-                setNewTrackingNumber("");
-              }}
-            >
-              Save
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

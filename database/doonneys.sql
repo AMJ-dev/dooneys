@@ -242,7 +242,7 @@ CREATE TABLE `order_item_variants` (
   CONSTRAINT `fk_oiv_item` FOREIGN KEY (`order_item_id`) REFERENCES `order_items` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_oiv_option` FOREIGN KEY (`option_id`) REFERENCES `product_variant_options` (`id`),
   CONSTRAINT `fk_oiv_variant` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `order_item_variants` VALUES
@@ -281,7 +281,9 @@ INSERT INTO `order_item_variants` VALUES
 (33,27,NULL,1,'26\"','Length',NULL,-2.00,'2026-01-14 18:54:40'),
 (34,27,NULL,3,'Natural Black','Color',NULL,2.00,'2026-01-14 18:54:40'),
 (35,63,NULL,5,'Blonde','Color',NULL,1.00,'2026-01-19 22:03:29'),
-(36,63,NULL,2,'28\"','Length',NULL,3.00,'2026-01-19 22:03:29');
+(36,63,NULL,2,'28\"','Length',NULL,3.00,'2026-01-19 22:03:29'),
+(37,64,NULL,4,'Off Black','Color',NULL,2.00,'2026-01-30 11:39:44'),
+(38,64,NULL,2,'28\"','Length',NULL,3.00,'2026-01-30 11:39:44');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -299,7 +301,7 @@ CREATE TABLE `order_items` (
   PRIMARY KEY (`id`),
   KEY `fk_order_items_order` (`order_id`),
   CONSTRAINT `fk_order_items_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `order_items` VALUES
@@ -357,7 +359,30 @@ INSERT INTO `order_items` VALUES
 (60,61,10,NULL,'Midnight Elegance Gown',23.00,0.00,1,23.00,'2026-01-19 21:49:51'),
 (61,62,10,NULL,'Midnight Elegance Gown',23.00,0.00,1,23.00,'2026-01-19 21:51:22'),
 (62,63,9,NULL,'Midnight Elegance Gown',120.00,0.00,1,120.00,'2026-01-19 22:03:29'),
-(63,63,10,NULL,'Midnight Elegance Gown',27.00,0.00,1,27.00,'2026-01-19 22:03:29');
+(63,63,10,NULL,'Midnight Elegance Gown',27.00,0.00,1,27.00,'2026-01-19 22:03:29'),
+(64,64,10,NULL,'Midnight Elegance Gown',28.00,0.00,1,28.00,'2026-01-30 11:39:44'),
+(65,64,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 11:39:44'),
+(66,64,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 11:39:44'),
+(67,65,9,NULL,'Midnight Elegance Gown',120.00,0.00,1,120.00,'2026-01-30 13:19:25'),
+(68,65,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 13:19:25'),
+(69,66,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:13:39'),
+(70,66,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:13:39'),
+(71,66,4,NULL,'Luxury Body Lotion Set',20.00,0.00,2,40.00,'2026-01-30 15:13:39'),
+(72,66,3,NULL,'Hair Growth Serum - Premium Formula',233.00,0.00,1,233.00,'2026-01-30 15:13:39'),
+(73,66,5,NULL,'Pre-Stretched Braiding Hair - Rainbow Pack',520.00,0.00,1,520.00,'2026-01-30 15:13:39'),
+(74,66,6,NULL,'Professional Titanium Flat Iron',128.00,0.00,1,128.00,'2026-01-30 15:13:39'),
+(75,67,4,NULL,'Luxury Body Lotion Set',20.00,0.00,1,20.00,'2026-01-30 15:14:01'),
+(76,67,3,NULL,'Hair Growth Serum - Premium Formula',233.00,0.00,1,233.00,'2026-01-30 15:14:01'),
+(77,67,5,NULL,'Pre-Stretched Braiding Hair - Rainbow Pack',520.00,0.00,1,520.00,'2026-01-30 15:14:01'),
+(78,68,3,NULL,'Hair Growth Serum - Premium Formula',233.00,0.00,1,233.00,'2026-01-30 15:14:23'),
+(79,68,4,NULL,'Luxury Body Lotion Set',20.00,0.00,1,20.00,'2026-01-30 15:14:23'),
+(80,69,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:21:39'),
+(81,70,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:39:15'),
+(82,70,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:39:15'),
+(83,71,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:44:07'),
+(84,71,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:44:07'),
+(85,72,7,NULL,'Human Hair Bundles - Straight',235.00,0.00,1,235.00,'2026-01-30 15:45:49'),
+(86,72,8,NULL,'Deep Conditioning Treatment',230.00,0.00,1,230.00,'2026-01-30 15:45:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -371,7 +396,7 @@ CREATE TABLE `order_status_history` (
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`),
   CONSTRAINT `fk_order_status_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `order_status_history` VALUES
@@ -423,7 +448,16 @@ INSERT INTO `order_status_history` VALUES
 (46,60,'delivered','admin','POS Order Created','2026-01-19 21:48:33'),
 (47,61,'delivered','admin','POS Order Created','2026-01-19 21:49:51'),
 (48,62,'delivered','admin','POS Order Created','2026-01-19 21:51:22'),
-(49,63,'delivered','admin','POS Order Created','2026-01-19 22:03:29');
+(49,63,'delivered','admin','POS Order Created','2026-01-19 22:03:29'),
+(50,64,'delivered','admin','POS Order Created','2026-01-30 11:39:44'),
+(51,65,'delivered','admin','POS Order Created','2026-01-30 13:19:25'),
+(52,66,'delivered','admin','POS Order Created','2026-01-30 15:13:39'),
+(53,67,'delivered','admin','POS Order Created','2026-01-30 15:14:01'),
+(54,68,'delivered','admin','POS Order Created','2026-01-30 15:14:23'),
+(55,69,'delivered','admin','POS Order Created','2026-01-30 15:21:39'),
+(56,70,'delivered','admin','POS Order Created','2026-01-30 15:39:15'),
+(57,71,'delivered','admin','POS Order Created','2026-01-30 15:44:07'),
+(58,72,'delivered','admin','POS Order Created','2026-01-30 15:45:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -470,7 +504,7 @@ CREATE TABLE `orders` (
   KEY `fk_orders_created_by_admin` (`created_by_admin_id`),
   CONSTRAINT `fk_orders_created_by_admin` FOREIGN KEY (`created_by_admin_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fk_orders_pickup_location` FOREIGN KEY (`pickup_id`) REFERENCES `pickup_locations` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `orders` VALUES
@@ -520,7 +554,16 @@ INSERT INTO `orders` VALUES
 (60,'DN-260119024833-C86CE4','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,278.00,0.00,5004.00,0.00,NULL,5282.00,'CAD','paid','delivered','2026-01-19 21:48:33','2026-01-19 21:48:33',NULL,NULL,NULL,NULL),
 (61,'DN-260119024951-993287','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,384.00,0.00,69.12,0.00,NULL,453.12,'CAD','paid','delivered','2026-01-19 21:49:51','2026-01-19 21:49:51',NULL,NULL,NULL,NULL),
 (62,'DN-260119025122-2D976F','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','card',NULL,NULL,NULL,NULL,23.00,0.00,4.14,0.00,NULL,27.14,'CAD','paid','delivered','2026-01-19 21:51:22','2026-01-19 21:51:22',NULL,NULL,NULL,NULL),
-(63,'DN-260119030329-3A8BC5','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','card',NULL,NULL,NULL,NULL,147.00,0.00,26.46,0.00,NULL,173.46,'CAD','paid','delivered','2026-01-19 22:03:29','2026-01-19 22:03:29',NULL,NULL,NULL,NULL);
+(63,'DN-260119030329-3A8BC5','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','card',NULL,NULL,NULL,NULL,147.00,0.00,26.46,0.00,NULL,173.46,'CAD','paid','delivered','2026-01-19 22:03:29','2026-01-19 22:03:29',NULL,NULL,NULL,NULL),
+(64,'DN-260130043944-42A175','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,493.00,0.00,88.74,0.00,NULL,581.74,'CAD','paid','delivered','2026-01-30 11:39:44','2026-01-30 11:39:44',NULL,NULL,NULL,NULL),
+(65,'DN-260130061925-23ADDB','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,350.00,0.00,63.00,0.00,NULL,413.00,'CAD','paid','delivered','2026-01-30 13:19:25','2026-01-30 13:19:25',NULL,NULL,NULL,NULL),
+(66,'DN-260130081339-1F370D','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,1386.00,0.00,249.48,0.00,NULL,1635.48,'CAD','paid','delivered','2026-01-30 15:13:39','2026-01-30 15:13:39',NULL,NULL,NULL,NULL),
+(67,'DN-260130081401-EB9A63','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,773.00,0.00,139.14,0.00,NULL,912.14,'CAD','paid','delivered','2026-01-30 15:14:01','2026-01-30 15:14:01',NULL,NULL,NULL,NULL),
+(68,'DN-260130081423-61905C','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,253.00,0.00,45.54,0.00,NULL,298.54,'CAD','paid','delivered','2026-01-30 15:14:23','2026-01-30 15:14:23',NULL,NULL,NULL,NULL),
+(69,'DN-260130082139-D88B35','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,230.00,0.00,41.40,0.00,NULL,271.40,'CAD','paid','delivered','2026-01-30 15:21:39','2026-01-30 15:21:39',NULL,NULL,NULL,NULL),
+(70,'DN-260130083915-953124','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,465.00,0.00,83.70,0.00,NULL,548.70,'CAD','paid','delivered','2026-01-30 15:39:15','2026-01-30 15:39:15',NULL,NULL,NULL,NULL),
+(71,'DN-260130084407-ECF033','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,465.00,0.00,83.70,0.00,NULL,548.70,'CAD','paid','delivered','2026-01-30 15:44:07','2026-01-30 15:44:07',NULL,NULL,NULL,NULL),
+(72,'DN-260130084549-616976','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,465.00,0.00,83.70,0.00,NULL,548.70,'CAD','paid','delivered','2026-01-30 15:45:49','2026-01-30 15:45:49',NULL,NULL,NULL,NULL);
 commit;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8mb4;
@@ -590,7 +633,7 @@ CREATE TABLE `page_views` (
   KEY `session_id` (`session_id`),
   KEY `created_at` (`created_at`),
   CONSTRAINT `page_views_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `sessions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1353 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1424 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `page_views` VALUES
@@ -1945,7 +1988,78 @@ INSERT INTO `page_views` VALUES
 (1349,1368,'/contact','null','2026-01-22 16:30:53'),
 (1350,1369,'/contact','null','2026-01-22 16:31:12'),
 (1351,1370,'/contact','null','2026-01-22 16:31:16'),
-(1352,1371,'/contact','null','2026-01-22 16:31:22');
+(1352,1371,'/contact','null','2026-01-22 16:31:22'),
+(1353,1372,'/','null','2026-01-30 10:20:07'),
+(1354,1373,'/admin','null','2026-01-30 10:20:12'),
+(1355,1374,'/admin/dashboard','null','2026-01-30 10:20:12'),
+(1356,1375,'/admin/orders','null','2026-01-30 10:20:31'),
+(1357,1376,'/admin/order/63/guest-customer','null','2026-01-30 10:20:37'),
+(1358,1377,'/admin/order/63/guest-customer','null','2026-01-30 10:40:23'),
+(1359,1378,'/admin/order/63/guest-customer','null','2026-01-30 10:40:25'),
+(1360,1379,'/admin/order/63/guest-customer','null','2026-01-30 10:40:29'),
+(1361,1380,'/admin/order/63/guest-customer','null','2026-01-30 10:40:36'),
+(1362,1381,'/admin/order/63/guest-customer','null','2026-01-30 10:40:41'),
+(1363,1382,'/admin/order/63/guest-customer','null','2026-01-30 10:40:46'),
+(1364,1383,'/admin/order/63/guest-customer','null','2026-01-30 10:42:57'),
+(1365,1384,'/admin/order/63/guest-customer','null','2026-01-30 10:43:01'),
+(1366,1385,'/admin/order/63/guest-customer','null','2026-01-30 10:43:03'),
+(1367,1386,'/admin/order/63/guest-customer','null','2026-01-30 10:43:06'),
+(1368,1387,'/admin/order/63/guest-customer','null','2026-01-30 10:43:09'),
+(1369,1388,'/test-page','null','2026-01-30 10:43:32'),
+(1370,1389,'/test-page','http://localhost:8080/test-page','2026-01-30 10:43:34'),
+(1371,1390,'/test-page','http://localhost:8080/test-page','2026-01-30 10:46:17'),
+(1372,1391,'/test-page','http://localhost:8080/test-page','2026-01-30 10:46:20'),
+(1373,1392,'/test-page','http://localhost:8080/test-page','2026-01-30 10:47:45'),
+(1374,1393,'/test-page','http://localhost:8080/test-page','2026-01-30 10:50:02'),
+(1375,1394,'/test-page','http://localhost:8080/test-page','2026-01-30 10:50:19'),
+(1376,1395,'/admin/order/63/guest-customer','null','2026-01-30 10:50:51'),
+(1377,1396,'/admin/order/63/guest-customer','null','2026-01-30 10:54:18'),
+(1378,1397,'/admin/pos','null','2026-01-30 10:55:39'),
+(1379,1398,'/admin/products','null','2026-01-30 10:55:52'),
+(1380,1399,'/admin/product/new','null','2026-01-30 10:55:54'),
+(1381,1400,'/admin/product/new','null','2026-01-30 11:00:38'),
+(1382,1401,'/admin/product/new','http://localhost:8080/admin/product/new','2026-01-30 11:09:44'),
+(1383,1402,'/admin/product/new','null','2026-01-30 11:11:12'),
+(1384,1403,'/admin/pos','http://localhost:8080/admin/product/new','2026-01-30 11:39:06'),
+(1385,1404,'/admin/product/new','null','2026-01-30 11:53:11'),
+(1386,1405,'/admin/product/new','null','2026-01-30 11:56:18'),
+(1387,1406,'/admin/product/new','null','2026-01-30 12:00:10'),
+(1388,1407,'/admin/product/new','null','2026-01-30 12:00:30'),
+(1389,1408,'/admin/product/new','null','2026-01-30 12:07:04'),
+(1390,1409,'/admin/pos','null','2026-01-30 12:40:40'),
+(1391,1410,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 12:49:25'),
+(1392,1411,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 12:50:16'),
+(1393,1412,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 12:56:28'),
+(1394,1413,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 12:58:27'),
+(1395,1414,'/admin/products','http://localhost:8080/admin/pos','2026-01-30 12:59:54'),
+(1396,1415,'/admin/product/new','http://localhost:8080/admin/pos','2026-01-30 12:59:55'),
+(1397,1416,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 13:03:14'),
+(1398,1417,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 13:03:27'),
+(1399,1418,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 13:05:09'),
+(1400,1419,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 13:05:54'),
+(1401,1420,'/admin/orders','http://localhost:8080/admin/pos','2026-01-30 13:22:27'),
+(1402,1421,'/admin/order/65/guest-customer','http://localhost:8080/admin/pos','2026-01-30 13:22:33'),
+(1403,1422,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:35:23'),
+(1404,1423,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:36:00'),
+(1405,1424,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:07'),
+(1406,1425,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:23'),
+(1407,1426,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:28'),
+(1408,1427,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:34'),
+(1409,1428,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:36'),
+(1410,1429,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:40'),
+(1411,1430,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:39:49'),
+(1412,1431,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 13:40:22'),
+(1413,1432,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 14:46:58'),
+(1414,1433,'/admin/order/65/guest-customer','http://localhost:8080/admin/order/65/guest-customer','2026-01-30 15:05:08'),
+(1415,1434,'/admin/order/65/guest-customer','null','2026-01-30 15:09:28'),
+(1416,1435,'/admin/pos','null','2026-01-30 15:13:01'),
+(1417,1436,'/admin/pos','null','2026-01-30 15:24:38'),
+(1418,1437,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:24:52'),
+(1419,1438,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:25:40'),
+(1420,1439,'/admin/pos','null','2026-01-30 15:26:33'),
+(1421,1440,'/admin/pos','null','2026-01-30 15:36:51'),
+(1422,1441,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:39:02'),
+(1423,1442,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:45:12');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -1984,7 +2098,7 @@ CREATE TABLE `payments` (
   KEY `payment_intent_id` (`payment_intent_id`),
   KEY `fk_payments_order` (`order_id`),
   CONSTRAINT `fk_payments_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `payments` VALUES
@@ -2013,7 +2127,16 @@ INSERT INTO `payments` VALUES
 (24,60,'cash',NULL,NULL,'cash',NULL,5282.00,NULL,'CAD','paid','2026-01-19 21:48:33'),
 (25,61,'cash',NULL,NULL,'cash',NULL,453.12,NULL,'CAD','paid','2026-01-19 21:49:51'),
 (26,62,'cash',NULL,NULL,'cash',NULL,27.14,NULL,'CAD','paid','2026-01-19 21:51:22'),
-(27,63,'cash',NULL,NULL,'cash',NULL,173.46,NULL,'CAD','paid','2026-01-19 22:03:29');
+(27,63,'cash',NULL,NULL,'cash',NULL,173.46,NULL,'CAD','paid','2026-01-19 22:03:29'),
+(28,64,'cash',NULL,NULL,'cash',NULL,581.74,NULL,'CAD','paid','2026-01-30 11:39:44'),
+(29,65,'cash',NULL,NULL,'cash',NULL,413.00,NULL,'CAD','paid','2026-01-30 13:19:25'),
+(30,66,'cash',NULL,NULL,'cash',NULL,1635.48,NULL,'CAD','paid','2026-01-30 15:13:39'),
+(31,67,'cash',NULL,NULL,'cash',NULL,912.14,NULL,'CAD','paid','2026-01-30 15:14:01'),
+(32,68,'cash',NULL,NULL,'cash',NULL,298.54,NULL,'CAD','paid','2026-01-30 15:14:23'),
+(33,69,'cash',NULL,NULL,'cash',NULL,271.40,NULL,'CAD','paid','2026-01-30 15:21:39'),
+(34,70,'cash',NULL,NULL,'cash',NULL,548.70,NULL,'CAD','paid','2026-01-30 15:39:15'),
+(35,71,'cash',NULL,NULL,'cash',NULL,548.70,NULL,'CAD','paid','2026-01-30 15:44:07'),
+(36,72,'cash',NULL,NULL,'cash',NULL,548.70,NULL,'CAD','paid','2026-01-30 15:45:49');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -2249,16 +2372,16 @@ CREATE TABLE `products` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `products` VALUES
-(1,'HD Lace Front Wig - Body Wave','Premium HD lace front wig with natural-looking hairline. Perfect for everyday wear or special occasions.',2,225.00,NULL,'DON-953205','active',0,0,1,1,30,10,0.02,21.00,13.00,32.00,'2026-01-08 04:03:43','2026-01-14 17:18:43'),
-(2,'Blonde Ombre Wig - Loose Wave','Stunning blonde ombre wig with gorgeous loose waves. A head-turner for any occasion.',2,125.00,NULL,'DON-258094','active',0,0,1,1,0,100,0.02,21.00,13.00,32.00,'2026-01-08 04:05:32','2026-01-17 06:03:46'),
-(3,'Hair Growth Serum - Premium Formula','Advanced hair growth serum with natural botanical extracts. Promotes thicker, healthier hair.',4,233.00,250.00,'DON-755294','active',0,0,1,1,19,10,0.02,21.00,13.00,32.00,'2026-01-08 04:07:31','2026-01-19 21:49:51'),
-(4,'Luxury Body Lotion Set','Indulgent body lotion and cream set for silky smooth skin. Long-lasting hydration.',5,20.00,NULL,'DON-317620','active',0,0,1,1,499,10,0.02,21.00,13.00,32.00,'2026-01-08 04:08:58','2026-01-19 21:48:33'),
-(5,'Pre-Stretched Braiding Hair - Rainbow Pack','Vibrant pre-stretched braiding hair in assorted colors. Easy to work with and long-lasting.',3,520.00,NULL,'DON-874976','active',0,1,1,1,4500,100,0.02,21.00,13.00,32.00,'2026-01-08 04:10:12','2026-01-14 17:18:43'),
-(6,'Professional Titanium Flat Iron','Professional-grade titanium flat iron for sleek, salon-quality results at home.',6,128.00,150.00,'DON-395529','active',1,1,1,1,1199,500,0.02,21.00,13.00,32.00,'2026-01-08 04:11:44','2026-01-19 21:49:51'),
-(7,'Human Hair Bundles - Straight','Premium 100% human hair bundles. Silky straight texture that can be styled and colored.',4,235.00,NULL,'DON-968448','active',1,1,1,1,110,10,0.02,21.00,13.00,32.00,'2026-01-08 04:12:55','2026-01-19 21:48:33'),
-(8,'Deep Conditioning Treatment','Intensive deep conditioning treatment for dry and damaged hair. Restores moisture and shine.',4,230.00,400.00,'DON-534244','active',1,1,1,1,2299,300,0.02,21.00,13.00,32.00,'2026-01-08 06:39:05','2026-01-19 21:44:24'),
-(9,'Midnight Elegance Gown','asknlk',6,120.00,NULL,'DON-152043','active',1,1,1,1,197,100,0.02,21.00,13.00,32.00,'2026-01-10 14:40:35','2026-01-19 22:03:29'),
-(10,'Midnight Elegance Gown','sdmlksmmlkm',8,23.00,NULL,'DON-368845','active',1,1,1,1,100,50,0.02,21.00,13.00,32.00,'2026-01-12 18:36:35','2026-01-19 22:03:29');
+(1,'HD Lace Front Wig - Body Wave','Premium HD lace front wig with natural-looking hairline. Perfect for everyday wear or special occasions.',2,225.00,NULL,'5449000002938','active',0,0,1,1,30,10,0.02,21.00,13.00,32.00,'2026-01-08 04:03:43','2026-01-30 13:00:16'),
+(2,'Blonde Ombre Wig - Loose Wave','Stunning blonde ombre wig with gorgeous loose waves. A head-turner for any occasion.',2,125.00,NULL,'5449000297280','active',0,0,1,1,0,100,0.02,21.00,13.00,32.00,'2026-01-08 04:05:32','2026-01-30 13:00:33'),
+(3,'Hair Growth Serum - Premium Formula','Advanced hair growth serum with natural botanical extracts. Promotes thicker, healthier hair.',4,233.00,250.00,'250228345','active',0,0,1,1,16,10,0.02,21.00,13.00,32.00,'2026-01-08 04:07:31','2026-01-30 15:14:23'),
+(4,'Luxury Body Lotion Set','Indulgent body lotion and cream set for silky smooth skin. Long-lasting hydration.',5,20.00,NULL,'58IITBU4C072746','active',0,0,1,1,495,10,0.02,21.00,13.00,32.00,'2026-01-08 04:08:58','2026-01-30 15:14:23'),
+(5,'Pre-Stretched Braiding Hair - Rainbow Pack','Vibrant pre-stretched braiding hair in assorted colors. Easy to work with and long-lasting.',3,520.00,NULL,'4016779630689','active',0,1,1,1,4498,100,0.02,21.00,13.00,32.00,'2026-01-08 04:10:12','2026-01-30 15:14:01'),
+(6,'Professional Titanium Flat Iron','Professional-grade titanium flat iron for sleek, salon-quality results at home.',6,128.00,150.00,'703828=035','active',1,1,1,1,1198,500,0.02,21.00,13.00,32.00,'2026-01-08 04:11:44','2026-01-30 15:13:39'),
+(7,'Human Hair Bundles - Straight','Premium 100% human hair bundles. Silky straight texture that can be styled and colored.',4,235.00,NULL,'DON-968448','active',1,1,1,1,105,10,0.02,21.00,13.00,32.00,'2026-01-08 04:12:55','2026-01-30 15:45:49'),
+(8,'Deep Conditioning Treatment','Intensive deep conditioning treatment for dry and damaged hair. Restores moisture and shine.',4,230.00,400.00,'DON-534244','active',1,1,1,1,2292,300,0.02,21.00,13.00,32.00,'2026-01-08 06:39:05','2026-01-30 15:45:49'),
+(9,'Midnight Elegance Gown','asknlk',6,120.00,NULL,'DON-152043','active',1,1,1,1,196,100,0.02,21.00,13.00,32.00,'2026-01-10 14:40:35','2026-01-30 13:19:25'),
+(10,'Midnight Elegance Gown','sdmlksmmlkm',8,23.00,NULL,'DON-368845','active',1,1,1,1,99,50,0.02,21.00,13.00,32.00,'2026-01-12 18:36:35','2026-01-30 11:39:44');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -2381,7 +2504,7 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`id`),
   KEY `visitor_id` (`visitor_id`),
   CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`visitor_id`) REFERENCES `visitors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1443 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `sessions` VALUES
@@ -3755,7 +3878,78 @@ INSERT INTO `sessions` VALUES
 (1368,1368,'2026-01-22 16:30:53','2026-01-22 16:30:53'),
 (1369,1369,'2026-01-22 16:31:12','2026-01-22 16:31:12'),
 (1370,1370,'2026-01-22 16:31:16','2026-01-22 16:31:16'),
-(1371,1371,'2026-01-22 16:31:22','2026-01-22 16:31:22');
+(1371,1371,'2026-01-22 16:31:22','2026-01-22 16:31:22'),
+(1372,1372,'2026-01-30 10:20:07','2026-01-30 10:20:07'),
+(1373,1373,'2026-01-30 10:20:12','2026-01-30 10:20:12'),
+(1374,1374,'2026-01-30 10:20:12','2026-01-30 10:20:12'),
+(1375,1375,'2026-01-30 10:20:31','2026-01-30 10:20:31'),
+(1376,1376,'2026-01-30 10:20:37','2026-01-30 10:20:37'),
+(1377,1377,'2026-01-30 10:40:23','2026-01-30 10:40:23'),
+(1378,1378,'2026-01-30 10:40:25','2026-01-30 10:40:25'),
+(1379,1379,'2026-01-30 10:40:29','2026-01-30 10:40:29'),
+(1380,1380,'2026-01-30 10:40:36','2026-01-30 10:40:36'),
+(1381,1381,'2026-01-30 10:40:41','2026-01-30 10:40:41'),
+(1382,1382,'2026-01-30 10:40:46','2026-01-30 10:40:46'),
+(1383,1383,'2026-01-30 10:42:57','2026-01-30 10:42:57'),
+(1384,1384,'2026-01-30 10:43:01','2026-01-30 10:43:01'),
+(1385,1385,'2026-01-30 10:43:03','2026-01-30 10:43:03'),
+(1386,1386,'2026-01-30 10:43:06','2026-01-30 10:43:06'),
+(1387,1387,'2026-01-30 10:43:09','2026-01-30 10:43:09'),
+(1388,1388,'2026-01-30 10:43:32','2026-01-30 10:43:32'),
+(1389,1389,'2026-01-30 10:43:34','2026-01-30 10:43:34'),
+(1390,1390,'2026-01-30 10:46:17','2026-01-30 10:46:17'),
+(1391,1391,'2026-01-30 10:46:20','2026-01-30 10:46:20'),
+(1392,1392,'2026-01-30 10:47:45','2026-01-30 10:47:45'),
+(1393,1393,'2026-01-30 10:50:02','2026-01-30 10:50:02'),
+(1394,1394,'2026-01-30 10:50:19','2026-01-30 10:50:19'),
+(1395,1395,'2026-01-30 10:50:51','2026-01-30 10:50:51'),
+(1396,1396,'2026-01-30 10:54:18','2026-01-30 10:54:18'),
+(1397,1397,'2026-01-30 10:55:39','2026-01-30 10:55:39'),
+(1398,1398,'2026-01-30 10:55:52','2026-01-30 10:55:52'),
+(1399,1399,'2026-01-30 10:55:54','2026-01-30 10:55:54'),
+(1400,1400,'2026-01-30 11:00:38','2026-01-30 11:00:38'),
+(1401,1401,'2026-01-30 11:09:44','2026-01-30 11:09:44'),
+(1402,1402,'2026-01-30 11:11:12','2026-01-30 11:11:12'),
+(1403,1403,'2026-01-30 11:39:06','2026-01-30 11:39:06'),
+(1404,1404,'2026-01-30 11:53:11','2026-01-30 11:53:11'),
+(1405,1405,'2026-01-30 11:56:18','2026-01-30 11:56:18'),
+(1406,1406,'2026-01-30 12:00:10','2026-01-30 12:00:10'),
+(1407,1407,'2026-01-30 12:00:30','2026-01-30 12:00:30'),
+(1408,1408,'2026-01-30 12:07:04','2026-01-30 12:07:04'),
+(1409,1409,'2026-01-30 12:40:40','2026-01-30 12:40:40'),
+(1410,1410,'2026-01-30 12:49:25','2026-01-30 12:49:25'),
+(1411,1411,'2026-01-30 12:50:16','2026-01-30 12:50:16'),
+(1412,1412,'2026-01-30 12:56:28','2026-01-30 12:56:28'),
+(1413,1413,'2026-01-30 12:58:27','2026-01-30 12:58:27'),
+(1414,1414,'2026-01-30 12:59:54','2026-01-30 12:59:54'),
+(1415,1415,'2026-01-30 12:59:55','2026-01-30 12:59:55'),
+(1416,1416,'2026-01-30 13:03:14','2026-01-30 13:03:14'),
+(1417,1417,'2026-01-30 13:03:27','2026-01-30 13:03:27'),
+(1418,1418,'2026-01-30 13:05:09','2026-01-30 13:05:09'),
+(1419,1419,'2026-01-30 13:05:54','2026-01-30 13:05:54'),
+(1420,1420,'2026-01-30 13:22:27','2026-01-30 13:22:27'),
+(1421,1421,'2026-01-30 13:22:33','2026-01-30 13:22:33'),
+(1422,1422,'2026-01-30 13:35:23','2026-01-30 13:35:23'),
+(1423,1423,'2026-01-30 13:36:00','2026-01-30 13:36:00'),
+(1424,1424,'2026-01-30 13:39:07','2026-01-30 13:39:07'),
+(1425,1425,'2026-01-30 13:39:23','2026-01-30 13:39:23'),
+(1426,1426,'2026-01-30 13:39:28','2026-01-30 13:39:28'),
+(1427,1427,'2026-01-30 13:39:34','2026-01-30 13:39:34'),
+(1428,1428,'2026-01-30 13:39:36','2026-01-30 13:39:36'),
+(1429,1429,'2026-01-30 13:39:40','2026-01-30 13:39:40'),
+(1430,1430,'2026-01-30 13:39:49','2026-01-30 13:39:49'),
+(1431,1431,'2026-01-30 13:40:22','2026-01-30 13:40:22'),
+(1432,1432,'2026-01-30 14:46:58','2026-01-30 14:46:58'),
+(1433,1433,'2026-01-30 15:05:08','2026-01-30 15:05:08'),
+(1434,1434,'2026-01-30 15:09:28','2026-01-30 15:09:28'),
+(1435,1435,'2026-01-30 15:13:01','2026-01-30 15:13:01'),
+(1436,1436,'2026-01-30 15:24:38','2026-01-30 15:24:38'),
+(1437,1437,'2026-01-30 15:24:52','2026-01-30 15:24:52'),
+(1438,1438,'2026-01-30 15:25:40','2026-01-30 15:25:40'),
+(1439,1439,'2026-01-30 15:26:33','2026-01-30 15:26:33'),
+(1440,1440,'2026-01-30 15:36:51','2026-01-30 15:36:51'),
+(1441,1441,'2026-01-30 15:39:02','2026-01-30 15:39:02'),
+(1442,1442,'2026-01-30 15:45:12','2026-01-30 15:45:12');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -3887,7 +4081,7 @@ CREATE TABLE `visitors` (
   UNIQUE KEY `anon_id` (`anon_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `visitors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1372 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1443 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `visitors` VALUES
@@ -5261,7 +5455,78 @@ INSERT INTO `visitors` VALUES
 (1368,'1f313bc7-68e4-4584-96fd-e59f83c9a5f5',1,'2026-01-22 16:30:53','2026-01-22 16:30:53'),
 (1369,'37751657-a1dc-4eb0-a4ab-eff6db9ca73a',1,'2026-01-22 16:31:12','2026-01-22 16:31:12'),
 (1370,'2d0e3b9d-80d4-4d7a-8f10-d4b21ee586ae',1,'2026-01-22 16:31:16','2026-01-22 16:31:16'),
-(1371,'4719b15a-7144-4361-9bb2-594a7d37b1bd',1,'2026-01-22 16:31:22','2026-01-22 16:31:22');
+(1371,'4719b15a-7144-4361-9bb2-594a7d37b1bd',1,'2026-01-22 16:31:22','2026-01-22 16:31:22'),
+(1372,'48d2eb2a-37a2-4f86-a101-e2510215e5c6',1,'2026-01-30 10:20:07','2026-01-30 10:20:07'),
+(1373,'eb3627dc-693b-48dc-bee0-4ddb512b5a56',1,'2026-01-30 10:20:12','2026-01-30 10:20:12'),
+(1374,'b7e378b8-6abc-4446-b686-5c1374780fe9',1,'2026-01-30 10:20:12','2026-01-30 10:20:12'),
+(1375,'f29679be-c693-49da-98fb-51a56cac969a',1,'2026-01-30 10:20:31','2026-01-30 10:20:31'),
+(1376,'dd498731-297b-4c5a-a263-c7d29d79bf3d',1,'2026-01-30 10:20:37','2026-01-30 10:20:37'),
+(1377,'5d0858a1-1800-482c-b66c-8e56210b8a9e',1,'2026-01-30 10:40:23','2026-01-30 10:40:23'),
+(1378,'b024093e-618a-4b21-993b-7f6d84d37c10',1,'2026-01-30 10:40:25','2026-01-30 10:40:25'),
+(1379,'8ee44906-55c0-46e4-8f1a-3da3b26a8250',1,'2026-01-30 10:40:29','2026-01-30 10:40:29'),
+(1380,'d34de8de-df5e-46b1-a1e8-07a071709602',1,'2026-01-30 10:40:36','2026-01-30 10:40:36'),
+(1381,'1b812613-42ea-4883-9beb-218f49c1b41c',1,'2026-01-30 10:40:41','2026-01-30 10:40:41'),
+(1382,'ccfac0d0-d292-47f0-96a8-f7441826c844',1,'2026-01-30 10:40:46','2026-01-30 10:40:46'),
+(1383,'d3306512-5694-4b02-9651-c4dbab31ad22',1,'2026-01-30 10:42:57','2026-01-30 10:42:57'),
+(1384,'3c567e36-b340-46af-926a-5a166407bb1d',1,'2026-01-30 10:43:01','2026-01-30 10:43:01'),
+(1385,'23dbfc8b-971c-478f-8f42-88719f4330ba',1,'2026-01-30 10:43:03','2026-01-30 10:43:03'),
+(1386,'f257dbb5-163d-47fe-bc86-13747ed3db12',1,'2026-01-30 10:43:06','2026-01-30 10:43:06'),
+(1387,'a279ec26-6785-45ef-a718-b9f71c42c37c',1,'2026-01-30 10:43:09','2026-01-30 10:43:09'),
+(1388,'8bc0310b-fbb2-4542-a9af-289f37d50465',1,'2026-01-30 10:43:32','2026-01-30 10:43:32'),
+(1389,'a8c9c18c-3685-4dad-9aa7-5cc271f1b7f5',1,'2026-01-30 10:43:34','2026-01-30 10:43:34'),
+(1390,'e93956c8-91d8-4e5b-962d-34e16afe009d',1,'2026-01-30 10:46:17','2026-01-30 10:46:17'),
+(1391,'d339481a-f26a-42b4-9da0-fa2c03b8d6e5',1,'2026-01-30 10:46:20','2026-01-30 10:46:20'),
+(1392,'5b177350-e399-4146-ba1c-41a7c70733a8',1,'2026-01-30 10:47:45','2026-01-30 10:47:45'),
+(1393,'20ab63da-70dc-4255-9c1c-e6fb33def966',1,'2026-01-30 10:50:02','2026-01-30 10:50:02'),
+(1394,'553d317e-8aba-4f39-9f51-fcd854d5726f',1,'2026-01-30 10:50:19','2026-01-30 10:50:19'),
+(1395,'a578adc4-b07d-428c-866c-ac4b0dde2145',1,'2026-01-30 10:50:51','2026-01-30 10:50:51'),
+(1396,'cdab3bd0-9e50-4bca-ad4e-b2eada1b9986',1,'2026-01-30 10:54:18','2026-01-30 10:54:18'),
+(1397,'2f098ff4-6fec-456d-a531-6b293eaa000e',1,'2026-01-30 10:55:39','2026-01-30 10:55:39'),
+(1398,'f4ea9cba-1498-493c-b956-239f7c0e37dc',1,'2026-01-30 10:55:52','2026-01-30 10:55:52'),
+(1399,'c19b2081-6392-48e6-96f1-86de4530d894',1,'2026-01-30 10:55:54','2026-01-30 10:55:54'),
+(1400,'1721944c-8688-4b2a-8d2f-f4b9528b6a3e',1,'2026-01-30 11:00:38','2026-01-30 11:00:38'),
+(1401,'3e0109f0-841c-4750-9bf4-93bc5f01866b',1,'2026-01-30 11:09:44','2026-01-30 11:09:44'),
+(1402,'4f9abca6-1a2c-46dc-bcae-f8067c0051e2',1,'2026-01-30 11:11:12','2026-01-30 11:11:12'),
+(1403,'ca1fcffe-35e7-4c91-acc1-0572cb8581b5',1,'2026-01-30 11:39:06','2026-01-30 11:39:06'),
+(1404,'e24604ae-385a-4bfd-8eb5-58d39e81b6d6',1,'2026-01-30 11:53:11','2026-01-30 11:53:11'),
+(1405,'9ff291ef-b7ca-486d-873a-7d87ad7f241c',1,'2026-01-30 11:56:18','2026-01-30 11:56:18'),
+(1406,'f72f0e81-d899-4028-960e-70e523288f4b',1,'2026-01-30 12:00:10','2026-01-30 12:00:10'),
+(1407,'7ee811df-f8d2-41d1-a563-b509113b784a',1,'2026-01-30 12:00:30','2026-01-30 12:00:30'),
+(1408,'8d8d5fc1-55e4-4e20-bfd3-3111a29a1e3f',1,'2026-01-30 12:07:04','2026-01-30 12:07:04'),
+(1409,'683a1a31-5268-46d1-94b2-e26341202a43',1,'2026-01-30 12:40:40','2026-01-30 12:40:40'),
+(1410,'9eba12a1-060b-4beb-8566-21948b06cf64',1,'2026-01-30 12:49:25','2026-01-30 12:49:25'),
+(1411,'bfa248a7-1bf8-426e-bc90-4e47ca363eb3',1,'2026-01-30 12:50:16','2026-01-30 12:50:16'),
+(1412,'43ff6885-d33d-4511-a8e4-ec1bdbf3874e',1,'2026-01-30 12:56:28','2026-01-30 12:56:28'),
+(1413,'0d4d698a-7843-44ee-98b2-1b927b113040',1,'2026-01-30 12:58:27','2026-01-30 12:58:27'),
+(1414,'16b3815a-415f-4f58-b295-8192c8e7f4fc',1,'2026-01-30 12:59:54','2026-01-30 12:59:54'),
+(1415,'68c4a104-68f6-4179-8282-2e0569a7ab4f',1,'2026-01-30 12:59:55','2026-01-30 12:59:55'),
+(1416,'d2713bf7-fb8f-4c24-b14b-a725d8b83e91',1,'2026-01-30 13:03:14','2026-01-30 13:03:14'),
+(1417,'b107a2e3-1e3d-4cba-851a-01fa07399f09',1,'2026-01-30 13:03:27','2026-01-30 13:03:27'),
+(1418,'c3d873ea-37a9-4404-8a97-4303d83be421',1,'2026-01-30 13:05:09','2026-01-30 13:05:09'),
+(1419,'6fe6c150-5485-4f8f-b887-2620dd192426',1,'2026-01-30 13:05:54','2026-01-30 13:05:54'),
+(1420,'cb9377cd-1f00-404a-8638-901e3dcc3233',1,'2026-01-30 13:22:27','2026-01-30 13:22:27'),
+(1421,'de3d2fa7-01d6-48f9-b703-04e965465a3e',1,'2026-01-30 13:22:33','2026-01-30 13:22:33'),
+(1422,'afc5dcb7-6588-461e-9c9c-0afeb5c6d700',1,'2026-01-30 13:35:23','2026-01-30 13:35:23'),
+(1423,'52e68b71-7ec1-44dc-bc96-70d8f1af6671',1,'2026-01-30 13:36:00','2026-01-30 13:36:00'),
+(1424,'6c499080-b943-43e7-9d06-496a4e079095',1,'2026-01-30 13:39:07','2026-01-30 13:39:07'),
+(1425,'56572ed3-629f-4099-bba6-1525abb40e50',1,'2026-01-30 13:39:23','2026-01-30 13:39:23'),
+(1426,'248c4211-ebdb-495e-a465-64939dc746cd',1,'2026-01-30 13:39:28','2026-01-30 13:39:28'),
+(1427,'f7aa9fab-3fdc-4513-982e-330920e5c679',1,'2026-01-30 13:39:34','2026-01-30 13:39:34'),
+(1428,'d9b1de81-40e0-4852-9388-421900765a29',1,'2026-01-30 13:39:36','2026-01-30 13:39:36'),
+(1429,'5a5d7c08-8f3c-442d-963d-76391581138f',1,'2026-01-30 13:39:40','2026-01-30 13:39:40'),
+(1430,'f1fcf1a3-5832-44b6-bdb1-cc3a936f264b',1,'2026-01-30 13:39:49','2026-01-30 13:39:49'),
+(1431,'8012b2b5-1533-4b40-a95f-87f21d67feac',1,'2026-01-30 13:40:22','2026-01-30 13:40:22'),
+(1432,'31553fba-488e-42ed-b620-a8f0bc7befea',1,'2026-01-30 14:46:58','2026-01-30 14:46:58'),
+(1433,'c8965d92-d380-4126-aebc-a6b51e57d681',1,'2026-01-30 15:05:08','2026-01-30 15:05:08'),
+(1434,'acfcf77e-292c-4a25-a13e-4efbc7c18e31',1,'2026-01-30 15:09:28','2026-01-30 15:09:28'),
+(1435,'2c99c996-dd8c-426b-95ca-e98e3f108f10',1,'2026-01-30 15:13:01','2026-01-30 15:13:01'),
+(1436,'f9e8f4e8-26f6-4055-a616-7d1ff9b0b76f',1,'2026-01-30 15:24:38','2026-01-30 15:24:38'),
+(1437,'811f52d0-0003-4e6e-af77-e1f576e46236',1,'2026-01-30 15:24:52','2026-01-30 15:24:52'),
+(1438,'56d7a7ab-5a51-4a72-8e95-51b2d3233dbc',1,'2026-01-30 15:25:40','2026-01-30 15:25:40'),
+(1439,'6c45ace4-68da-47cf-ae60-81b6b89d4391',1,'2026-01-30 15:26:33','2026-01-30 15:26:33'),
+(1440,'a92ac08c-8b2d-41d1-8cf3-2a5020f23250',1,'2026-01-30 15:36:51','2026-01-30 15:36:51'),
+(1441,'aab9619f-2ad7-4c0d-b7ed-f6acd0c53585',1,'2026-01-30 15:39:02','2026-01-30 15:39:02'),
+(1442,'b3317f56-4d9b-4e8c-af65-24eadcb7b277',1,'2026-01-30 15:45:12','2026-01-30 15:45:12');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;

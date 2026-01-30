@@ -1,2 +1,2 @@
-UI only. No backend. No APIs.
+window.document.write(`
 
