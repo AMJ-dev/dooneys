@@ -1,3 +1,2 @@
 window.document.write(`
 
-`);
