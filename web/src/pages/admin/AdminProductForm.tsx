@@ -34,10 +34,12 @@ import {
   Scissors,
   Hash,
   Minus,
+  Scan,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import BarcodeScanner from "@/components/BarcodeScanner";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -1664,6 +1666,8 @@ const AdminProductForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<CategoryFromAPI[]>([]);
+  const [scanning, setScanning] = useState(false);
+  const [isInitializingCamera, setIsInitializingCamera] = useState(false);
 
   const progress = ((currentStep + 1) / formSteps.length) * 100;
 
@@ -1976,20 +1980,16 @@ const AdminProductForm = () => {
       isNew: !prev.isNew
     }));
   };
-
-  const generateSKU = () => {
-    if (isReadOnly || isEditMode) return;
-    
-    const prefix = "DON-";
-    const randomNum = Math.floor(100000 + Math.random() * 900000);
-    const sku = `${prefix}${randomNum}`;
-    
-    setFormData(prev => ({
-      ...prev,
-      sku
-    }));
+  const handleScan = (code: string) => {
+    setFormData(prev => ({ ...prev, sku: code })); 
+    toast.success(`Barcode scanned: ${code}`, {
+      icon: <CheckCircle className="h-5 w-5 text-white" />,
+      autoClose: 3000,
+    });
+    setTimeout(() => {
+      setScanning(false);
+    }, 2000);
   };
-
   const stockQuantity = parseInt(formData.stockQuantity) || 0;
   const lowStockThreshold = parseInt(formData.lowStockAlert) || 10;
   const isLowStock = stockQuantity <= lowStockThreshold;
@@ -2022,686 +2022,38 @@ const AdminProductForm = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate("/admin/products")}
-            className="h-10 w-10"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="font-display text-2xl md:text-3xl mb-1">
-              {isViewMode ? `View Product: ${formData.name || name}` : 
-               isEditMode ? `Edit Product: ${formData.name || name}` : 
-               "Create New Product"}
-            </h1>
-            <p className="text-muted-foreground">
-              {isViewMode ? "View product details and images" : 
-               isEditMode ? "Update product details, images, and settings" : 
-               "Add a new product to your catalog"}
-            </p>
-          </div>
-        </div>
-        
-        {!isViewMode && (
-          <div className="flex items-center gap-3">
-            {currentStep === formSteps.length - 1 ? (
-              <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2">
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    {isEditMode ? "Updating..." : "Creating..."}
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    {isEditMode ? "Update Product" : "Create Product"}
-                  </>
-                )}
-              </Button>
-            ) : (
-              <Button onClick={handleNext} className="gap-2">
-                Next Step
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        )}
-        
-        {isViewMode && (
-          <Button onClick={() => navigate(`/admin/products/${id}/${name}`)} className="gap-2">
-            <Edit2 className="h-4 w-4" />
-            Edit Product
-          </Button>
-        )}
-      </div>
-
-      {!isViewMode && (
-        <Card className="bg-gradient-to-r from-background to-primary/5 border-primary/10">
-          <CardContent className="pt-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-medium">
-                  Step {currentStep + 1} of {formSteps.length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {Math.round(progress)}% Complete
-                </div>
-              </div>
-              <Progress value={progress} className="h-2" />
-              
-              <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
-                {formSteps.map((step, index) => {
-                  const Icon = step.icon;
-                  return (
-                    <motion.button
-                      key={`${step.id}-${gen_random_string()}`}
-                      type="button"
-                      onClick={() => setCurrentStep(index)}
-                      className={cn(
-                        "flex flex-col items-center justify-center p-4 rounded-lg transition-all",
-                        index === currentStep 
-                          ? "bg-primary/10 border border-primary/20 shadow-sm" 
-                          : "hover:bg-accent/50"
-                      )}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Icon className={cn(
-                        "h-5 w-5 mb-2",
-                        index === currentStep ? "text-primary" : "text-muted-foreground"
-                      )} />
-                      <span className={cn(
-                        "text-sm font-medium",
-                        index === currentStep ? "text-foreground" : "text-muted-foreground"
-                      )}>
-                        {step.label}
-                      </span>
-                      <div className={cn(
-                        "h-1 w-8 rounded-full mt-2",
-                        index === currentStep ? "bg-primary" : "bg-muted"
-                      )} />
-                    </motion.button>
-                  );
-                })}
-              </div>
+    <>
+     <BarcodeScanner onScan={handleScan} enabled={scanning} />
+      <div className="space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/admin/products")}
+              className="h-10 w-10"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="font-display text-2xl md:text-3xl mb-1">
+                {isViewMode ? `View Product: ${formData.name || name}` : 
+                isEditMode ? `Edit Product: ${formData.name || name}` : 
+                "Create New Product"}
+              </h1>
+              <p className="text-muted-foreground">
+                {isViewMode ? "View product details and images" : 
+                isEditMode ? "Update product details, images, and settings" : 
+                "Add a new product to your catalog"}
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          {currentStep === 0 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
-                  <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-primary" />
-                    Basic Information
-                  </CardTitle>
-                  <CardDescription>
-                    Enter the essential details for your product
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="flex items-center gap-2">
-                        Product Name *
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <Info className="h-3 w-3 text-muted-foreground" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>This is the name customers will see</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange('name', e.target.value)}
-                        placeholder="e.g., Luxury Brazilian Hair Bundle"
-                        disabled={isReadOnly}
-                        className="h-11"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        value={formData.description}
-                        onChange={(e) => handleInputChange('description', e.target.value)}
-                        placeholder="Describe your product features, benefits, and specifications..."
-                        rows={4}
-                        disabled={isReadOnly}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="category">Category *</Label>
-                        <CategorySelect
-                          value={formData.category_id}
-                          onChange={(categoryId) => handleInputChange('category_id', categoryId)}
-                          categories={availableCategories}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="sku">SKU *</Label>
-                        <div className="flex gap-2">
-                          <Input
-                            id="sku"
-                            value={formData.sku}
-                            onChange={(e) => handleInputChange('sku', e.target.value)}
-                            placeholder="e.g., DON-000001"
-                            className="font-mono"
-                            disabled={isReadOnly}
-                          />
-                          {!isReadOnly && !isEditMode && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={generateSKU}
-                              className="whitespace-nowrap"
-                            >
-                              Generate
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="price" className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4" />
-                          Base Price *
-                        </Label>
-                        <Input
-                          id="price"
-                          type="number"
-                          value={formData.price}
-                          onChange={(e) => handleInputChange('price', e.target.value)}
-                          placeholder="0.00"
-                          min="0"
-                          step="0.01"
-                          disabled={isReadOnly}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="originalPrice" className="flex items-center gap-2">
-                          <Tag className="h-4 w-4" />
-                          Original Price
-                        </Label>
-                        <Input
-                          id="originalPrice"
-                          type="number"
-                          value={formData.originalPrice}
-                          onChange={(e) => handleInputChange('originalPrice', e.target.value)}
-                          placeholder="0.00"
-                          min="0"
-                          step="0.01"
-                          disabled={isReadOnly}
-                        />
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Trophy className="h-4 w-4 text-amber-500" />
-                          <div>
-                            <Label htmlFor="bestSeller">Best Seller</Label>
-                            <p className="text-sm text-muted-foreground">
-                              Mark this product as a best seller
-                            </p>
-                          </div>
-                        </div>
-                        <Switch
-                          id="bestSeller"
-                          checked={formData.isBestSeller}
-                          onCheckedChange={handleBestSellerToggle}
-                          disabled={isReadOnly}
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-blue-500" />
-                          <div>
-                            <Label htmlFor="newProduct">New Arrival</Label>
-                            <p className="text-sm text-muted-foreground">
-                              Mark this product as new
-                            </p>
-                          </div>
-                        </div>
-                        <Switch
-                          id="newProduct"
-                          checked={formData.isNew}
-                          onCheckedChange={handleNewToggle}
-                          disabled={isReadOnly}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {currentStep === 1 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
-                  <CardTitle className="flex items-center gap-2">
-                    <Palette className="h-5 w-5 text-primary" />
-                    Product Variants
-                  </CardTitle>
-                  <CardDescription>
-                    Add variants like Length, Color, Size, etc. with optional price adjustments
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <ProductVariantsManager 
-                    variants={productVariants}
-                    onVariantsChange={setProductVariants}
-                    basePrice={formData.price} // Pass base price here
-                    isReadOnly={isReadOnly}
-                  />
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {currentStep === 2 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-primary" />
-                    Product Features
-                  </CardTitle>
-                  <CardDescription>
-                    Add key features of your product
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <ProductFeaturesManager 
-                    features={productFeatures}
-                    onFeaturesChange={setProductFeatures}
-                    isReadOnly={isReadOnly}
-                  />
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {currentStep === 3 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
-                  <CardTitle className="flex items-center gap-2">
-                    <Camera className="h-5 w-5 text-primary" />
-                    Product Images
-                  </CardTitle>
-                  <CardDescription>
-                    Upload high-quality images to showcase your product
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <ImageUploadGallery 
-                    images={productImages}
-                    onImagesChange={setProductImages}
-                    maxImages={5}
-                    isEditMode={isEditMode}
-                    onImageDelete={handleDeleteImage}
-                  />
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {currentStep === 4 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
-                  <CardTitle className="flex items-center gap-2">
-                    <ShoppingCart className="h-5 w-5 text-primary" />
-                    Inventory Management
-                  </CardTitle>
-                  <CardDescription>
-                    Configure stock levels and alerts
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                  <div className="space-y-4">
-                    <Separator />
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="stockQuantity">Current Stock *</Label>
-                        <Input
-                          id="stockQuantity"
-                          type="number"
-                          value={formData.stockQuantity}
-                          onChange={(e) => handleInputChange('stockQuantity', e.target.value)}
-                          placeholder="e.g., 100"
-                          min="0"
-                          disabled={isReadOnly}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="lowStockAlert" className="flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4 text-amber-500" />
-                          Low Stock Alert
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <Info className="h-3 w-3 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="max-w-xs">
-                                  Get notified when stock falls below this level. Helps prevent stockouts.
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </Label>
-                        <Input
-                          id="lowStockAlert"
-                          type="number"
-                          value={formData.lowStockAlert}
-                          onChange={(e) => handleInputChange('lowStockAlert', e.target.value)}
-                          placeholder="e.g., 10"
-                          min="0"
-                          disabled={isReadOnly}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Alert when stock ≤ {formData.lowStockAlert || 10}
-                        </p>
-                      </div>
-                    </div>
-
-                    {formData.stockQuantity && (
-                      <div className="space-y-3 p-4 rounded-lg border bg-gradient-to-r from-background to-primary/5">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium">Stock Status</Label>
-                          <Badge 
-                            variant={isLowStock ? "destructive" : "default"}
-                            className="gap-1"
-                          >
-                            {isLowStock ? (
-                              <>
-                                <AlertTriangle className="h-3 w-3" />
-                                Low Stock
-                              </>
-                            ) : (
-                              "In Stock"
-                            )}
-                          </Badge>
-                        </div>
-                        
-                        <Progress 
-                          value={stockPercentage} 
-                          className={cn(
-                            "h-2",
-                            isLowStock ? "bg-destructive/20" : "bg-primary/20"
-                          )}
-                        />
-                        
-                        <div className="flex items-center justify-between text-sm">
-                          <div className="text-muted-foreground">
-                            Current: {stockQuantity} units
-                          </div>
-                          <div className={cn(
-                            "font-medium",
-                            isLowStock ? "text-destructive" : "text-primary"
-                          )}>
-                            Alert at: {lowStockThreshold} units
-                          </div>
-                        </div>
-                        
-                        {isLowStock && (
-                          <div className="flex items-center gap-2 text-sm text-destructive mt-2">
-                            <AlertTriangle className="h-4 w-4" />
-                            <span>Stock is running low! Consider restocking soon.</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    <Separator />
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Label htmlFor="status">Product Status</Label>
-                        <p className="text-sm text-muted-foreground">
-                          {formData.inStock ? "Product is visible to customers" : "Product is hidden from customers"}
-                        </p>
-                      </div>
-                      <Switch
-                        id="status"
-                        checked={formData.inStock}
-                        onCheckedChange={handleStatusToggle}
-                        disabled={isReadOnly}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {currentStep === 5 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card>
-                <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
-                  <CardTitle className="flex items-center gap-2">
-                    <Package2 className="h-5 w-5 text-primary" />
-                    Shipping & Dimensions
-                  </CardTitle>
-                  <CardDescription>
-                    Product specifications for shipping calculations
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6 pt-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="weight" className="flex items-center gap-2">
-                        <Scale className="h-4 w-4" />
-                        Weight (kg) *
-                      </Label>
-                      <div className="flex gap-2">
-                        <Input
-                          id="weight"
-                          type="number"
-                          value={formData.weight}
-                          onChange={(e) => handleInputChange('weight', e.target.value)}
-                          placeholder="e.g., 0.2"
-                          min="0"
-                          step="0.001"
-                          disabled={isReadOnly}
-                        />
-                        <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
-                          kg
-                        </div>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Enter weight in kilograms (1 kg = 1000 grams)
-                      </p>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Ruler className="h-4 w-4 text-primary" />
-                        <h4 className="font-medium">Dimensions (cm)</h4>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="item_height">Height</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              id="item_height"
-                              type="number"
-                              value={formData.item_height}
-                              onChange={(e) => handleInputChange('item_height', e.target.value)}
-                              placeholder="e.g., 24"
-                              min="0"
-                              step="0.1"
-                              disabled={isReadOnly}
-                            />
-                            <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
-                              cm
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="item_width">Width</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              id="item_width"
-                              type="number"
-                              value={formData.item_width}
-                              onChange={(e) => handleInputChange('item_width', e.target.value)}
-                              placeholder="e.g., 8"
-                              min="0"
-                              step="0.1"
-                              disabled={isReadOnly}
-                            />
-                            <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
-                              cm
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor="item_depth">Depth</Label>
-                          <div className="flex gap-2">
-                            <Input
-                              id="item_depth"
-                              type="number"
-                              value={formData.item_depth}
-                              onChange={(e) => handleInputChange('item_depth', e.target.value)}
-                              placeholder="e.g., 2"
-                              min="0"
-                              step="0.1"
-                              disabled={isReadOnly}
-                            />
-                            <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
-                              cm
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="p-4 rounded-lg border bg-gradient-to-r from-background to-primary/5">
-                        <h4 className="font-medium mb-2">Dimension Summary</h4>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Total Dimensions:</span>
-                            <span className="font-medium">
-                              {formData.item_height || "?"} × {formData.item_width || "?"} × {formData.item_depth || "?"} cm
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Weight:</span>
-                            <span className="font-medium">{formData.weight || "?"} kg</span>
-                          </div>
-                          {formData.item_height && formData.item_width && formData.item_depth && (
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Volume:</span>
-                              <span className="font-medium">
-                                {(parseFloat(formData.item_height) * parseFloat(formData.item_width) * parseFloat(formData.item_depth)).toFixed(2)} cm³
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="p-4 rounded-lg border bg-gradient-to-r from-blue-50 to-blue-100">
-                      <div className="flex items-start gap-3">
-                        <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium text-blue-800">Shipping Calculation Info</p>
-                          <p className="text-xs text-blue-700 mt-1">
-                            These dimensions and weight are used to calculate shipping costs. 
-                            Accurate measurements ensure correct shipping rates for customers.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
+          </div>
+          
           {!isViewMode && (
-            <div className="flex items-center justify-between pt-4">
-              <Button
-                variant="outline"
-                onClick={handlePrev}
-                disabled={currentStep === 0}
-                className="gap-2"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-              
-              <div className="text-sm text-muted-foreground">
-                Step {currentStep + 1} of {formSteps.length}
-              </div>
-              
-              <Button
-                onClick={currentStep === formSteps.length - 1 ? handleSubmit : handleNext}
-                disabled={isSubmitting}
-                className="gap-2"
-              >
-                {currentStep === formSteps.length - 1 ? (
-                  isSubmitting ? (
+            <div className="flex items-center gap-3">
+              {currentStep === formSteps.length - 1 ? (
+                <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2">
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
                       {isEditMode ? "Updating..." : "Creating..."}
@@ -2711,262 +2063,1032 @@ const AdminProductForm = () => {
                       <Save className="h-4 w-4" />
                       {isEditMode ? "Update Product" : "Create Product"}
                     </>
-                  )
-                ) : (
-                  <>
-                    Next
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </Button>
+                  )}
+                </Button>
+              ) : (
+                <Button onClick={handleNext} className="gap-2">
+                  Next Step
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              )}
             </div>
+          )}
+          
+          {isViewMode && (
+            <Button onClick={() => navigate(`/admin/products/${id}/${name}`)} className="gap-2">
+              <Edit2 className="h-4 w-4" />
+              Edit Product
+            </Button>
           )}
         </div>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5 text-primary" />
-                Product Preview
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-primary/0 border">
-                {productImages.filter(img => !img.isRemoved).length > 0 ? (
-                  <img
-                    src={resolveSrc(productImages.filter(img => !img.isRemoved)[0]?.image)}
-                    alt="Product preview"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "/placeholder-product.jpg";
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center p-6">
-                    <Package className="h-12 w-12 text-primary/30 mb-3" />
-                    <p className="text-sm text-muted-foreground text-center">
-                      No preview available
-                    </p>
+        {!isViewMode && (
+          <Card className="bg-gradient-to-r from-background to-primary/5 border-primary/10">
+            <CardContent className="pt-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-medium">
+                    Step {currentStep + 1} of {formSteps.length}
                   </div>
-                )}
-              </div>
-              
-              <div className="space-y-3">
-                <div>
-                  <h3 className="font-semibold truncate">{formData.name || "Product Name"}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {formData.description || "Product description will appear here"}
-                  </p>
+                  <div className="text-sm text-muted-foreground">
+                    {Math.round(progress)}% Complete
+                  </div>
                 </div>
+                <Progress value={progress} className="h-2" />
                 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Category:</span>
-                    <Badge variant="outline">
-                      {availableCategories.find(cat => cat.id === formData.category_id)?.name || "Uncategorized"}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Price:</span>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1">
-                        <span className="font-semibold text-lg">
-                          {format_currency(previewPrice)}
+                <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
+                  {formSteps.map((step, index) => {
+                    const Icon = step.icon;
+                    return (
+                      <motion.button
+                        key={`${step.id}-${gen_random_string()}`}
+                        type="button"
+                        onClick={() => setCurrentStep(index)}
+                        className={cn(
+                          "flex flex-col items-center justify-center p-4 rounded-lg transition-all",
+                          index === currentStep 
+                            ? "bg-primary/10 border border-primary/20 shadow-sm" 
+                            : "hover:bg-accent/50"
+                        )}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Icon className={cn(
+                          "h-5 w-5 mb-2",
+                          index === currentStep ? "text-primary" : "text-muted-foreground"
+                        )} />
+                        <span className={cn(
+                          "text-sm font-medium",
+                          index === currentStep ? "text-foreground" : "text-muted-foreground"
+                        )}>
+                          {step.label}
                         </span>
-                        {previewPrice !== parseFloat(formData.price || "0") && (
-                          <Badge variant="outline" className="text-xs h-5">
-                            {previewPrice > parseFloat(formData.price || "0") ? "+" : ""}
-                            {format_currency(Math.abs(previewPrice - parseFloat(formData.price || "0")))}
-                          </Badge>
-                        )}
+                        <div className={cn(
+                          "h-1 w-8 rounded-full mt-2",
+                          index === currentStep ? "bg-primary" : "bg-muted"
+                        )} />
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            {currentStep === 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card>
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
+                    <CardTitle className="flex items-center gap-2">
+                      <Package className="h-5 w-5 text-primary" />
+                      Basic Information
+                    </CardTitle>
+                    <CardDescription>
+                      Enter the essential details for your product
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 pt-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="flex items-center gap-2">
+                          Product Name *
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="h-3 w-3 text-muted-foreground" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>This is the name customers will see</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </Label>
+                        <Input
+                          id="name"
+                          value={formData.name}
+                          onChange={(e) => handleInputChange('name', e.target.value)}
+                          placeholder="e.g., Luxury Brazilian Hair Bundle"
+                          disabled={isReadOnly}
+                          className="h-11"
+                        />
                       </div>
-                      <div className="space-y-1">
-                        {formData.originalPrice && (
-                          <span className="text-sm text-muted-foreground line-through">
-                            {format_currency(parseFloat(formData.originalPrice))}
-                          </span>
-                        )}
-                        <div className="text-xs text-muted-foreground">
-                          Base: {formData.price ? format_currency(parseFloat(formData.price)) : "0.00"}
+
+                      <div className="space-y-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                          id="description"
+                          value={formData.description}
+                          onChange={(e) => handleInputChange('description', e.target.value)}
+                          placeholder="Describe your product features, benefits, and specifications..."
+                          rows={4}
+                          disabled={isReadOnly}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="category">Category *</Label>
+                          <CategorySelect
+                            value={formData.category_id}
+                            onChange={(categoryId) => handleInputChange('category_id', categoryId)}
+                            categories={availableCategories}
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label htmlFor="sku">SKU *</Label>
+                          {!isReadOnly && (
+                            <div className="flex gap-2">
+                              <Input
+                                id="sku"
+                                value={formData.sku}
+                                onChange={(e) => handleInputChange('sku', e.target.value)}
+                                placeholder="e.g., DON-000001"
+                                className="font-mono"
+                                disabled={isReadOnly || scanning}
+                              />
+                              <Button
+                                type="button"
+                                variant={scanning ? "destructive" : "outline"}
+                                onClick={() => {
+                                  if (!scanning) {
+                                    setScanning(true);
+                                    toast.info("Ready to scan. Point camera at barcode...", {autoClose: 3000,});
+                                  } else setScanning(false);
+                                }}
+                                className="gap-2"
+                                disabled={isSubmitting}
+                              >
+                                {scanning ? (
+                                  <>
+                                    <div className="relative">
+                                      <Camera className="h-4 w-4 animate-pulse" />
+                                      <div className="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-75" />
+                                    </div>
+                                    <span className="relative">
+                                      Scanning...
+                                      <span className="absolute -top-1 -right-2 h-2 w-2 bg-red-500 rounded-full animate-pulse" />
+                                    </span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Scan className="h-4 w-4" />
+                                    <span>Scan Barcode</span>
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          )}
+
+                          {scanning && (
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+                              onClick={() => setScanning(false)}
+                            >
+                              <div className="relative" onClick={(e) => e.stopPropagation()}>
+                                <div className="relative w-64 h-64 md:w-80 md:h-80">
+                                  <div className="absolute inset-0 border-4 border-primary/20 rounded-2xl" />
+                                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent animate-[scan_2s_linear_infinite]" />
+                                  <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-primary" />
+                                  <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-primary" />
+                                  <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-primary" />
+                                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-primary" />
+                                
+                                  <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="relative">
+                                      <div className="w-32 h-32 border-2 border-primary/40 rounded-full animate-pulse" />
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <div className="w-16 h-16 bg-primary/20 rounded-full animate-ping" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="absolute -bottom-16 left-0 right-0 text-center">
+                                    <motion.div
+                                      animate={{ y: [0, -5, 0] }}
+                                      transition={{ duration: 1.5, repeat: Infinity }}
+                                      className="space-y-2"
+                                    >
+                                      <div className="flex items-center justify-center gap-2">
+                                        <Camera className="h-5 w-5 text-primary animate-pulse" />
+                                        <h3 className="text-xl font-display font-semibold text-white">
+                                          Scanning...
+                                        </h3>
+                                      </div>
+                                      <p className="text-sm text-primary/80">
+                                        Point camera at barcode
+                                      </p>
+                                      <div className="flex items-center justify-center gap-1.5 text-xs text-white/60">
+                                        <div className="h-1.5 w-1.5 bg-primary rounded-full animate-pulse" />
+                                        <div className="h-1.5 w-1.5 bg-primary rounded-full animate-pulse delay-150" />
+                                        <div className="h-1.5 w-1.5 bg-primary rounded-full animate-pulse delay-300" />
+                                        <span className="ml-2">Looking for barcode</span>
+                                      </div>
+                                    </motion.div>
+                                  </div>
+                                </div>
+                                
+                                {/* Instructions Panel */}
+                                <motion.div
+                                  initial={{ y: 20, opacity: 0 }}
+                                  animate={{ y: 0, opacity: 1 }}
+                                  transition={{ delay: 0.3 }}
+                                  className="mt-12 bg-black/40 backdrop-blur-md rounded-xl p-6 max-w-md mx-auto border border-white/10"
+                                >
+                                  <h4 className="font-display font-medium text-white mb-3 flex items-center gap-2">
+                                    <Info className="h-4 w-4 text-primary" />
+                                    Scanning Tips
+                                  </h4>
+                                  <ul className="space-y-2 text-sm text-white/70">
+                                    <li className="flex items-start gap-2">
+                                      <div className="h-1.5 w-1.5 bg-primary rounded-full mt-1.5" />
+                                      Ensure good lighting on the barcode
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <div className="h-1.5 w-1.5 bg-primary rounded-full mt-1.5" />
+                                      Hold camera steady for 2-3 seconds
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <div className="h-1.5 w-1.5 bg-primary rounded-full mt-1.5" />
+                                      Keep barcode within the scanning frame
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                      <div className="h-1.5 w-1.5 bg-primary rounded-full mt-1.5" />
+                                      Scan will auto-populate SKU field
+                                    </li>
+                                  </ul>
+                                  
+                                  <div className="mt-4 pt-4 border-t border-white/10">
+                                    <Button
+                                      onClick={() => setScanning(false)}
+                                      variant="destructive"
+                                      size="sm"
+                                      className="w-full gap-2"
+                                    >
+                                      <X className="h-4 w-4" />
+                                      Stop Scanning
+                                    </Button>
+                                  </div>
+                                </motion.div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="price" className="flex items-center gap-2">
+                            <DollarSign className="h-4 w-4" />
+                            Base Price *
+                          </Label>
+                          <Input
+                            id="price"
+                            type="number"
+                            value={formData.price}
+                            onChange={(e) => handleInputChange('price', e.target.value)}
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                            disabled={isReadOnly}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="originalPrice" className="flex items-center gap-2">
+                            <Tag className="h-4 w-4" />
+                            Original Price
+                          </Label>
+                          <Input
+                            id="originalPrice"
+                            type="number"
+                            value={formData.originalPrice}
+                            onChange={(e) => handleInputChange('originalPrice', e.target.value)}
+                            placeholder="0.00"
+                            min="0"
+                            step="0.01"
+                            disabled={isReadOnly}
+                          />
+                        </div>
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Trophy className="h-4 w-4 text-amber-500" />
+                            <div>
+                              <Label htmlFor="bestSeller">Best Seller</Label>
+                              <p className="text-sm text-muted-foreground">
+                                Mark this product as a best seller
+                              </p>
+                            </div>
+                          </div>
+                          <Switch
+                            id="bestSeller"
+                            checked={formData.isBestSeller}
+                            onCheckedChange={handleBestSellerToggle}
+                            disabled={isReadOnly}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-blue-500" />
+                            <div>
+                              <Label htmlFor="newProduct">New Arrival</Label>
+                              <p className="text-sm text-muted-foreground">
+                                Mark this product as new
+                              </p>
+                            </div>
+                          </div>
+                          <Switch
+                            id="newProduct"
+                            checked={formData.isNew}
+                            onCheckedChange={handleNewToggle}
+                            disabled={isReadOnly}
+                          />
                         </div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {currentStep === 1 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card>
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
+                    <CardTitle className="flex items-center gap-2">
+                      <Palette className="h-5 w-5 text-primary" />
+                      Product Variants
+                    </CardTitle>
+                    <CardDescription>
+                      Add variants like Length, Color, Size, etc. with optional price adjustments
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <ProductVariantsManager 
+                      variants={productVariants}
+                      onVariantsChange={setProductVariants}
+                      basePrice={formData.price} // Pass base price here
+                      isReadOnly={isReadOnly}
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {currentStep === 2 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card>
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
+                    <CardTitle className="flex items-center gap-2">
+                      <CheckCircle className="h-5 w-5 text-primary" />
+                      Product Features
+                    </CardTitle>
+                    <CardDescription>
+                      Add key features of your product
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <ProductFeaturesManager 
+                      features={productFeatures}
+                      onFeaturesChange={setProductFeatures}
+                      isReadOnly={isReadOnly}
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {currentStep === 3 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card>
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
+                    <CardTitle className="flex items-center gap-2">
+                      <Camera className="h-5 w-5 text-primary" />
+                      Product Images
+                    </CardTitle>
+                    <CardDescription>
+                      Upload high-quality images to showcase your product
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <ImageUploadGallery 
+                      images={productImages}
+                      onImagesChange={setProductImages}
+                      maxImages={5}
+                      isEditMode={isEditMode}
+                      onImageDelete={handleDeleteImage}
+                    />
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {currentStep === 4 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card>
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
+                    <CardTitle className="flex items-center gap-2">
+                      <ShoppingCart className="h-5 w-5 text-primary" />
+                      Inventory Management
+                    </CardTitle>
+                    <CardDescription>
+                      Configure stock levels and alerts
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 pt-6">
+                    <div className="space-y-4">
+                      <Separator />
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="stockQuantity">Current Stock *</Label>
+                          <Input
+                            id="stockQuantity"
+                            type="number"
+                            value={formData.stockQuantity}
+                            onChange={(e) => handleInputChange('stockQuantity', e.target.value)}
+                            placeholder="e.g., 100"
+                            min="0"
+                            disabled={isReadOnly}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="lowStockAlert" className="flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-amber-500" />
+                            Low Stock Alert
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <Info className="h-3 w-3 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="max-w-xs">
+                                    Get notified when stock falls below this level. Helps prevent stockouts.
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </Label>
+                          <Input
+                            id="lowStockAlert"
+                            type="number"
+                            value={formData.lowStockAlert}
+                            onChange={(e) => handleInputChange('lowStockAlert', e.target.value)}
+                            placeholder="e.g., 10"
+                            min="0"
+                            disabled={isReadOnly}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Alert when stock ≤ {formData.lowStockAlert || 10}
+                          </p>
+                        </div>
+                      </div>
+
+                      {formData.stockQuantity && (
+                        <div className="space-y-3 p-4 rounded-lg border bg-gradient-to-r from-background to-primary/5">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-sm font-medium">Stock Status</Label>
+                            <Badge 
+                              variant={isLowStock ? "destructive" : "default"}
+                              className="gap-1"
+                            >
+                              {isLowStock ? (
+                                <>
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Low Stock
+                                </>
+                              ) : (
+                                "In Stock"
+                              )}
+                            </Badge>
+                          </div>
+                          
+                          <Progress 
+                            value={stockPercentage} 
+                            className={cn(
+                              "h-2",
+                              isLowStock ? "bg-destructive/20" : "bg-primary/20"
+                            )}
+                          />
+                          
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="text-muted-foreground">
+                              Current: {stockQuantity} units
+                            </div>
+                            <div className={cn(
+                              "font-medium",
+                              isLowStock ? "text-destructive" : "text-primary"
+                            )}>
+                              Alert at: {lowStockThreshold} units
+                            </div>
+                          </div>
+                          
+                          {isLowStock && (
+                            <div className="flex items-center gap-2 text-sm text-destructive mt-2">
+                              <AlertTriangle className="h-4 w-4" />
+                              <span>Stock is running low! Consider restocking soon.</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <Separator />
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="status">Product Status</Label>
+                          <p className="text-sm text-muted-foreground">
+                            {formData.inStock ? "Product is visible to customers" : "Product is hidden from customers"}
+                          </p>
+                        </div>
+                        <Switch
+                          id="status"
+                          checked={formData.inStock}
+                          onCheckedChange={handleStatusToggle}
+                          disabled={isReadOnly}
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {currentStep === 5 && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card>
+                  <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/0">
+                    <CardTitle className="flex items-center gap-2">
+                      <Package2 className="h-5 w-5 text-primary" />
+                      Shipping & Dimensions
+                    </CardTitle>
+                    <CardDescription>
+                      Product specifications for shipping calculations
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 pt-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="weight" className="flex items-center gap-2">
+                          <Scale className="h-4 w-4" />
+                          Weight (kg) *
+                        </Label>
+                        <div className="flex gap-2">
+                          <Input
+                            id="weight"
+                            type="number"
+                            value={formData.weight}
+                            onChange={(e) => handleInputChange('weight', e.target.value)}
+                            placeholder="e.g., 0.2"
+                            min="0"
+                            step="0.001"
+                            disabled={isReadOnly}
+                          />
+                          <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
+                            kg
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Enter weight in kilograms (1 kg = 1000 grams)
+                        </p>
+                      </div>
+
+                      <Separator />
+
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Ruler className="h-4 w-4 text-primary" />
+                          <h4 className="font-medium">Dimensions (cm)</h4>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="item_height">Height</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                id="item_height"
+                                type="number"
+                                value={formData.item_height}
+                                onChange={(e) => handleInputChange('item_height', e.target.value)}
+                                placeholder="e.g., 24"
+                                min="0"
+                                step="0.1"
+                                disabled={isReadOnly}
+                              />
+                              <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
+                                cm
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="item_width">Width</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                id="item_width"
+                                type="number"
+                                value={formData.item_width}
+                                onChange={(e) => handleInputChange('item_width', e.target.value)}
+                                placeholder="e.g., 8"
+                                min="0"
+                                step="0.1"
+                                disabled={isReadOnly}
+                              />
+                              <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
+                                cm
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="item_depth">Depth</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                id="item_depth"
+                                type="number"
+                                value={formData.item_depth}
+                                onChange={(e) => handleInputChange('item_depth', e.target.value)}
+                                placeholder="e.g., 2"
+                                min="0"
+                                step="0.1"
+                                disabled={isReadOnly}
+                              />
+                              <div className="flex items-center px-3 border rounded-lg bg-muted text-sm">
+                                cm
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-lg border bg-gradient-to-r from-background to-primary/5">
+                          <h4 className="font-medium mb-2">Dimension Summary</h4>
+                          <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Total Dimensions:</span>
+                              <span className="font-medium">
+                                {formData.item_height || "?"} × {formData.item_width || "?"} × {formData.item_depth || "?"} cm
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Weight:</span>
+                              <span className="font-medium">{formData.weight || "?"} kg</span>
+                            </div>
+                            {formData.item_height && formData.item_width && formData.item_depth && (
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Volume:</span>
+                                <span className="font-medium">
+                                  {(parseFloat(formData.item_height) * parseFloat(formData.item_width) * parseFloat(formData.item_depth)).toFixed(2)} cm³
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-lg border bg-gradient-to-r from-blue-50 to-blue-100">
+                        <div className="flex items-start gap-3">
+                          <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium text-blue-800">Shipping Calculation Info</p>
+                            <p className="text-xs text-blue-700 mt-1">
+                              These dimensions and weight are used to calculate shipping costs. 
+                              Accurate measurements ensure correct shipping rates for customers.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {!isViewMode && (
+              <div className="flex items-center justify-between pt-4">
+                <Button
+                  variant="outline"
+                  onClick={handlePrev}
+                  disabled={currentStep === 0}
+                  className="gap-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                
+                <div className="text-sm text-muted-foreground">
+                  Step {currentStep + 1} of {formSteps.length}
+                </div>
+                
+                <Button
+                  onClick={currentStep === formSteps.length - 1 ? handleSubmit : handleNext}
+                  disabled={isSubmitting}
+                  className="gap-2"
+                >
+                  {currentStep === formSteps.length - 1 ? (
+                    isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {isEditMode ? "Updating..." : "Creating..."}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4" />
+                        {isEditMode ? "Update Product" : "Create Product"}
+                      </>
+                    )
+                  ) : (
+                    <>
+                      Next
+                      <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-primary" />
+                  Product Preview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-primary/0 border">
+                  {productImages.filter(img => !img.isRemoved).length > 0 ? (
+                    <img
+                      src={resolveSrc(productImages.filter(img => !img.isRemoved)[0]?.image)}
+                      alt="Product preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/placeholder-product.jpg";
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center p-6">
+                      <Package className="h-12 w-12 text-primary/30 mb-3" />
+                      <p className="text-sm text-muted-foreground text-center">
+                        No preview available
+                      </p>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="space-y-3">
+                  <div>
+                    <h3 className="font-semibold truncate">{formData.name || "Product Name"}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {formData.description || "Product description will appear here"}
+                    </p>
                   </div>
                   
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Status:</span>
-                    <Badge variant={formData.inStock ? "default" : "secondary"}>
-                      {formData.inStock ? "In Stock" : "Out of Stock"}
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {formData.isBestSeller && (
-                      <Badge variant="default" className="bg-amber-500 hover:bg-amber-600 gap-1">
-                        <Trophy className="h-3 w-3" />
-                        Best Seller
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Category:</span>
+                      <Badge variant="outline">
+                        {availableCategories.find(cat => cat.id === formData.category_id)?.name || "Uncategorized"}
                       </Badge>
-                    )}
-                    {formData.isNew && (
-                      <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 gap-1">
-                        <Sparkles className="h-3 w-3" />
-                        New
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Price:</span>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1">
+                          <span className="font-semibold text-lg">
+                            {format_currency(previewPrice)}
+                          </span>
+                          {previewPrice !== parseFloat(formData.price || "0") && (
+                            <Badge variant="outline" className="text-xs h-5">
+                              {previewPrice > parseFloat(formData.price || "0") ? "+" : ""}
+                              {format_currency(Math.abs(previewPrice - parseFloat(formData.price || "0")))}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="space-y-1">
+                          {formData.originalPrice && (
+                            <span className="text-sm text-muted-foreground line-through">
+                              {format_currency(parseFloat(formData.originalPrice))}
+                            </span>
+                          )}
+                          <div className="text-xs text-muted-foreground">
+                            Base: {formData.price ? format_currency(parseFloat(formData.price)) : "0.00"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Status:</span>
+                      <Badge variant={formData.inStock ? "default" : "secondary"}>
+                        {formData.inStock ? "In Stock" : "Out of Stock"}
                       </Badge>
-                    )}
-                  </div>
+                    </div>
 
-                  {productVariants.filter(v => !v.isRemoved).length > 0 && (
-                    <div className="pt-2 border-t">
-                      <h4 className="text-sm font-medium mb-2">Available Variants:</h4>
-                      <div className="space-y-2">
-                        {productVariants
-                          .filter(v => !v.isRemoved)
-                          .slice(0, 2)
-                          .map((variant) => {
-                            const activeOptions = variant.options.filter(opt => !opt.isRemoved);
-                            const optionsWithPrice = activeOptions
-                              .slice(0, 2)
-                              .map(opt => {
-                                const modifier = parseFloat(opt.price_modifier || "0");
-                                const sign = modifier > 0 ? "+" : modifier < 0 ? "-" : "";
-                                const priceText = modifier !== 0 ? ` (${sign}${format_currency(Math.abs(modifier))})` : "";
-                                return `${opt.value}${priceText}`;
-                              })
-                              .join(', ');
-                            
-                            return (
-                              <div key={`${variant.id}-${gen_random_string()}`} className="text-sm">
-                                <span className="text-muted-foreground">{variant.type}: </span>
-                                <span className="font-medium">
-                                  {optionsWithPrice}
-                                </span>
-                                {activeOptions.length > 2 && (
-                                  <span className="text-muted-foreground text-xs">
-                                    {' '}+{activeOptions.length - 2} more
+                    <div className="flex items-center gap-2">
+                      {formData.isBestSeller && (
+                        <Badge variant="default" className="bg-amber-500 hover:bg-amber-600 gap-1">
+                          <Trophy className="h-3 w-3" />
+                          Best Seller
+                        </Badge>
+                      )}
+                      {formData.isNew && (
+                        <Badge variant="default" className="bg-blue-500 hover:bg-blue-600 gap-1">
+                          <Sparkles className="h-3 w-3" />
+                          New
+                        </Badge>
+                      )}
+                    </div>
+
+                    {productVariants.filter(v => !v.isRemoved).length > 0 && (
+                      <div className="pt-2 border-t">
+                        <h4 className="text-sm font-medium mb-2">Available Variants:</h4>
+                        <div className="space-y-2">
+                          {productVariants
+                            .filter(v => !v.isRemoved)
+                            .slice(0, 2)
+                            .map((variant) => {
+                              const activeOptions = variant.options.filter(opt => !opt.isRemoved);
+                              const optionsWithPrice = activeOptions
+                                .slice(0, 2)
+                                .map(opt => {
+                                  const modifier = parseFloat(opt.price_modifier || "0");
+                                  const sign = modifier > 0 ? "+" : modifier < 0 ? "-" : "";
+                                  const priceText = modifier !== 0 ? ` (${sign}${format_currency(Math.abs(modifier))})` : "";
+                                  return `${opt.value}${priceText}`;
+                                })
+                                .join(', ');
+                              
+                              return (
+                                <div key={`${variant.id}-${gen_random_string()}`} className="text-sm">
+                                  <span className="text-muted-foreground">{variant.type}: </span>
+                                  <span className="font-medium">
+                                    {optionsWithPrice}
                                   </span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        {productVariants.filter(v => !v.isRemoved).length > 2 && (
+                                  {activeOptions.length > 2 && (
+                                    <span className="text-muted-foreground text-xs">
+                                      {' '}+{activeOptions.length - 2} more
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          {productVariants.filter(v => !v.isRemoved).length > 2 && (
+                            <p className="text-xs text-muted-foreground">
+                              +{productVariants.filter(v => !v.isRemoved).length - 2} more variant types
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {formData.stockQuantity && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Stock Level:</span>
+                        <Badge 
+                          variant={isLowStock ? "destructive" : "default"}
+                          className="gap-1"
+                        >
+                          {formData.stockQuantity} units
+                        </Badge>
+                      </div>
+                    )}
+
+                    {(formData.weight || formData.item_height || formData.item_width || formData.item_depth) && (
+                      <div className="pt-2 border-t">
+                        <h4 className="text-sm font-medium mb-2">Shipping Info:</h4>
+                        <div className="space-y-1 text-sm">
+                          {formData.weight && (
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Weight:</span>
+                              <span className="font-medium">{formData.weight} kg</span>
+                            </div>
+                          )}
+                          {(formData.item_height || formData.item_width || formData.item_depth) && (
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Dimensions:</span>
+                              <span className="font-medium">
+                                {formData.item_height || "?"} × {formData.item_width || "?"} × {formData.item_depth || "?"} cm
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {productFeatures.filter(f => !f.isRemoved).length > 0 && (
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-medium mb-2">Key Features:</h4>
+                      <div className="space-y-1">
+                        {productFeatures
+                          .filter(f => !f.isRemoved)
+                          .slice(0, 3)
+                          .map((feature, index) => (
+                            <div key={`${index}-${gen_random_string()}`} className="flex items-start gap-2 text-sm">
+                              <CheckCircle className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
+                              <span className="text-foreground">{feature.feature}</span>
+                            </div>
+                          ))}
+                        {productFeatures.filter(f => !f.isRemoved).length > 3 && (
                           <p className="text-xs text-muted-foreground">
-                            +{productVariants.filter(v => !v.isRemoved).length - 2} more variant types
+                            +{productFeatures.filter(f => !f.isRemoved).length - 3} more features
                           </p>
                         )}
                       </div>
                     </div>
                   )}
-                  
-                  {formData.stockQuantity && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Stock Level:</span>
-                      <Badge 
-                        variant={isLowStock ? "destructive" : "default"}
-                        className="gap-1"
-                      >
-                        {formData.stockQuantity} units
-                      </Badge>
-                    </div>
-                  )}
-
-                  {(formData.weight || formData.item_height || formData.item_width || formData.item_depth) && (
-                    <div className="pt-2 border-t">
-                      <h4 className="text-sm font-medium mb-2">Shipping Info:</h4>
-                      <div className="space-y-1 text-sm">
-                        {formData.weight && (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Weight:</span>
-                            <span className="font-medium">{formData.weight} kg</span>
-                          </div>
-                        )}
-                        {(formData.item_height || formData.item_width || formData.item_depth) && (
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Dimensions:</span>
-                            <span className="font-medium">
-                              {formData.item_height || "?"} × {formData.item_width || "?"} × {formData.item_depth || "?"} cm
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {productFeatures.filter(f => !f.isRemoved).length > 0 && (
-                  <div className="pt-4 border-t">
-                    <h4 className="text-sm font-medium mb-2">Key Features:</h4>
-                    <div className="space-y-1">
-                      {productFeatures
-                        .filter(f => !f.isRemoved)
-                        .slice(0, 3)
-                        .map((feature, index) => (
-                          <div key={`${index}-${gen_random_string()}`} className="flex items-start gap-2 text-sm">
-                            <CheckCircle className="h-3 w-3 text-primary mt-0.5 flex-shrink-0" />
-                            <span className="text-foreground">{feature.feature}</span>
-                          </div>
-                        ))}
-                      {productFeatures.filter(f => !f.isRemoved).length > 3 && (
-                        <p className="text-xs text-muted-foreground">
-                          +{productFeatures.filter(f => !f.isRemoved).length - 3} more features
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {!isViewMode && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Completion Checklist</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Basic Information</span>
-                  <Badge variant={formData.name && formData.category_id && formData.price ? "default" : "secondary"}>
-                    {formData.name && formData.category_id && formData.price ? "✓" : "—"}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Variants</span>
-                  <Badge variant={productVariants.filter(v => !v.isRemoved).length > 0 ? "default" : "secondary"}>
-                    {productVariants.filter(v => !v.isRemoved).length} added
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Features</span>
-                  <Badge variant={productFeatures.filter(f => !f.isRemoved).length > 0 ? "default" : "secondary"}>
-                    {productFeatures.filter(f => !f.isRemoved).length} added
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Images Uploaded</span>
-                  <Badge variant={productImages.filter(img => !img.isRemoved).length > 0 ? "default" : "secondary"}>
-                    {productImages.filter(img => !img.isRemoved).length} / 5
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Stock Information</span>
-                  <Badge variant={formData.stockQuantity ? "default" : "secondary"}>
-                    {formData.stockQuantity ? "✓" : "—"}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Shipping Details</span>
-                  <Badge variant={formData.weight ? "default" : "secondary"}>
-                    {formData.weight ? "✓" : "—"}
-                  </Badge>
                 </div>
               </CardContent>
             </Card>
-          )}
+
+            {!isViewMode && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Completion Checklist</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Basic Information</span>
+                    <Badge variant={formData.name && formData.category_id && formData.price ? "default" : "secondary"}>
+                      {formData.name && formData.category_id && formData.price ? "✓" : "—"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Variants</span>
+                    <Badge variant={productVariants.filter(v => !v.isRemoved).length > 0 ? "default" : "secondary"}>
+                      {productVariants.filter(v => !v.isRemoved).length} added
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Features</span>
+                    <Badge variant={productFeatures.filter(f => !f.isRemoved).length > 0 ? "default" : "secondary"}>
+                      {productFeatures.filter(f => !f.isRemoved).length} added
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Images Uploaded</span>
+                    <Badge variant={productImages.filter(img => !img.isRemoved).length > 0 ? "default" : "secondary"}>
+                      {productImages.filter(img => !img.isRemoved).length} / 5
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Stock Information</span>
+                    <Badge variant={formData.stockQuantity ? "default" : "secondary"}>
+                      {formData.stockQuantity ? "✓" : "—"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Shipping Details</span>
+                    <Badge variant={formData.weight ? "default" : "secondary"}>
+                      {formData.weight ? "✓" : "—"}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

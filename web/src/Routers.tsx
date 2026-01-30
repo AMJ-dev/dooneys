@@ -61,6 +61,7 @@ const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
 const NotFound = lazy(() => import("@/pages/error/NotFound"));
 const UnAuthorized = lazy(() => import("@/pages/error/UnAuthorized"));
 const AccountSuspended = lazy(() => import("@/pages/error/AccountSuspended"));
+const TestPage = lazy(()=>import("@/pages/public/Test"))
 
 
 import { usePageTracking } from "@/lib/usePageTracking";
@@ -184,6 +185,7 @@ export default function AnimatedRoutes() {
             <Route path="/logout" element={<Logout />} />
             <Route path="/suspended" element={<AccountSuspended />} />
             <Route path="/unauthorized" element={<UnAuthorized />} />
+            <Route path="/test-page" element={<TestPage />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
