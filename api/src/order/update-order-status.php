@@ -80,6 +80,8 @@
         if (!$order) {
             throw new Exception("Order not found");
         }
+        if($_POST['status'] == "shipped") require_once __DIR__."/create-shipment.php";
+        
 
         $stmt = $conn->prepare("SELECT order_updates, sms_alerts FROM user_notifications WHERE user_id = :user_id");
         $stmt->execute([":user_id" => $order->user_id]);

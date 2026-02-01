@@ -1,5 +1,5 @@
 <?php
-    require dirname(__DIR__, 2) . "/vendor/autoload.php";
+    require_once dirname(__DIR__, 2) . "/vendor/autoload.php";
     require_once dirname(__DIR__, 2) . "/include/verify-user.php";
 
     $get_settings = $conn->prepare("SELECT stripe_secret_key FROM store_settings LIMIT 1");
