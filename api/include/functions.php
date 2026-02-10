@@ -831,7 +831,7 @@
 
             default:
                 throw new Exception("Unsupported carrier");
-        }
+        } 
     }
 
     function canada_post_create_order(array $order){

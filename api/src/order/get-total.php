@@ -204,9 +204,6 @@
                 $stmt->execute([(int)$item['id']]);
                 $product = $stmt->fetch(PDO::FETCH_OBJ);
 
-                // print_r($product);
-                // print_r($item);
-                // exit;
                 if (!$product) {
                     continue;
                 }

@@ -396,7 +396,7 @@ CREATE TABLE `order_status_history` (
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`),
   CONSTRAINT `fk_order_status_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `order_status_history` VALUES
@@ -457,7 +457,11 @@ INSERT INTO `order_status_history` VALUES
 (55,69,'delivered','admin','POS Order Created','2026-01-30 15:21:39'),
 (56,70,'delivered','admin','POS Order Created','2026-01-30 15:39:15'),
 (57,71,'delivered','admin','POS Order Created','2026-01-30 15:44:07'),
-(58,72,'delivered','admin','POS Order Created','2026-01-30 15:45:49');
+(58,72,'delivered','admin','POS Order Created','2026-01-30 15:45:49'),
+(61,46,'packaging','admin','kjnk','2026-02-01 14:33:42'),
+(66,46,'shipped','admin',NULL,'2026-02-01 14:37:45'),
+(67,44,'shipped','admin',NULL,'2026-02-01 14:40:24'),
+(77,44,'shipped','admin',NULL,'2026-02-01 14:57:05');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -535,9 +539,9 @@ INSERT INTO `orders` VALUES
 (40,'DN-260114084136-BA7EA5','checkout',NULL,1,NULL,2,'sam','daniel','+1254875555','sam@gmail.com','pickup','cash','Mastercard','1111',NULL,NULL,147.00,0.00,26.46,0.00,NULL,173.46,'CAD','pending','processing','2026-01-14 15:41:36','2026-01-16 14:10:51',NULL,NULL,NULL,NULL),
 (42,'DN-260114092019-7D0A5B','checkout',NULL,1,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','card','Mastercard','1111',NULL,NULL,23.00,0.00,4.14,0.00,NULL,27.14,'CAD','pending','processing','2026-01-14 16:20:19','2026-01-16 14:10:51',NULL,NULL,NULL,NULL),
 (43,'DN-260114092132-7EA290','checkout',NULL,1,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','card','Mastercard','1111',NULL,NULL,23.00,0.00,4.14,0.00,NULL,27.14,'CAD','pending','processing','2026-01-14 16:21:32','2026-01-16 14:10:51',NULL,NULL,NULL,NULL),
-(44,'DN-260114093601-DDF5C5','checkout',NULL,1,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','card','Mastercard','1111',NULL,NULL,23.00,0.00,4.14,0.00,NULL,27.14,'CAD','pending','processing','2026-01-14 16:36:01','2026-01-16 14:10:51',NULL,NULL,NULL,NULL),
+(44,'DN-260114093601-DDF5C5','checkout',NULL,1,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','card','Mastercard','1111','Canada Post',NULL,23.00,0.00,4.14,0.00,NULL,27.14,'CAD','paid','shipped','2026-01-14 16:36:01','2026-02-01 14:57:05','CPTEST38047645',NULL,'2026-02-01 15:57:05',NULL),
 (45,'DN-260114102123-C0F6EE','checkout',NULL,1,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','cash','Mastercard','1111',NULL,NULL,23.00,0.00,4.14,0.00,NULL,27.14,'CAD','paid','shipped','2026-01-14 17:21:23','2026-01-16 14:10:51',NULL,NULL,NULL,NULL),
-(46,'DN-260114115440-20243A','checkout',NULL,1,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','card','Mastercard','1111',NULL,NULL,23.00,12.99,4.14,0.00,NULL,40.13,'CAD','paid','processing','2026-01-14 18:54:40','2026-01-16 14:10:51',NULL,NULL,NULL,NULL),
+(46,'DN-260114115440-20243A','checkout',NULL,1,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','card','Mastercard','1111',NULL,NULL,23.00,12.99,4.14,0.00,NULL,40.13,'CAD','paid','packaging','2026-01-14 18:54:40','2026-02-01 14:40:46',NULL,NULL,NULL,NULL),
 (47,'DN-260114115621-D8A972','checkout',NULL,1,NULL,2,'sam','daniel','+1254875555','sam@gmail.com','pickup','card','Mastercard','1111',NULL,NULL,350.00,0.00,63.00,0.00,NULL,413.00,'CAD','paid','shipped','2026-01-14 18:56:21','2026-01-16 14:51:52',NULL,NULL,NULL,NULL),
 (48,'DN-260114121101-EA0DDE','checkout',NULL,2,NULL,NULL,'sam','daniel','+1254875555','sam@gmail.com','shipping','card','Mastercard','1111',NULL,NULL,350.00,12.99,63.00,0.00,NULL,425.99,'CAD','paid','shipped','2026-01-14 19:11:01','2026-01-18 19:58:13',NULL,NULL,NULL,NULL),
 (49,'DN-260119021155-86C9E3','pos',1,0,NULL,NULL,NULL,NULL,NULL,NULL,'pickup','cash',NULL,NULL,NULL,NULL,281.00,0.00,5058.00,0.00,NULL,5339.00,'CAD','paid','delivered','2026-01-19 21:11:55','2026-01-19 21:11:55',NULL,NULL,NULL,NULL),
@@ -633,7 +637,7 @@ CREATE TABLE `page_views` (
   KEY `session_id` (`session_id`),
   KEY `created_at` (`created_at`),
   CONSTRAINT `page_views_ibfk_1` FOREIGN KEY (`session_id`) REFERENCES `sessions` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1424 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1442 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `page_views` VALUES
@@ -2059,7 +2063,25 @@ INSERT INTO `page_views` VALUES
 (1420,1439,'/admin/pos','null','2026-01-30 15:26:33'),
 (1421,1440,'/admin/pos','null','2026-01-30 15:36:51'),
 (1422,1441,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:39:02'),
-(1423,1442,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:45:12');
+(1423,1442,'/admin/pos','http://localhost:8080/admin/pos','2026-01-30 15:45:12'),
+(1424,1443,'/','null','2026-02-01 14:32:26'),
+(1425,1444,'/admin','null','2026-02-01 14:32:31'),
+(1426,1445,'/admin/dashboard','null','2026-02-01 14:32:31'),
+(1427,1446,'/admin/orders','null','2026-02-01 14:32:40'),
+(1428,1447,'/admin/order/46/guest-customer','null','2026-02-01 14:33:00'),
+(1429,1448,'/admin/orders','null','2026-02-01 14:37:50'),
+(1430,1449,'/admin/order/44/guest-customer','null','2026-02-01 14:38:02'),
+(1431,1450,'/admin/orders','null','2026-02-01 14:38:54'),
+(1432,1451,'/admin/order/43/guest-customer','null','2026-02-01 14:39:00'),
+(1433,1452,'/admin/orders','null','2026-02-01 14:39:05'),
+(1434,1453,'/admin/order/23/guest-customer','null','2026-02-01 14:39:13'),
+(1435,1454,'/admin/order/44/guest-customer','null','2026-02-01 14:40:15'),
+(1436,1455,'/admin/order/44/guest-customer','null','2026-02-01 14:41:05'),
+(1437,1456,'/admin/order/44/guest-customer','null','2026-02-01 14:46:33'),
+(1438,1457,'/admin/order/44/guest-customer','null','2026-02-01 14:47:21'),
+(1439,1458,'/admin/order/44/guest-customer','null','2026-02-01 14:48:20'),
+(1440,1459,'/admin/order/44/guest-customer','null','2026-02-01 14:54:15'),
+(1441,1460,'/admin/order/44/guest-customer','null','2026-02-01 14:57:00');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -2504,7 +2526,7 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`id`),
   KEY `visitor_id` (`visitor_id`),
   CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`visitor_id`) REFERENCES `visitors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1443 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1461 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `sessions` VALUES
@@ -3949,7 +3971,25 @@ INSERT INTO `sessions` VALUES
 (1439,1439,'2026-01-30 15:26:33','2026-01-30 15:26:33'),
 (1440,1440,'2026-01-30 15:36:51','2026-01-30 15:36:51'),
 (1441,1441,'2026-01-30 15:39:02','2026-01-30 15:39:02'),
-(1442,1442,'2026-01-30 15:45:12','2026-01-30 15:45:12');
+(1442,1442,'2026-01-30 15:45:12','2026-01-30 15:45:12'),
+(1443,1443,'2026-02-01 14:32:26','2026-02-01 14:32:26'),
+(1444,1444,'2026-02-01 14:32:31','2026-02-01 14:32:31'),
+(1445,1445,'2026-02-01 14:32:31','2026-02-01 14:32:31'),
+(1446,1446,'2026-02-01 14:32:40','2026-02-01 14:32:40'),
+(1447,1447,'2026-02-01 14:33:00','2026-02-01 14:33:00'),
+(1448,1448,'2026-02-01 14:37:50','2026-02-01 14:37:50'),
+(1449,1449,'2026-02-01 14:38:02','2026-02-01 14:38:02'),
+(1450,1450,'2026-02-01 14:38:54','2026-02-01 14:38:54'),
+(1451,1451,'2026-02-01 14:39:00','2026-02-01 14:39:00'),
+(1452,1452,'2026-02-01 14:39:05','2026-02-01 14:39:05'),
+(1453,1453,'2026-02-01 14:39:13','2026-02-01 14:39:13'),
+(1454,1454,'2026-02-01 14:40:15','2026-02-01 14:40:15'),
+(1455,1455,'2026-02-01 14:41:05','2026-02-01 14:41:05'),
+(1456,1456,'2026-02-01 14:46:33','2026-02-01 14:46:33'),
+(1457,1457,'2026-02-01 14:47:21','2026-02-01 14:47:21'),
+(1458,1458,'2026-02-01 14:48:20','2026-02-01 14:48:20'),
+(1459,1459,'2026-02-01 14:54:15','2026-02-01 14:54:15'),
+(1460,1460,'2026-02-01 14:57:00','2026-02-01 14:57:00');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -4081,7 +4121,7 @@ CREATE TABLE `visitors` (
   UNIQUE KEY `anon_id` (`anon_id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `visitors_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1443 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1461 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 set autocommit=0;
 INSERT INTO `visitors` VALUES
@@ -5526,7 +5566,25 @@ INSERT INTO `visitors` VALUES
 (1439,'6c45ace4-68da-47cf-ae60-81b6b89d4391',1,'2026-01-30 15:26:33','2026-01-30 15:26:33'),
 (1440,'a92ac08c-8b2d-41d1-8cf3-2a5020f23250',1,'2026-01-30 15:36:51','2026-01-30 15:36:51'),
 (1441,'aab9619f-2ad7-4c0d-b7ed-f6acd0c53585',1,'2026-01-30 15:39:02','2026-01-30 15:39:02'),
-(1442,'b3317f56-4d9b-4e8c-af65-24eadcb7b277',1,'2026-01-30 15:45:12','2026-01-30 15:45:12');
+(1442,'b3317f56-4d9b-4e8c-af65-24eadcb7b277',1,'2026-01-30 15:45:12','2026-01-30 15:45:12'),
+(1443,'bf189bc4-fa99-40fb-b517-6aecf9101fe5',1,'2026-02-01 14:32:26','2026-02-01 14:32:26'),
+(1444,'a7139825-7664-4737-ba5e-4e48a0ade1a5',1,'2026-02-01 14:32:31','2026-02-01 14:32:31'),
+(1445,'4e0eeb13-510d-41f4-8bc5-023f9f33ca02',1,'2026-02-01 14:32:31','2026-02-01 14:32:31'),
+(1446,'fac52fcc-eeb2-4b37-b863-32a84cf56204',1,'2026-02-01 14:32:40','2026-02-01 14:32:40'),
+(1447,'212c9530-dc10-4bfa-9ee2-51db3d7d25b0',1,'2026-02-01 14:33:00','2026-02-01 14:33:00'),
+(1448,'cbab3128-9874-4faf-9606-265a36f714c6',1,'2026-02-01 14:37:50','2026-02-01 14:37:50'),
+(1449,'ad5e6a3f-2031-4604-8ff4-c833ad1864a8',1,'2026-02-01 14:38:02','2026-02-01 14:38:02'),
+(1450,'00f02dfc-3dc6-452d-9f4d-54175929ab4d',1,'2026-02-01 14:38:54','2026-02-01 14:38:54'),
+(1451,'1f22c0cd-066b-40a8-a22e-9da23b65bc65',1,'2026-02-01 14:39:00','2026-02-01 14:39:00'),
+(1452,'bbb3d32d-d697-40da-9e6e-0ce3e3156037',1,'2026-02-01 14:39:05','2026-02-01 14:39:05'),
+(1453,'23139573-1951-4a5e-9dab-8f135925aab9',1,'2026-02-01 14:39:13','2026-02-01 14:39:13'),
+(1454,'3700de8e-1743-4dcb-b2cf-edaa5f6fbba2',1,'2026-02-01 14:40:15','2026-02-01 14:40:15'),
+(1455,'cac80dbb-973c-436a-9c7c-23bf9b33825a',1,'2026-02-01 14:41:05','2026-02-01 14:41:05'),
+(1456,'2bf56219-74f3-4667-9c03-befd5c696417',1,'2026-02-01 14:46:33','2026-02-01 14:46:33'),
+(1457,'6d9a4add-3be6-4c2e-bd4b-d7fa6613f7b8',1,'2026-02-01 14:47:21','2026-02-01 14:47:21'),
+(1458,'a9ad2617-4097-46a6-b638-633f0dac7f85',1,'2026-02-01 14:48:20','2026-02-01 14:48:20'),
+(1459,'ee7530ae-fdae-4456-a9b1-e791fcfa557a',1,'2026-02-01 14:54:15','2026-02-01 14:54:15'),
+(1460,'d69eba26-ba94-45da-bb0b-418f4f995218',1,'2026-02-01 14:57:00','2026-02-01 14:57:00');
 commit;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
