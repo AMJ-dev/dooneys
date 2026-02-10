@@ -6,6 +6,7 @@ import logo from "@/assets/logo.png";
 import { comp_name, comp_address, comp_whatsapp, comp_phone } from "@/lib/constants";
 
 const Footer = () => {
+
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
@@ -19,12 +20,11 @@ const Footer = () => {
     ],
     quickLinks: [
       { name: "Shop All", path: "/shop" },
-      { name: "New Arrivals", path: "/shop?sort=newest" }, // Changed from /deals
-      { name: "Best Sellers", path: "/shop?sort=bestselling" }, // Changed from /deals
+      { name: "New Arrivals", path: "/deals" }, // Changed from /deals
       { name: "Book Appointment", path: "/contact" },
     ],
     support: [
-      { name: "Shipping & Returns", path: "/shipping" },
+      { name: "Admin Login", path: "/admin-login" },
       { name: "Privacy Policy", path: "/privacy" },
       { name: "Terms & Conditions", path: "/terms" },
     ],
@@ -61,8 +61,7 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Shop categories */}
-            <div>
+            {/* <div>
               <h4 className="font-display text-lg mb-4">Shop Categories</h4>
               <ul className="space-y-2">
                 {footerLinks.shop.map((link) => (
@@ -76,9 +75,8 @@ const Footer = () => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
 
-            {/* Quick links */}
             <div>
               <h4 className="font-display text-lg mb-4">Quick Links</h4>
               <ul className="space-y-2">
@@ -166,6 +164,9 @@ const Footer = () => {
               </Link>
               <Link to="/terms" className="hover:text-primary transition-colors">
                 Terms
+              </Link>
+              <Link to="/admin-login" className="hover:text-primary transition-colors">
+                Admin Login
               </Link>
             </div>
           </div>

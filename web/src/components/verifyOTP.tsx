@@ -38,7 +38,7 @@ import LoadingScreen from "@/components/ui/loading-screen";
 import { cn } from "@/lib/utils";
 
 const OTP_LENGTH = 6;
-type Role = "user" | "admin";
+type Role = "account" | "admin";
 
 const VerifyOTP = ({role}: {role: Role}) => {
   const [searchParams] = useSearchParams();
