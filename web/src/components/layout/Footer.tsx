@@ -1,26 +1,37 @@
+import {useState, useEffect} from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Instagram, Facebook, Phone, MapPin, Mail } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/motion";
 import logo from "@/assets/logo.png";
 import { comp_name, comp_address, comp_whatsapp, comp_phone } from "@/lib/constants";
+import { http } from "@/lib/httpClient";
+import { ApiResp } from "@/lib/types";
 
 const Footer = () => {
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await http.get("/get-public-categories/");
+        const resp: ApiResp = res.data;
+        if (!resp.error && resp.data && Array.isArray(resp.data)) {
+          setCategories(resp.data);
+        }      
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
-    shop: [
-      { name: "Hair", path: "/shop/hair" },
-      { name: "Wigs", path: "/shop/wigs" },
-      { name: "Braids & Crochet", path: "/shop/braids-crochet" },
-      { name: "Hair Care", path: "/shop/hair-care" },
-      { name: "Skin & Body Care", path: "/shop/skin-body-care" },
-      { name: "Tools & Appliances", path: "/shop/tools-appliances" },
-    ],
     quickLinks: [
       { name: "Shop All", path: "/shop" },
-      { name: "New Arrivals", path: "/deals" }, // Changed from /deals
+      { name: "Deals & New", path: "/deals" }, 
       { name: "Book Appointment", path: "/contact" },
     ],
     support: [
@@ -61,21 +72,21 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* <div>
+            <div>
               <h4 className="font-display text-lg mb-4">Shop Categories</h4>
               <ul className="space-y-2">
-                {footerLinks.shop.map((link) => (
-                  <li key={link.path}>
+                {categories.map((category) => (
+                  <li key={category.id}>
                     <Link
-                      to={link.path}
+                      to={`/category/${category.id}/${category.slug}`}
                       className="text-sm text-secondary-foreground/80 hover:text-primary transition-colors"
                     >
-                      {link.name}
+                      {category.name}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div> */}
+            </div>
 
             <div>
               <h4 className="font-display text-lg mb-4">Quick Links</h4>
