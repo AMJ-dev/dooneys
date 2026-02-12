@@ -51,12 +51,11 @@ const HeroSection = () => {
     setIsAutoPlaying(false);
     if (direction === "next") nextSlide();
     else prevSlide();
-    // Resume auto-play after 10 seconds
     setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+    <section className="relative h-screen max-h-[1080px] min-h-[700px] flex items-center overflow-hidden">
       {/* Background Images with Transition */}
       {slides.map((slide, index) => (
         <motion.div
@@ -74,89 +73,120 @@ const HeroSection = () => {
             animate={{ scale: currentSlide === index ? 1 : 1.1 }}
             transition={{ duration: 6, ease: "easeOut" }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/70 via-foreground/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent" />
         </motion.div>
       ))}
 
       {/* Content */}
-      <div className="container relative z-10 py-20">
-        <div className="max-w-2xl">
+      <div className="container relative z-20 px-4 md:px-6">
+        <div className="max-w-3xl">
           {slides.map((slide, index) => (
             <motion.div
               key={index}
-              className="absolute"
+              className="space-y-6"
               initial={{ opacity: 0, y: 30 }}
               animate={{
                 opacity: currentSlide === index ? 1 : 0,
                 y: currentSlide === index ? 0 : 30,
+                display: currentSlide === index ? "block" : "none"
               }}
               transition={{ duration: 0.6 }}
-              style={{ pointerEvents: currentSlide === index ? "auto" : "none" }}
             >
-              <span className="inline-block px-4 py-1.5 rounded-full bg-primary/20 text-primary-foreground text-sm font-medium mb-6 backdrop-blur-sm border border-primary/30">
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="inline-block px-4 py-2 rounded-full bg-primary/20 text-primary-foreground text-sm font-medium backdrop-blur-sm border border-primary/30"
+              >
                 Welcome to {comp_name}
-              </span>
+              </motion.span>
 
-              <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-card leading-tight mb-6">
+              <motion.h1
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="font-display text-4xl md:text-5xl lg:text-7xl text-white leading-tight md:leading-tight lg:leading-tight font-bold drop-shadow-lg"
+              >
                 {slide.title}
-              </h1>
+              </motion.h1>
 
-              <p className="text-xl md:text-2xl text-card/90 mb-4 font-light">
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-xl md:text-2xl lg:text-3xl text-white/90 mb-4 font-light drop-shadow-md"
+              >
                 {slide.subtitle}
-              </p>
+              </motion.p>
 
-              <p className="text-card/80 text-lg mb-8 max-w-xl">
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="text-white/80 text-lg md:text-xl mb-8 max-w-2xl drop-shadow"
+              >
                 {slide.description}
-              </p>
+              </motion.p>
             </motion.div>
           ))}
 
-          {/* Static CTA Buttons */}
+          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="flex flex-wrap gap-4 mt-[280px] md:mt-[320px]"
+            className="flex flex-col sm:flex-row gap-4 mt-8 md:mt-10"
           >
-            <Button size="lg" className="group" asChild>
+            <Button 
+              size="lg" 
+              className="group bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer" 
+              asChild
+            >
               <Link to="/shop">
                 <ShoppingBag className="h-5 w-5 mr-2" />
                 Shop Now
                 <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="bg-card/10 border-card/30 text-card hover:bg-card hover:text-foreground" asChild>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white hover:text-foreground px-8 py-6 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer" 
+              asChild
+            >
               <Link to="/contact">
                 <Calendar className="h-5 w-5 mr-2" />
-                Book In-Store Appointment
+                Book Appointment
               </Link>
             </Button>
           </motion.div>
         </div>
       </div>
 
-      {/* Navigation Arrows */}
-      <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 flex justify-between z-20 pointer-events-none">
+      {/* Navigation Arrows - Positioned better */}
+      <div className="absolute left-4 md:left-8 right-4 md:right-8 top-1/2 -translate-y-1/2 flex justify-between z-30 pointer-events-none">
         <Button
           variant="secondary"
           size="icon"
-          className="pointer-events-auto shadow-lg bg-background/80 backdrop-blur-sm"
+          className="pointer-events-auto w-12 h-12 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white hover:bg-black/50 hover:scale-110 transition-all duration-300 cursor-pointer"
           onClick={() => handleManualNavigation("prev")}
+          aria-label="Previous slide"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-6 w-6" />
         </Button>
         <Button
           variant="secondary"
           size="icon"
-          className="pointer-events-auto shadow-lg bg-background/80 backdrop-blur-sm"
+          className="pointer-events-auto w-12 h-12 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white hover:bg-black/50 hover:scale-110 transition-all duration-300 cursor-pointer"
           onClick={() => handleManualNavigation("next")}
+          aria-label="Next slide"
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-6 w-6" />
         </Button>
       </div>
 
-      {/* Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+      {/* Slide Indicators - Modern styling */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-30">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -165,31 +195,38 @@ const HeroSection = () => {
               setIsAutoPlaying(false);
               setTimeout(() => setIsAutoPlaying(true), 10000);
             }}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              currentSlide === index
-                ? "bg-primary w-8"
-                : "bg-card/50 hover:bg-card/80"
-            }`}
-          />
+            className={`group relative cursor-pointer py-2 px-1`}
+            aria-label={`Go to slide ${index + 1}`}
+          >
+            <div
+              className={`transition-all duration-500 rounded-full ${
+                currentSlide === index
+                  ? "w-12 h-2 bg-primary"
+                  : "w-3 h-3 bg-white/50 group-hover:bg-white/80 group-hover:scale-110"
+              }`}
+            />
+          </button>
         ))}
       </div>
 
-      {/* Decorative scroll indicator */}
+      {/* Scroll Indicator - Subtle */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="absolute bottom-20 left-1/2 -translate-x-1/2 hidden md:block"
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:flex flex-col items-center gap-2 text-white/60 z-30 pointer-events-none"
+        style={{ bottom: '5rem' }}
       >
+        <span className="text-xs uppercase tracking-wider font-light">Scroll</span>
         <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-          className="w-6 h-10 rounded-full border-2 border-card/50 flex items-start justify-center p-2"
+          animate={{ y: [0, 6, 0] }}
+          transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+          className="w-5 h-8 rounded-full border border-white/30 flex items-start justify-center p-1"
         >
           <motion.div
-            animate={{ height: ["0%", "50%", "0%"] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className="w-1 bg-card/50 rounded-full"
+            animate={{ y: [0, 12, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+            className="w-1 h-1.5 bg-white/60 rounded-full"
           />
         </motion.div>
       </motion.div>

@@ -82,6 +82,33 @@ INSERT INTO `categories` VALUES
 (8,'Kids & Toys','kids-toys','Fun and educational items for the little ones.','uploads/4e4007c3af_2026_01_08_04_47_23_ory_kids.jpg','active','2026-01-07 17:28:30','2026-01-08 02:47:23');
 commit;
 
+CREATE TABLE sub_categories (
+    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    category_id BIGINT(20) UNSIGNED NOT NULL,
+
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL,
+
+    status ENUM('active','inactive') DEFAULT 'active',
+
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (id),
+
+    CONSTRAINT fk_sub_categories_category
+        FOREIGN KEY (category_id)
+        REFERENCES categories(id)
+        ON DELETE CASCADE,
+
+    UNIQUE KEY unique_slug_per_category (category_id, slug),
+
+    KEY idx_category_id (category_id),
+    KEY idx_status (status)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 CREATE TABLE `roles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `slug` varchar(50) NOT NULL,
@@ -189,6 +216,14 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 set autocommit=0;
+
+ALTER TABLE products
+ADD COLUMN sub_category_id BIGINT(20) UNSIGNED NULL AFTER category_id;
+ALTER TABLE products ADD CONSTRAINT fk_products_subcategory FOREIGN KEY (sub_category_id) REFERENCES sub_categories(id) ON DELETE SET NULL;
+ALTER TABLE products
+ADD INDEX idx_products_subcategory (sub_category_id);
+
+
 INSERT INTO `products` VALUES
 (1,'HD Lace Front Wig - Body Wave','Premium HD lace front wig with natural-looking hairline. Perfect for everyday wear or special occasions.',2,225.00,NULL,'DON-953205','active',0,0,1,1,30,10,0.02,21.00,13.00,32.00,'2026-01-08 04:03:43','2026-01-14 17:18:43'),
 (2,'Blonde Ombre Wig - Loose Wave','Stunning blonde ombre wig with gorgeous loose waves. A head-turner for any occasion.',2,125.00,NULL,'DON-258094','active',0,0,1,1,0,100,0.02,21.00,13.00,32.00,'2026-01-08 04:05:32','2026-01-17 06:03:46'),

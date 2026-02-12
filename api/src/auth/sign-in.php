@@ -1,12 +1,13 @@
 <?php
     require_once dirname(__DIR__, 2) . "/include/set-header.php";
 
-    function respond(bool $error, string $message, int $http = 200, array $extra = []) {
+    function respond(bool $error, string $data, int $http = 200, $code = "") {
         http_response_code($http);
         echo json_encode(array_merge([
             "error" => $error,
-            "message" => $message
-        ], $extra));
+            "data" => $data,
+            "code" => $code,
+        ]));
         exit;
     }
 
@@ -28,7 +29,7 @@
             mobile_number,
             password,
             first_name,
-            is_admin,
+            role,
             status
         FROM users
         WHERE email = :email
@@ -50,7 +51,4 @@
         respond(true, "Failed to send OTP. Please try again.");
     }
 
-    respond(false, "OTP sent to your email", 200, [
-        "user_id" => $user->id,
-        "is_admin" => (bool)$user->is_admin
-    ]);
+    respond(false, "OTP sent to your email", 200, $code);

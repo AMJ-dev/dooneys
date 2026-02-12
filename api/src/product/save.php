@@ -9,8 +9,13 @@
 
         $name        = trim($_POST['name'] ?? '');
         $sku         = trim($_POST['sku'] ?? '');
-        $category_id = (int)($_POST['category_id'] ?? 0);
+        $category_id = (int)($_POST['category_id'] ?? 0);        
         $price       = (float)($_POST['price'] ?? 0);
+        $sub_category_id = null;
+        if (isset($_POST['sub_category_id']) && $_POST['sub_category_id'] !== '' && $_POST['sub_category_id'] !== 'null') {
+            $sub_category_id = (int)$_POST['sub_category_id'];
+        }
+
 
         if ($name === '') throw new Exception("Product name is required");
         // if ($sku === '') throw new Exception("SKU is required");
@@ -19,14 +24,14 @@
 
         $stmt = $conn->prepare("
             INSERT INTO products (
-                name, description, category_id,
+                name, description, category_id, sub_category_id,
                 price, original_price, sku,
                 status, in_stock, manage_stock,
                 stock_quantity, low_stock_alert,
                 weight, item_width, item_height, item_depth,
                 is_best_seller, is_new
             ) VALUES (
-                :name, :description, :category_id,
+                :name, :description, :category_id, :sub_category_id,
                 :price, :original_price, :sku,
                 :status, :in_stock, :manage_stock,
                 :stock_quantity, :low_stock_alert,
@@ -39,6 +44,7 @@
             ':name'             => $name,
             ':description'      => $_POST['description'] ?? null,
             ':category_id'      => $category_id,
+            ':sub_category_id'  => $sub_category_id,
             ':price'            => $price,
             ':original_price'   => $_POST['original_price'] ?: null,
             ':sku'              => $sku,

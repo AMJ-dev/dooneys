@@ -9,6 +9,7 @@ import RequireAuth from "@/components/RequireAuth";
 const Index = lazy(() => import("@/pages/public/Index"));
 const Shop = lazy(() => import("@/pages/public/Shop"));
 const Category = lazy(() => import("@/pages/public/Category"));
+const SubCategory = lazy(() => import("@/pages/public/SubCategory"));
 const ProductDetail = lazy(() => import("@/pages/public/ProductDetail"));
 const Deals = lazy(() => import("@/pages/public/Deals"));
 const About = lazy(() => import("@/pages/public/About"));
@@ -109,6 +110,7 @@ export default function AnimatedRoutes() {
             <Route path="/" element={<Index />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/category/:id/:slug" element={<Category />} />
+            <Route path="/subcategory/:id/:slug" element={<SubCategory />} />
             <Route path="/product/:id/:slug" element={<ProductDetail />} />
             <Route path="/deals" element={<Deals />} />
             <Route path="/about" element={<About />} />
