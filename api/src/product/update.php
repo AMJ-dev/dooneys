@@ -8,10 +8,15 @@
         $conn->beginTransaction();
 
         $id = (int)($_POST['id'] ?? 0);
+        $sub_category_id = null;
+        if (isset($_POST['sub_category_id']) && $_POST['sub_category_id'] !== '' && $_POST['sub_category_id'] !== 'null') {
+            $sub_category_id = (int)$_POST['sub_category_id'];
+        }
+        
         if ($id <= 0) throw new Exception("Invalid product ID");
 
         if (trim($_POST['name'] ?? '') === '') throw new Exception("Product name required");
-        // if (trim($_POST['sku'] ?? '') === '') throw new Exception("SKU required");
+        if (trim($_POST['sku'] ?? '') === '') throw new Exception("SKU required");
         if ((float)($_POST['price'] ?? 0) <= 0) throw new Exception("Invalid price");
 
         $conn->prepare("
@@ -21,6 +26,7 @@
                 category_id=:category_id,
                 price=:price,
                 original_price=:original_price,
+                sub_category_id=:sub_category_id,
                 sku=:sku,
                 status=:status,
                 in_stock=:in_stock,
@@ -38,6 +44,7 @@
             ':name'            => $_POST['name'],
             ':description'     => $_POST['description'] ?? null,
             ':category_id'     => (int)$_POST['category_id'],
+            ':sub_category_id' => $sub_category_id,
             ':price'           => (float)$_POST['price'],
             ':original_price'  => $_POST['original_price'] ?: null,
             ':sku'             => $_POST['sku'],

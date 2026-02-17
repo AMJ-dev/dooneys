@@ -24,6 +24,7 @@
                 p.name,
                 p.description,
                 p.category_id,
+                p.sub_category_id,
                 p.price,
                 p.original_price,
                 p.sku,
@@ -40,13 +41,25 @@
                 p.item_depth,
                 p.created_at,
                 p.updated_at,
+
                 c.name AS category_name,
-                c.slug AS category_slug
+                c.slug AS category_slug,
+
+                sc.id   AS sub_category_id,
+                sc.name AS sub_category_name,
+                sc.slug AS sub_category_slug,
+                sc.status AS sub_category_status
+
             FROM products p
             INNER JOIN categories c ON c.id = p.category_id
+
+            /* Subcategory is optional */
+            LEFT JOIN sub_categories sc ON sc.id = p.sub_category_id
+
             WHERE p.id = :id
             LIMIT 1
         ");
+
         $stmt->execute([':id' => $id]);
 
         if (!$stmt->rowCount()) {

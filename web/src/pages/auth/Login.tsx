@@ -58,6 +58,7 @@ const Login = () => {
     try {
       const res = await http.post("/sign-in/", {email, password});
       const resp: ApiResp = res.data;
+      console.log(resp)
       if(resp?.error === false && resp?.data){
         const jwt = resp?.code?.jwt;  
         if (!jwt) {

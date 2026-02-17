@@ -167,7 +167,7 @@ const AdminInventory = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
   // Fetch inventory data using your existing API endpoint
   const fetchInventory = async () => {

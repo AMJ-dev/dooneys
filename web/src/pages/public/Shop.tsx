@@ -471,9 +471,6 @@ const Shop = () => {
                             <div className="flex-1 min-w-0">
                               <span className="font-medium truncate">{cat.name}</span>
                             </div>
-                            <span className="text-xs px-2 py-1 bg-muted rounded-full min-w-[2rem] text-center">
-                              {cat.product_count}
-                            </span>
                           </button>
                         );
                       })}

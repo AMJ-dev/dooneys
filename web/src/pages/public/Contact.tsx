@@ -5,7 +5,7 @@ import { ScrollReveal } from "@/components/ui/motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Phone, MapPin, Clock, MessageCircle, Calendar, Send, Mail, User, Hash } from "lucide-react";
+import { Phone, MapPin, Clock, MessageCircle, Calendar, Send, Mail, User, Hash, ArrowRight, Store } from "lucide-react";
 import storeInterior from "@/assets/store-interior.jpg";
 import { comp_address, comp_phone, comp_whatsapp, comp_name, comp_email } from "@/lib/constants";
 import { http } from "@/lib/httpClient";
@@ -101,11 +101,12 @@ const Contact = () => {
     <Layout>
       {/* Hero Section - Premium Design */}
       <section className="relative h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden">
+        {/* Background Image - Now visible */}
         <motion.div
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.2, ease: "easeOut" }}
-          className="absolute inset-0"
+          className="absolute inset-0 z-0"
         >
           <img
             src={storeInterior}
@@ -114,34 +115,71 @@ const Contact = () => {
           />
         </motion.div>
         
-        <div className="container relative z-10">
+        {/* Subtle Gradient Overlay - Image still shows through */}
+        <div className="absolute inset-0 z-1 bg-gradient-to-b from-background/40 via-background/20 to-background/60" />
+        <div className="absolute inset-0 z-1 bg-gradient-to-r from-primary/10 via-transparent to-accent/10 mix-blend-overlay" />
+        
+        {/* Content with Enhanced Visibility */}
+        <div className="container relative z-20 px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="max-w-3xl mx-auto text-center"
+            className="max-w-4xl mx-auto text-center"
           >
+            {/* Premium Badge with Glass Effect */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/30 backdrop-blur-md border border-white/30 shadow-lg mb-8"
             >
-              <MessageCircle className="h-4 w-4" />
-              <span className="text-sm font-medium">Contact Us</span>
+              <MessageCircle className="h-4 w-4 text-white" />
+              <span className="text-sm font-medium text-white drop-shadow-md">
+                Contact Our Beauty Concierge
+              </span>
             </motion.div>
             
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl text-card mb-6 tracking-tight">
-              Connect With
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-highlight">
+            {/* Main Heading with Text Shadow Only */}
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl mb-6 tracking-tight">
+              <span className="block text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)]">
+                Connect With
+              </span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)]">
                 Luxury Beauty
               </span>
             </h1>
             
-            <p className="text-card/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            {/* Description with Subtle Background */}
+            <p className="text-white text-lg md:text-xl lg:text-2xl max-w-2xl mx-auto leading-relaxed font-light drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] px-6 py-4 rounded-2xl bg-black/20 backdrop-blur-sm border border-white/20">
               Experience personalized service, expert consultations, and premium beauty solutions. 
               Let's create your perfect beauty journey together.
             </p>
+            
+            {/* Optional CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="flex flex-wrap gap-4 justify-center mt-10"
+            >
+              <Button 
+                size="lg" 
+                className="group bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white border-0 shadow-2xl px-8 py-6 text-lg"
+              >
+                <MessageCircle className="h-5 w-5 mr-2" />
+                Schedule Consultation
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="bg-black/30 backdrop-blur-md border-2 border-white/30 text-white hover:bg-black/40 px-8 py-6 text-lg"
+              >
+                <Store className="h-5 w-5 mr-2" />
+                Visit Our Store
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
         
@@ -149,10 +187,15 @@ const Contact = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          transition={{ delay: 1.2 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
         >
-          <div className="h-12 w-px bg-gradient-to-b from-primary via-accent to-transparent" />
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-xs uppercase tracking-[0.3em] text-white/80 drop-shadow-md font-light">
+              Discover
+            </span>
+            <div className="h-12 w-px bg-gradient-to-b from-white via-white/50 to-transparent" />
+          </div>
         </motion.div>
       </section>
 

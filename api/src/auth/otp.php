@@ -20,19 +20,20 @@ if($verify_resp["error"]){
     $data = "OTP Verified"; 
     
     if(isset($_SESSION["login_id"])) {
-        $user = get_user($_SESSION["login_id"], "id, email, mobile_number, first_name, last_name, is_admin");
+        $user = get_user($_SESSION["login_id"], "id, email, mobile_number, first_name, last_name, role");
         $token = [
             "id" => $user->id, 
             "first_name" => $user->first_name, 
             "email" => $user->email, 
-            "role" => $user->is_admin == "1" ? "admin" : "user"
+            "role" => $user->role
         ];
         $jwt = JWT::encode($token, $privateKey, 'RS256');
+        if(isset($_COOKIE['anon_id'])){
+            $conn->prepare("UPDATE visitors SET user_id = :user_id WHERE anon_id = :anon_id")
+                ->execute([":user_id" => $user->id, ":anon_id" => $_COOKIE['anon_id']]);
+        }
 
-        $conn->prepare("UPDATE visitors SET user_id = :user_id WHERE anon_id = :anon_id")
-            ->execute([":user_id" => $user->id, ":anon_id" => $_COOKIE['anon_id']]);
-
-        $code = ["jwt" => $jwt, "role" => $user->is_admin == "1" ? "admin" : "account"];
+        $code = ["jwt" => $jwt, "role" => $user->role];
         $locationInfo = isset($_POST["locationInfo"]) ? $_POST["locationInfo"] : "";
         $deviceInfo = isset($_POST["deviceInfo"]) ? $_POST["deviceInfo"] : "";
         
@@ -53,7 +54,7 @@ if($verify_resp["error"]){
         $deviceType = $_POST['device_type'] ?? 'Unknown Device';
 
         $save_login = $conn->prepare("
-            INSERT INTO logins (user_id, ip_address, user_agent, device_type, platform, browser, country, city, created_at) 
+            INSERT INTO login_history (user_id, ip_address, user_agent, device_type, platform, browser, country, city, created_at) 
             VALUES (:user_id, :ip_address, :user_agent, :device_type, :platform, :browser, :country, :city, :created_at)");
         $save_login->execute([
             ":user_id" => $user->id,
@@ -289,7 +290,7 @@ if($verify_resp["error"]){
 
             </body>
             </html>
-            HTML;
+        HTML;
 
         send_email($user->email, $user->first_name, $subject, $message);
 

@@ -35,6 +35,7 @@ import {
   Hash,
   Minus,
   Scan,
+  Layers
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -62,6 +63,15 @@ interface CategoryFromAPI {
   image: string | null;
   status: "active" | "inactive";
   product_count: number;
+  sub_categories?: SubCategoryFromAPI[];
+}
+
+interface SubCategoryFromAPI {
+  id: number;
+  category_id: number;
+  name: string;
+  slug: string;
+  status: "active" | "inactive";
 }
 
 interface ProductImage {
@@ -99,6 +109,13 @@ interface ProductFormData {
   description: string;
   category_id: number | null;
   category_name?: string;
+  sub_category_id: number | null;
+  sub_category?: {
+    id: number;
+    name: string;
+    slug: string;
+    status: string;
+  };
   price: string;
   originalPrice: string;
   sku: string;
@@ -126,64 +143,180 @@ const formSteps = [
 
 interface CategorySelectProps {
   value: number | null;
-  onChange: (categoryId: number | null) => void;
+  subCategoryValue: number | null;
+  onChange: (categoryId: number | null, subCategoryId: number | null) => void;
   categories: CategoryFromAPI[];
 }
 
-const CategorySelect = ({ value, onChange, categories }: CategorySelectProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const CategorySelect = ({ value, subCategoryValue, onChange, categories }: CategorySelectProps) => {
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [isSubCategoryOpen, setIsSubCategoryOpen] = useState(false);
+  
+  const selectedCategory = categories.find(cat => cat.id === value);
+  const subCategories = selectedCategory?.sub_categories?.filter(sub => sub.status === "active") || [];
+  
   const getSelectedCategoryName = () => {
     if (value === null) return "Select a category";
-    const selectedCat = categories.find(cat => cat.id === value);
-    return selectedCat ? selectedCat.name : "Select a category";
+    return selectedCategory?.name || "Select a category";
+  };
+
+  const getSelectedSubCategoryName = () => {
+    if (subCategoryValue === null) return "Select a subcategory (optional)";
+    const selectedSub = subCategories.find(sub => sub.id === subCategoryValue);
+    return selectedSub?.name || "Select a subcategory (optional)";
   };
 
   return (
-    <div className="relative">
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full justify-between border-input hover:bg-accent/50"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <span className={value ? "" : "text-muted-foreground"}>
-          {getSelectedCategoryName()}
-        </span>
-        <ChevronDown className="h-4 w-4 ml-2" />
-      </Button>
-      
-      {isOpen && (
-        <div className="absolute z-50 mt-1 w-full bg-popover border rounded-md shadow-lg animate-in fade-in-0 zoom-in-95">
-          <div className="p-2 max-h-60 overflow-y-auto">
-            <div className="mb-2">
-              <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Categories
-              </div>
-              {categories.length > 0 ? (
-                categories.map((category) => (
-                  <button
-                    key={`${category.id}-${gen_random_string()}`}
-                    type="button"
-                    onClick={() => {
-                      onChange(category.id);
-                      setIsOpen(false);
-                    }}
-                    className="w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between transition-colors"
-                  >
-                    <span>{category.name}</span>
-                    {value === category.id && (
-                      <div className="h-2 w-2 rounded-full bg-primary" />
-                    )}
-                  </button>
-                ))
-              ) : (
-                <div className="px-2 py-1.5 text-sm text-muted-foreground italic">
-                  No categories found
+    <div className="space-y-4">
+      {/* Main Category Selector */}
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2">
+          <Package className="h-4 w-4 text-primary" />
+          Category *
+        </Label>
+        <div className="relative">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-between border-input hover:bg-accent/50"
+            onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+          >
+            <span className={value ? "" : "text-muted-foreground"}>
+              {getSelectedCategoryName()}
+            </span>
+            <ChevronDown className="h-4 w-4 ml-2" />
+          </Button>
+          
+          {isCategoryOpen && (
+            <div className="absolute z-50 mt-1 w-full bg-popover border rounded-md shadow-lg animate-in fade-in-0 zoom-in-95">
+              <div className="p-2 max-h-60 overflow-y-auto">
+                <div className="mb-2">
+                  <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Categories
+                  </div>
+                  {categories.length > 0 ? (
+                    categories.map((category) => (
+                      <button
+                        key={`${category.id}-${gen_random_string()}`}
+                        type="button"
+                        onClick={() => {
+                          onChange(category.id, null);
+                          setIsCategoryOpen(false);
+                        }}
+                        className="w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span>{category.name}</span>
+                          {category.sub_categories && category.sub_categories.length > 0 && (
+                            <Badge variant="outline" className="text-xs">
+                              {category.sub_categories.length} sub
+                            </Badge>
+                          )}
+                        </div>
+                        {value === category.id && (
+                          <div className="h-2 w-2 rounded-full bg-primary" />
+                        )}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-2 py-1.5 text-sm text-muted-foreground italic">
+                      No categories found
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sub Category Selector - Only shown if selected category has subcategories */}
+      {selectedCategory && subCategories.length > 0 && (
+        <div className="space-y-2">
+          <Label className="flex items-center gap-2">
+            <Layers className="h-4 w-4 text-primary/70" />
+            Sub Category
+            <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+          </Label>
+          <div className="relative">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full justify-between border-input hover:bg-accent/50"
+              onClick={() => setIsSubCategoryOpen(!isSubCategoryOpen)}
+            >
+              <span className={subCategoryValue ? "" : "text-muted-foreground"}>
+                {getSelectedSubCategoryName()}
+              </span>
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+            
+            {isSubCategoryOpen && (
+              <div className="absolute z-50 mt-1 w-full bg-popover border rounded-md shadow-lg animate-in fade-in-0 zoom-in-95">
+                <div className="p-2 max-h-60 overflow-y-auto">
+                  <div className="mb-2">
+                    <div className="px-2 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      Subcategories for {selectedCategory.name}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChange(selectedCategory.id, null);
+                        setIsSubCategoryOpen(false);
+                      }}
+                      className="w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between transition-colors"
+                    >
+                      <span className="text-muted-foreground">None (Main Category)</span>
+                      {subCategoryValue === null && (
+                        <div className="h-2 w-2 rounded-full bg-primary" />
+                      )}
+                    </button>
+                    <div className="my-1 border-t" />
+                    {subCategories.map((sub) => (
+                      <button
+                        key={`${sub.id}-${gen_random_string()}`}
+                        type="button"
+                        onClick={() => {
+                          onChange(selectedCategory.id, sub.id);
+                          setIsSubCategoryOpen(false);
+                        }}
+                        className="w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm flex items-center justify-between transition-colors"
+                      >
+                        <span>{sub.name}</span>
+                        {subCategoryValue === sub.id && (
+                          <div className="h-2 w-2 rounded-full bg-primary" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
+          
+          {subCategoryValue && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+              <Badge variant="outline" className="bg-primary/5 border-primary/20">
+                {selectedCategory.name} → {subCategories.find(s => s.id === subCategoryValue)?.name}
+              </Badge>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Quick stats */}
+      {selectedCategory && (
+        <div className="text-xs text-muted-foreground pt-2 border-t">
+          <div className="flex items-center justify-between">
+            <span>Products in category:</span>
+            <span className="font-medium">{selectedCategory.product_count || 0}</span>
+          </div>
+          {selectedCategory.sub_categories && (
+            <div className="flex items-center justify-between mt-1">
+              <span>Available subcategories:</span>
+              <span className="font-medium">{selectedCategory.sub_categories.length}</span>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -725,14 +858,14 @@ const ProductFeaturesManager = ({
 interface ProductVariantsManagerProps {
   variants: ProductVariant[];
   onVariantsChange: (variants: ProductVariant[]) => void;
-  basePrice?: string; // Added basePrice prop
+  basePrice?: string;
   isReadOnly?: boolean;
 }
 
 const ProductVariantsManager = ({ 
   variants, 
   onVariantsChange, 
-  basePrice = "", // Added default value
+  basePrice = "",
   isReadOnly = false 
 }: ProductVariantsManagerProps) => {
   const [variantType, setVariantType] = useState("");
@@ -855,14 +988,6 @@ const ProductVariantsManager = ({
     }
   };
 
-  const handleAddCustom = () => {
-    if (!customValue.trim()) {
-      toast.error("Please enter a custom value");
-      return;
-    }
-    setShowCustomInput(true);
-  };
-
   const startEditOption = (variantIndex: number, optionIndex: number) => {
     if (isReadOnly) return;
     
@@ -927,7 +1052,7 @@ const ProductVariantsManager = ({
 
   const activeVariants = variants.filter(v => !v.isRemoved);
 
-return (
+  return (
     <div className="space-y-8">
       <div className="space-y-6">
         {/* Header Section */}
@@ -1644,6 +1769,7 @@ const AdminProductForm = () => {
     name: "",
     description: "",
     category_id: null,
+    sub_category_id: null,
     price: "",
     originalPrice: "",
     sku: "",
@@ -1667,7 +1793,6 @@ const AdminProductForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableCategories, setAvailableCategories] = useState<CategoryFromAPI[]>([]);
   const [scanning, setScanning] = useState(false);
-  const [isInitializingCamera, setIsInitializingCamera] = useState(false);
 
   const progress = ((currentStep + 1) / formSteps.length) * 100;
 
@@ -1684,7 +1809,7 @@ const AdminProductForm = () => {
       if(!can_add_product){
         startTransition(()=>navigate("/unauthorized"))
         return;
-      }
+      } 
     }
   }, [id, isEditMode]);
 
@@ -1719,13 +1844,15 @@ const AdminProductForm = () => {
           description: productData.description,
           category_id: productData.category_id,
           category_name: productData.category_name,
-          price: productData.price,
-          originalPrice: productData.original_price || "",
-          sku: productData.sku,
-          weight: productData.weight || "",
-          item_height: productData.item_height || "",
-          item_width: productData.item_width || "",
-          item_depth: productData.item_depth || "",
+          sub_category_id: productData.sub_category_id || null,
+          sub_category: productData.sub_category,
+          price: productData.price?.toString() || "",
+          originalPrice: productData.original_price?.toString() || "",
+          sku: productData.sku || "",
+          weight: productData.weight?.toString() || "",
+          item_height: productData.item_height?.toString() || "",
+          item_width: productData.item_width?.toString() || "",
+          item_depth: productData.item_depth?.toString() || "",
           status: productData.status as "active" | "inactive",
           inStock: Boolean(productData.in_stock),
           stockQuantity: productData.stock_quantity?.toString() || "0",
@@ -1790,6 +1917,16 @@ const AdminProductForm = () => {
     }));
   };
 
+  const handleCategoryChange = (categoryId: number | null, subCategoryId: number | null) => {
+    if (isReadOnly) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      category_id: categoryId,
+      sub_category_id: subCategoryId
+    }));
+  };
+
   const handleNext = () => {
     if (currentStep < formSteps.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -1808,7 +1945,6 @@ const AdminProductForm = () => {
     if (!formData.name.trim()) errors.push("Product name is required");
     if (!formData.category_id) errors.push("Category is required");
     if (!formData.price) errors.push("Price is required");
-    // if (!formData.sku.trim()) errors.push("SKU is required");
     if (productImages.filter(img => !img.isRemoved).length === 0) errors.push("At least one product image is required");
     
     if (errors.length > 0) {
@@ -1824,8 +1960,13 @@ const AdminProductForm = () => {
       formDataToSend.append("name", formData.name);
       formDataToSend.append("description", formData.description);
       formDataToSend.append("category_id", formData.category_id!.toString());
+      
+      if (formData.sub_category_id) {
+        formDataToSend.append("sub_category_id", formData.sub_category_id.toString());
+      }
+      
       formDataToSend.append("price", formData.price);
-      formDataToSend.append("original_price", formData.originalPrice || "");
+      formDataToSend.append("original_price", formData.originalPrice || "0");
       formDataToSend.append("sku", formData.sku);
       formDataToSend.append("weight", formData.weight);
       formDataToSend.append("item_height", formData.item_height);
@@ -1843,6 +1984,7 @@ const AdminProductForm = () => {
         formDataToSend.append("id", formData.id.toString());
       }
 
+      // Handle images
       const existingImages = productImages.filter(img => !img.isRemoved && img.id > 0);
       existingImages.forEach((img, index) => {
         formDataToSend.append(`existing_images[${index}][id]`, img.id.toString());
@@ -1864,11 +2006,12 @@ const AdminProductForm = () => {
         }
       });
 
-      const removedImages = productImages.filter(img => img.isRemoved);
+      const removedImages = productImages.filter(img => img.isRemoved && img.id > 0);
       removedImages.forEach((img, index) => {
         formDataToSend.append(`removed_images[${index}]`, img.id.toString());
       });
 
+      // Handle features
       const existingFeatures = productFeatures.filter(f => !f.isRemoved && f.id && f.id > 0);
       existingFeatures.forEach((feature, index) => {
         formDataToSend.append(`existing_features[${index}][id]`, feature.id!.toString());
@@ -1887,6 +2030,7 @@ const AdminProductForm = () => {
         formDataToSend.append(`removed_features[${index}]`, feature.id!.toString());
       });
 
+      // Handle variants
       const existingVariants = productVariants.filter(v => !v.isRemoved && v.id && v.id > 0);
       existingVariants.forEach((variant, variantIndex) => {
         formDataToSend.append(`existing_variants[${variantIndex}][id]`, variant.id!.toString());
@@ -1980,6 +2124,7 @@ const AdminProductForm = () => {
       isNew: !prev.isNew
     }));
   };
+  
   const handleScan = (code: string) => {
     setFormData(prev => ({ ...prev, sku: code })); 
     toast.success(`Barcode scanned: ${code}`, {
@@ -1990,6 +2135,7 @@ const AdminProductForm = () => {
       setScanning(false);
     }, 2000);
   };
+
   const stockQuantity = parseInt(formData.stockQuantity) || 0;
   const lowStockThreshold = parseInt(formData.lowStockAlert) || 10;
   const isLowStock = stockQuantity <= lowStockThreshold;
@@ -2192,18 +2338,16 @@ const AdminProductForm = () => {
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="category">Category *</Label>
-                          <CategorySelect
-                            value={formData.category_id}
-                            onChange={(categoryId) => handleInputChange('category_id', categoryId)}
-                            categories={availableCategories}
-                          />
-                        </div>
+                      <CategorySelect
+                        value={formData.category_id}
+                        subCategoryValue={formData.sub_category_id}
+                        onChange={handleCategoryChange}
+                        categories={availableCategories}
+                      />
 
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <Label htmlFor="sku">SKU *</Label>
+                          <Label htmlFor="sku">SKU</Label>
                           {!isReadOnly && (
                             <div className="flex gap-2">
                               <Input
@@ -2298,7 +2442,6 @@ const AdminProductForm = () => {
                                   </div>
                                 </div>
                                 
-                                {/* Instructions Panel */}
                                 <motion.div
                                   initial={{ y: 20, opacity: 0 }}
                                   animate={{ y: 0, opacity: 1 }}
@@ -2447,7 +2590,7 @@ const AdminProductForm = () => {
                     <ProductVariantsManager 
                       variants={productVariants}
                       onVariantsChange={setProductVariants}
-                      basePrice={formData.price} // Pass base price here
+                      basePrice={formData.price}
                       isReadOnly={isReadOnly}
                     />
                   </CardContent>
@@ -2668,7 +2811,7 @@ const AdminProductForm = () => {
                       <div className="space-y-2">
                         <Label htmlFor="weight" className="flex items-center gap-2">
                           <Scale className="h-4 w-4" />
-                          Weight (kg) *
+                          Weight (kg)
                         </Label>
                         <div className="flex gap-2">
                           <Input
@@ -2884,9 +3027,22 @@ const AdminProductForm = () => {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Category:</span>
-                      <Badge variant="outline">
-                        {availableCategories.find(cat => cat.id === formData.category_id)?.name || "Uncategorized"}
-                      </Badge>
+                      <div className="text-right">
+                        <Badge variant="outline">
+                          {availableCategories.find(cat => cat.id === formData.category_id)?.name || "Uncategorized"}
+                        </Badge>
+                        {formData.sub_category_id && (
+                          <div className="mt-1">
+                            <Badge variant="outline" className="bg-primary/5 border-primary/20 text-xs">
+                              <Layers className="h-3 w-3 mr-1" />
+                              {(() => {
+                                const category = availableCategories.find(cat => cat.id === formData.category_id);
+                                return category?.sub_categories?.find(sub => sub.id === formData.sub_category_id)?.name;
+                              })()}
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     
                     <div className="flex items-center justify-between">
@@ -2904,7 +3060,7 @@ const AdminProductForm = () => {
                           )}
                         </div>
                         <div className="space-y-1">
-                          {formData.originalPrice && (
+                          {formData.originalPrice && parseFloat(formData.originalPrice) > 0 && (
                             <span className="text-sm text-muted-foreground line-through">
                               {format_currency(parseFloat(formData.originalPrice))}
                             </span>
@@ -2980,7 +3136,7 @@ const AdminProductForm = () => {
                       </div>
                     )}
                     
-                    {formData.stockQuantity && (
+                    {formData.stockQuantity && parseInt(formData.stockQuantity) > 0 && (
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-muted-foreground">Stock Level:</span>
                         <Badge 
@@ -3053,6 +3209,12 @@ const AdminProductForm = () => {
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Sub Category</span>
+                    <Badge variant={formData.sub_category_id ? "default" : "secondary"}>
+                      {formData.sub_category_id ? "✓" : "Optional"}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Variants</span>
                     <Badge variant={productVariants.filter(v => !v.isRemoved).length > 0 ? "default" : "secondary"}>
                       {productVariants.filter(v => !v.isRemoved).length} added
@@ -3072,8 +3234,8 @@ const AdminProductForm = () => {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Stock Information</span>
-                    <Badge variant={formData.stockQuantity ? "default" : "secondary"}>
-                      {formData.stockQuantity ? "✓" : "—"}
+                    <Badge variant={formData.stockQuantity && parseInt(formData.stockQuantity) > 0 ? "default" : "secondary"}>
+                      {formData.stockQuantity && parseInt(formData.stockQuantity) > 0 ? "✓" : "—"}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between text-sm">

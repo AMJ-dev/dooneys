@@ -549,13 +549,13 @@ const ProductCard = ({ product, index = 0, compact = false, showQuickView = true
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent lg:hidden" />
 
               <div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex flex-wrap gap-1 sm:gap-2">
-                {product.isNew && (
+                {/* {product.isNew && (
                   <Badge className="bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-sm sm:shadow-md text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
                     <Sparkles className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5" />
                     <span className="hidden xs:inline">New</span>
                     <span className="xs:hidden">N</span>
                   </Badge>
-                )}
+                )} */}
                 {hasDiscount && (
                   <Badge className="bg-gradient-to-r from-destructive to-destructive/90 text-destructive-foreground shadow-sm sm:shadow-md text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-1.5">
                     <Zap className="h-2.5 w-2.5 sm:h-3.5 sm:w-3.5 mr-1 sm:mr-1.5" />

@@ -30,7 +30,7 @@ import { resolveSrc } from "@/lib/functions";
 const navLinks = [
   { name: "Home", path: "/", icon: Home },
   { name: "Shop", path: "/shop", icon: ShoppingCart },
-  { name: "New Arrivals", path: "/new", icon: Star },
+  { name: "Deals & New", path: "/deals", icon: Star },
   { name: "About", path: "/about", icon: Sparkles },
   { name: "Contact", path: "/contact", icon: Mail },
 ];

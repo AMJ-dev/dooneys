@@ -2,7 +2,7 @@
     require_once dirname(__DIR__, 2) . "/include/set-header.php";
 
     $error = false;
-    $data  = ["categories" => [], "products" => [], "store_gst" => $site_settings->store_gst];
+    $data  = ["categories" => [], "category" => [], "products" => [], "store_gst" => $site_settings->store_gst];
 
     try {
         $user_id = 0;
@@ -156,6 +156,35 @@
             ORDER BY c.created_at DESC
         ");
         $data["categories"] = $cat->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($cat_id > 0) {
+            $catStmt = $conn->prepare("
+                SELECT id, name, slug, description, image
+                FROM categories
+                WHERE id = :id AND status = 'active'
+                LIMIT 1
+            ");
+            $catStmt->execute([':id' => $cat_id]);
+
+            $category = $catStmt->fetch(PDO::FETCH_ASSOC);
+            if ($category) {
+                $subStmt = $conn->prepare("
+                    SELECT id, name, slug, status
+                    FROM sub_categories
+                    WHERE category_id = :cid
+                    ORDER BY name ASC
+                ");
+                $subStmt->execute([':cid' => $cat_id]);
+
+                $category['sub_categories'] = $subStmt->fetchAll(PDO::FETCH_ASSOC);
+
+                $data["category"] = $category;
+
+            } else {
+                $data["category"] = null;
+            }
+        }
+
 
     } catch (Throwable $e) {
         $error = true;

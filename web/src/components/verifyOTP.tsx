@@ -38,7 +38,7 @@ import LoadingScreen from "@/components/ui/loading-screen";
 import { cn } from "@/lib/utils";
 
 const OTP_LENGTH = 6;
-type Role = "user" | "admin";
+type Role = "account" | "admin";
 
 const VerifyOTP = ({role}: {role: Role}) => {
   const [searchParams] = useSearchParams();
@@ -140,14 +140,6 @@ const VerifyOTP = ({role}: {role: Role}) => {
     if (value && index < OTP_LENGTH - 1) {
       setTimeout(() => focusInput(index + 1), 10);
     }
-
-    // Auto-submit if last digit entered
-    if (value && index === OTP_LENGTH - 1) {
-      const fullCode = next.join("");
-      if (fullCode.length === OTP_LENGTH) {
-        setTimeout(() => handleSubmit(), 300);
-      }
-    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
@@ -174,15 +166,6 @@ const VerifyOTP = ({role}: {role: Role}) => {
     const next = pasted.split("").concat(Array(OTP_LENGTH).fill("")).slice(0, OTP_LENGTH);
     setOtp(next);
     setVerificationError("");
-    
-    setTimeout(() => {
-      focusInput(Math.min(pasted.length, OTP_LENGTH - 1));
-      
-      // Auto-submit if full code pasted
-      if (pasted.length === OTP_LENGTH) {
-        setTimeout(() => handleSubmit(), 300);
-      }
-    }, 10);
   };
 
   const handleResend = async () => {
@@ -221,6 +204,7 @@ const VerifyOTP = ({role}: {role: Role}) => {
 
   const handleSubmit = async () => {
     const code = otp.join("");
+    console.log(code.length+1, OTP_LENGTH);
     if (code.length !== OTP_LENGTH) {
       setVerificationError("Please enter all 6 digits");
       return;

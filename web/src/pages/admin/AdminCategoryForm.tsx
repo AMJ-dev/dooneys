@@ -8,7 +8,10 @@ import {
   Upload, 
   Eye,
   Trash2,
-  Edit2
+  Edit2,
+  ChevronDown,
+  ChevronUp,
+  GripVertical
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -22,6 +25,15 @@ import {toast} from "react-toastify"
 import {resolveSrc} from "@/lib/functions"
 import usePermissions from "@/hooks/usePermissions";
 
+interface SubCategory {
+  id?: string;
+  name: string;
+  slug: string;
+  status: "active" | "inactive";
+  isNew?: boolean;
+  isDeleted?: boolean;
+}
+
 interface CategoryFormData {
   id: string;
   name: string;
@@ -29,6 +41,7 @@ interface CategoryFormData {
   description: string;
   image: string;
   status: "active" | "inactive";
+  subCategories: SubCategory[];
 }
 
 const AdminCategoryForm = () => {
@@ -50,11 +63,13 @@ const AdminCategoryForm = () => {
     description: "",
     image: "",
     status: "active",
+    subCategories: [],
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [expandedSubCategories, setExpandedSubCategories] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     if (isEditMode) {
@@ -82,6 +97,14 @@ const AdminCategoryForm = () => {
           description: resp.data.description,
           image: resp.data.image || "",
           status: resp.data.status,
+          subCategories: resp.data.sub_categories?.map((sub: any) => ({
+            id: sub.id.toString(),
+            name: sub.name,
+            slug: sub.slug,
+            status: sub.status,
+            isNew: false,
+            isDeleted: false
+          })) || [],
         });
         if (resp.data.image) {
           setImagePreview(resolveSrc(resp.data.image));
@@ -113,6 +136,124 @@ const AdminCategoryForm = () => {
         slug: slug
       }));
     }
+  };
+
+  const handleSubCategoryChange = (index: number, field: keyof SubCategory, value: string) => {
+    if (isReadOnly) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      subCategories: prev.subCategories.map((sub, i) => {
+        if (i === index) {
+          const updatedSub = { ...sub, [field]: value };
+          
+          // Auto-generate slug from name for new subcategories
+          if (field === 'name' && (!sub.id || sub.isNew)) {
+            updatedSub.slug = value
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .replace(/\s+/g, '-');
+          }
+          
+          return updatedSub;
+        }
+        return sub;
+      })
+    }));
+  };
+
+  const handleSubCategoryStatusToggle = (index: number) => {
+    if (isReadOnly) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      subCategories: prev.subCategories.map((sub, i) => 
+        i === index 
+          ? { ...sub, status: sub.status === "active" ? "inactive" : "active" }
+          : sub
+      )
+    }));
+  };
+
+  const addSubCategory = () => {
+    if (isReadOnly) return;
+    
+    const newSubCategory: SubCategory = {
+      name: "",
+      slug: "",
+      status: "active",
+      isNew: true
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      subCategories: [...prev.subCategories, newSubCategory]
+    }));
+    
+    // Auto-expand new subcategory
+    setExpandedSubCategories(prev => {
+      const newSet = new Set(prev);
+      newSet.add(formData.subCategories.length);
+      return newSet;
+    });
+  };
+
+  const removeSubCategory = async (index: number) => {
+    if (isReadOnly) return;
+    
+    const subCategory = formData.subCategories[index];
+    
+    // If it's an existing subcategory from the database, call API to remove it
+    if (subCategory.id && !subCategory.isNew) {
+      try {
+        setIsLoading(true);
+        const res = await http.post("/remove-subcat/", { id: subCategory.id });
+        const resp: ApiResp = res.data;
+        
+        if (resp.error == false) {
+          toast.success(`Subcategory "${subCategory.name}" removed successfully`);
+          
+          // Mark as deleted in UI
+          setFormData(prev => ({
+            ...prev,
+            subCategories: prev.subCategories.map((sub, i) => 
+              i === index ? { ...sub, isDeleted: true } : sub
+            )
+          }));
+          
+          // Remove from UI after successful API call
+          setFormData(prev => ({
+            ...prev,
+            subCategories: prev.subCategories.filter((_, i) => i !== index)
+          }));
+        } else {
+          toast.error(resp.data || "Failed to remove subcategory");
+        }
+      } catch (error: any) {
+        console.error("Error removing subcategory:", error);
+        toast.error(error.response?.data?.message || "Failed to remove subcategory");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      // For new unsaved subcategories, just remove from UI
+      setFormData(prev => ({
+        ...prev,
+        subCategories: prev.subCategories.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  const toggleSubCategoryExpand = (index: number) => {
+    setExpandedSubCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,6 +296,21 @@ const AdminCategoryForm = () => {
     }));
   };
 
+  const validateSubCategories = (): boolean => {
+    for (let i = 0; i < formData.subCategories.length; i++) {
+      const sub = formData.subCategories[i];
+      if (!sub.name.trim()) {
+        toast.error(`Subcategory #${i + 1} name is required`);
+        return false;
+      }
+      if (!sub.slug.trim()) {
+        toast.error(`Subcategory #${i + 1} slug is required`);
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
     if (!formData.name.trim()) {
       toast.error("Category name is required");
@@ -168,6 +324,10 @@ const AdminCategoryForm = () => {
 
     if (!formData.image && !imagePreview && !isEditMode) {
       toast.error("Please upload an image");
+      return;
+    }
+
+    if (!validateSubCategories()) {
       return;
     }
     
@@ -186,6 +346,27 @@ const AdminCategoryForm = () => {
       } else if (formData.image && !imageFile) {
         formDataToSend.append("image", formData.image);
       }
+
+      // Separate subcategories into new and existing
+      const newSubCategories = formData.subCategories
+        .filter(sub => sub.isNew && !sub.isDeleted)
+        .map(({ name, slug, status }) => ({
+          name,
+          slug,
+          status
+        }));
+      
+      const existingSubCategories = formData.subCategories
+        .filter(sub => !sub.isNew && !sub.isDeleted && sub.id)
+        .map(({ id, name, slug, status }) => ({
+          id,
+          name,
+          slug,
+          status
+        }));
+
+      formDataToSend.append("new_subcategories", JSON.stringify(newSubCategories));
+      formDataToSend.append("existing_subcategories", JSON.stringify(existingSubCategories));
 
       const endpoint = isEditMode ? "/update-category/" : "/save-category/";
       const res = await http.post(endpoint, formDataToSend, {
@@ -338,6 +519,134 @@ const AdminCategoryForm = () => {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Sub Categories Section */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <div>
+                <CardTitle>Sub Categories</CardTitle>
+                <CardDescription>
+                  Add and manage subcategories under this category
+                </CardDescription>
+              </div>
+              {!isReadOnly && (
+                <Button onClick={addSubCategory} size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Subcategory
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {formData.subCategories.length === 0 ? (
+                <div className="text-center py-8 border-2 border-dashed border-border rounded-lg">
+                  <div className="w-12 h-12 rounded-full bg-muted-foreground/10 flex items-center justify-center mx-auto mb-3">
+                    <ChevronDown className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground mb-2">No subcategories added yet</p>
+                  {!isReadOnly && (
+                    <Button variant="outline" onClick={addSubCategory} size="sm">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Your First Subcategory
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {formData.subCategories.map((sub, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-lg overflow-hidden bg-card"
+                    >
+                      <div className="flex items-center gap-2 p-4 bg-muted/30">
+                        <GripVertical className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          onClick={() => toggleSubCategoryExpand(index)}
+                        >
+                          {expandedSubCategories.has(index) ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
+                          )}
+                        </Button>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">
+                            {sub.name || "New Subcategory"}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            Slug: {sub.slug || "not-set"}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 mr-2">
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              sub.status === "active" 
+                                ? "bg-green-100 text-green-800" 
+                                : "bg-gray-100 text-gray-800"
+                            }`}>
+                              {sub.status}
+                            </span>
+                          </div>
+                          {!isReadOnly && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeSubCategory(index)}
+                              className="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {expandedSubCategories.has(index) && (
+                        <div className="p-4 border-t space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Subcategory Name *</Label>
+                              <Input
+                                value={sub.name}
+                                onChange={(e) => handleSubCategoryChange(index, 'name', e.target.value)}
+                                placeholder="e.g., Clip-in Extensions"
+                                disabled={isReadOnly}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Slug *</Label>
+                              <Input
+                                value={sub.slug}
+                                onChange={(e) => handleSubCategoryChange(index, 'slug', e.target.value)}
+                                placeholder="e.g., clip-in-extensions"
+                                className="font-mono"
+                                disabled={isReadOnly}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <Label>Status</Label>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-muted-foreground">
+                                {sub.status === "active" ? "Active" : "Inactive"}
+                              </span>
+                              <Switch
+                                checked={sub.status === "active"}
+                                onCheckedChange={() => handleSubCategoryStatusToggle(index)}
+                                disabled={isReadOnly}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

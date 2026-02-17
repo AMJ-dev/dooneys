@@ -6,6 +6,7 @@ $data  = [];
 
 try {
 
+    /* ================= MAIN CATEGORY ANALYTICS ================= */
     $sql = "
         SELECT
             c.id,
@@ -17,7 +18,6 @@ try {
 
             COUNT(DISTINCT p.id) AS product_count,
 
-            /* Revenue from PAID payments only */
             COALESCE(SUM(
                 CASE
                     WHEN pay.status = 'paid'
@@ -26,16 +26,13 @@ try {
                 END
             ), 0) AS total_revenue,
 
-            /* Orders with successful payment */
             COUNT(DISTINCT CASE
                 WHEN pay.status = 'paid'
                 THEN o.id
             END) AS orders_count,
 
-            /* Product views */
             COUNT(DISTINCT ev.id) AS views,
 
-            /* Conversion rate */
             CASE
                 WHEN COUNT(DISTINCT ev.id) = 0 THEN 0
                 ELSE ROUND(
@@ -49,23 +46,11 @@ try {
 
         FROM categories c
 
-        LEFT JOIN products p
-            ON p.category_id = c.id
-
-        LEFT JOIN order_items oi
-            ON oi.product_id = p.id
-
-        LEFT JOIN orders o
-            ON o.id = oi.order_id
-
-        /* PAYMENT is the source of truth */
-        LEFT JOIN payments pay
-            ON pay.order_id = o.id
-
-        /* Product views */
-        LEFT JOIN events ev
-            ON ev.event = 'view_product'
-            AND ev.entity_id = p.id
+        LEFT JOIN products p ON p.category_id = c.id
+        LEFT JOIN order_items oi ON oi.product_id = p.id
+        LEFT JOIN orders o ON o.id = oi.order_id
+        LEFT JOIN payments pay ON pay.order_id = o.id
+        LEFT JOIN events ev ON ev.event = 'view_product' AND ev.entity_id = p.id
 
         GROUP BY c.id
         ORDER BY c.created_at DESC
@@ -73,7 +58,35 @@ try {
 
     $stmt = $conn->prepare($sql);
     $stmt->execute();
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    if (!$categories) {
+        echo json_encode(["error" => false, "data" => []]);
+        exit;
+    }
+
+    /* ================= FETCH ALL SUBCATEGORIES ================= */
+    $subStmt = $conn->prepare("
+        SELECT id, category_id, name, slug, status
+        FROM sub_categories
+        ORDER BY name ASC
+    ");
+    $subStmt->execute();
+    $subs = $subStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    /* ================= GROUP SUBCATEGORIES BY CATEGORY ================= */
+    $subMap = [];
+
+    foreach ($subs as $sub) {
+        $subMap[$sub['category_id']][] = $sub;
+    }
+
+    /* ================= ATTACH TO CATEGORY ================= */
+    foreach ($categories as &$cat) {
+        $cat['sub_categories'] = $subMap[$cat['id']] ?? [];
+    }
+
+    $data = $categories;
 
 } catch (Throwable $e) {
     $error = true;
