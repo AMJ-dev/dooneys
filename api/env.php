@@ -11,6 +11,7 @@
     if (session_status() === PHP_SESSION_NONE) session_start();
     $url="localhost/dooneys";
     $baseURL="http://$url/";
+    $apiURL="https://api.$url/";
     $db_name = "dooneys";
     $AppName="Doonneys Beauty";
     $db_user = "cyberpros";
@@ -28,4 +29,9 @@
     $twilio_from = "";
     $is_prod = false;
     
-
+    define('META_ACCESS_TOKEN', 'EAATnpHfZBpRcBSMrOIPZBZClKwbBhXz5HwnC7ZADx1pX1DyAhQviSS4VtfWlPXRkqbbgkyasvBjjEDlqXyY8H1vk4lsSQTNMsXDtCgxj3eZBsnwPl1PsObdRDjlnouEGXZB42p15e4er2t6ymA1KdK4GKKCBzpjg1rZAXuOqkfU5oNAorZAH5aDnIlUPIawIvw3vtgZDZD');
+    define('META_CATALOG_ID', '2462053827632897');
+    define('FACEBOOK_PAGE_ID', 'YOUR_FACEBOOK_PAGE_ID');
+    define('INSTAGRAM_BUSINESS_ID', 'YOUR_INSTAGRAM_BUSINESS_ID'); 
+    define('WHATSAPP_PHONE_ID', '1149522334904832');
+    define('WHATSAPP_ADMIN_NUMBERS', ['+2348083654765']);

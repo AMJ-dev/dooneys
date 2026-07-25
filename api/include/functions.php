@@ -4,7 +4,10 @@
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\Exception;
     use PHPMailer\PHPMailer\SMTP;
-
+    
+    function str_to_url($string){
+        return strtolower(str_replace(" ", "-", preg_replace("/[^a-zA-Z0-9\s]/", "", $string)));
+    }
     function encrypt_pass($pass){
         return password_hash($pass, PASSWORD_ARGON2I);
     } 

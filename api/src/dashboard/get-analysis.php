@@ -78,11 +78,11 @@ try {
         ]
     ];
 
-    // === REVENUE DATA (for chart) ===
+    // === REVENUE DATA (for chart) - FIXED GROUP BY ===
     if ($dateRange === 'year') {
-        $format = '%Y-%m';
         $groupBy = "DATE_FORMAT(o.created_at, '%Y-%m')";
         $orderBy = "MIN(o.created_at)";
+        $format = '%Y-%m';
     } elseif ($dateRange === 'quarter') {
         $groupBy = "YEARWEEK(o.created_at)";
         $orderBy = "MIN(o.created_at)";
@@ -95,18 +95,20 @@ try {
 
     $stmt = $conn->prepare("
         SELECT 
-            DATE_FORMAT(o.created_at, ?) as period,
+            {$groupBy} as period,
             SUM(o.total_amount) as revenue,
             COUNT(o.id) as orders
         FROM orders o
-        WHERE o.created_at >= ?
+        WHERE o.created_at >= :start_date
           AND o.payment_status = 'paid'
-        GROUP BY $groupBy
-        ORDER BY $orderBy
+        GROUP BY {$groupBy}
+        ORDER BY {$orderBy}
     ");
-    $stmt->execute([$format, $startDate]);
+    $stmt->bindParam(':start_date', $startDate);
+    $stmt->execute();
     $revenueData = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    // Format the periods for display
     foreach ($revenueData as &$row) {
         if ($dateRange === 'year') {
             $monthNum = (int)substr($row['period'], 5);
@@ -149,8 +151,10 @@ try {
     }
     $data['categoryData'] = $categoryData;
 
-    // === TRAFFIC DATA (last 7 days) ===
+    // === TRAFFIC DATA (last 7 days) - FIXED ===
     $trafficStart = date('Y-m-d', strtotime('-7 days'));
+    
+    // Get orders by day of week for the last 7 days
     $stmt = $conn->prepare("
         SELECT 
             DAYNAME(o.created_at) as day_name,
@@ -158,26 +162,33 @@ try {
             COUNT(o.id) as pageViews
         FROM orders o
         WHERE o.created_at >= :traffic_start
-        GROUP BY DAYOFWEEK(o.created_at)
+          AND o.user_id > 0
+        GROUP BY DAYNAME(o.created_at)
         ORDER BY MIN(o.created_at)
     ");
     $stmt->bindParam(':traffic_start', $trafficStart);
     $stmt->execute();
     $trafficData = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // Map days to ensure all days are shown
+    $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    $dayAbbr = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     $trafficMap = [];
+    
     foreach ($trafficData as $t) {
-        $abbr = substr($t['day_name'], 0, 3);
-        $trafficMap[$abbr] = [
-            'day' => $abbr,
-            'visitors' => (int)$t['visitors'],
-            'pageViews' => (int)$t['pageViews']
-        ];
+        $dayName = trim($t['day_name']);
+        $idx = array_search($dayName, $days);
+        if ($idx !== false) {
+            $trafficMap[$dayAbbr[$idx]] = [
+                'day' => $dayAbbr[$idx],
+                'visitors' => (int)$t['visitors'],
+                'pageViews' => (int)$t['pageViews']
+            ];
+        }
     }
     
     $finalTraffic = [];
-    foreach ($days as $day) {
+    foreach ($dayAbbr as $day) {
         $finalTraffic[] = $trafficMap[$day] ?? [
             'day' => $day,
             'visitors' => 0,
@@ -222,7 +233,7 @@ try {
         ['stage' => 'Product Views', 'value' => $productViews, 'percentage' => round(($productViews / $pageViewsCount) * 100, 1)],
         ['stage' => 'Add to Cart', 'value' => $addToCart, 'percentage' => round(($addToCart / $pageViewsCount) * 100, 1)],
         ['stage' => 'Checkout Started', 'value' => $checkoutStarted, 'percentage' => round(($checkoutStarted / $pageViewsCount) * 100, 1)],
-        ['stage' => 'Orders Completed', 'value' => $ordersCompleted, 'percentage' => round(($ordersCompleted / $pageViewsCount) * 100, 1)]
+        ['stage' => 'Orders Completed', 'value' => $ordersCompleted, 'percentage' => round(($ordersCompleted / $pageViewsCount) * 100, 2)]
     ];
     $data['conversionFunnel'] = $conversionFunnel;
     $data['overallConversionRate'] = round(($ordersCompleted / $pageViewsCount) * 100, 2);

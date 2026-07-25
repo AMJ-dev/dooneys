@@ -36,9 +36,17 @@ import {
   User,
   X,
   ArrowLeft,
-  Home
+  Home,
+  Receipt as ReceiptIcon,
+  Building2,
+  Clock4,
+  Wallet,
+  Banknote,
+  Smartphone,
+  Check,
+  AlertCircle
 } from "lucide-react";
-import { comp_name, comp_phone } from "@/lib/constants";
+import { comp_name, comp_phone, comp_email, comp_address } from "@/lib/constants";
 import { format_currency, gen_random_string, resolveSrc } from "@/lib/functions";
 import { http } from "@/lib/httpClient";
 import { ApiResp } from "@/lib/types";
@@ -57,7 +65,6 @@ const OrderConfirmation = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [showReceiptPage, setShowReceiptPage] = useState(false);
 
-  // Initialize print functionality
   const handlePrint = useReactToPrint({
     content: () => receiptRef.current,
     documentTitle: order ? `${comp_name}_Receipt_${order.order.orderNumber}` : "Receipt",
@@ -91,7 +98,6 @@ const OrderConfirmation = () => {
     fetchOrder();
   }, [id]);
 
-  // Check for mobile on mount and resize
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -139,17 +145,14 @@ const OrderConfirmation = () => {
 
   const openReceiptPage = () => {
     setShowReceiptPage(true);
-    // Prevent body scroll when receipt is open
     document.body.style.overflow = 'hidden';
   };
 
   const closeReceiptPage = () => {
     setShowReceiptPage(false);
-    // Restore body scroll
     document.body.style.overflow = 'auto';
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       document.body.style.overflow = 'auto';
@@ -184,9 +187,9 @@ const OrderConfirmation = () => {
   const orderData = order;
   const displayItems = showAllItems ? orderData.items : orderData.items.slice(0, 3);
 
-  // Receipt Component (for printing)
+  // Enhanced Receipt Component
   const Receipt = forwardRef((props, ref) => (
-    <div ref={ref} className="p-8 bg-white text-gray-800" style={{ minWidth: '210mm' }}>
+    <div ref={ref} className="bg-white text-gray-900" style={{ minWidth: '210mm', padding: '20mm' }}>
       <style>
         {`
           @media print {
@@ -198,119 +201,176 @@ const OrderConfirmation = () => {
           }
           @page { 
             size: A4;
-            margin: 20mm;
+            margin: 10mm;
+          }
+          .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          .receipt-table th {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 2px solid #e5e7eb;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .receipt-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: top;
+          }
+          .receipt-table tr:last-child td {
+            border-bottom: none;
+          }
+          .receipt-total-line {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 12px;
+            margin-top: 4px;
           }
         `}
       </style>
       
-      <div className="text-center border-b-2 border-gray-300 pb-6 mb-6">
-        <h1 className="text-3xl font-display font-bold text-gray-900 mb-2">{comp_name}</h1>
-        <p className="text-gray-600">Premium Beauty & Cosmetics</p>
-        <p className="text-sm text-gray-500 mt-4">
-          {new Date(orderData.order.createdAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
+      {/* Header */}
+      <div className="text-center border-b-2 border-gray-200 pb-8 mb-8">
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-2xl shadow-lg">
+            ✨
+          </div>
+          <h1 className="text-3xl font-display font-bold text-gray-900">{comp_name}</h1>
+        </div>
+        <p className="text-gray-600 text-sm">Premium Beauty & Cosmetics</p>
+        <p className="text-gray-500 text-xs mt-2">
+          {comp_address || "123 Beauty Ave, Toronto, ON M5V 2A1"}
         </p>
+        <p className="text-gray-500 text-xs">{comp_phone}</p>
       </div>
 
-      <div className="mb-6">
-        <div className="flex justify-between mb-4">
+      {/* Receipt Info */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div>
+          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Receipt #</p>
+          <p className="text-lg font-bold">{orderData.receipt.receiptNumber}</p>
+          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider mt-3">Order #</p>
+          <p className="text-lg font-bold">{orderData.order.orderNumber}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Date</p>
+          <p className="font-medium">
+            {new Date(orderData.order.createdAt).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </p>
+          <p className="text-sm text-gray-500">
+            {new Date(orderData.order.createdAt).toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+        </div>
+      </div>
+
+      {/* Customer Info */}
+      <div className="bg-gray-50 rounded-lg p-4 mb-6">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Customer Information</h3>
+        <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
-            <p className="text-sm text-gray-500">Receipt #</p>
-            <p className="font-bold">{orderData.receipt.receiptNumber}</p>
+            <p className="text-gray-500 text-xs">Name</p>
+            <p className="font-medium">{orderData.customer.name}</p>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">Order #</p>
-            <p className="font-bold">{orderData.order.orderNumber}</p>
+          <div>
+            <p className="text-gray-500 text-xs">Email</p>
+            <p className="font-medium">{orderData.customer.email}</p>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <h3 className="font-bold text-lg mb-2">Customer Information</h3>
-          <div className="grid grid-cols-2 gap-4">
+          {orderData.customer.phone && (
             <div>
-              <p className="text-sm text-gray-500">Name</p>
-              <p className="font-medium">{orderData.customer.name}</p>
+              <p className="text-gray-500 text-xs">Phone</p>
+              <p className="font-medium">{orderData.customer.phone}</p>
             </div>
-            <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p className="font-medium">{orderData.customer.email}</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
+      {/* Items */}
       <div className="mb-6">
-        <h3 className="font-bold text-lg mb-4 border-b pb-2">Items Purchased</h3>
-        <table className="w-full">
+        <h3 className="text-sm font-semibold text-gray-700 mb-3">Items Purchased</h3>
+        <table className="receipt-table">
           <thead>
-            <tr className="border-b">
-              <th className="text-left py-2 text-sm text-gray-500">Item</th>
-              <th className="text-right py-2 text-sm text-gray-500">Qty</th>
-              <th className="text-right py-2 text-sm text-gray-500">Price</th>
-              <th className="text-right py-2 text-sm text-gray-500">Total</th>
+            <tr>
+              <th className="w-[45%]">Item</th>
+              <th className="w-[15%] text-center">Qty</th>
+              <th className="w-[20%] text-right">Price</th>
+              <th className="w-[20%] text-right">Total</th>
             </tr>
           </thead>
           <tbody>
             {orderData.items.map((item, index) => (
-              <tr key={index} className="border-b">
-                <td className="py-3">
-                  <div>
-                    <p className="font-medium">{item.product.name}</p>
-                    {item.variants && item.variants.length > 0 && (
-                      <div className="text-xs text-gray-500">
-                        {item.variants.map((v, i) => (
-                          <p key={i}>
-                            {v.variant_type}: {v.option_value}
-                            {v.price_modifier && ` (+${format_currency(v.price_modifier)})`}
-                          </p>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+              <tr key={index}>
+                <td>
+                  <p className="font-medium text-sm">{item.product.name}</p>
+                  {item.variants && item.variants.length > 0 && (
+                    <div className="text-xs text-gray-500 mt-0.5">
+                      {item.variants.map((v, i) => (
+                        <span key={i}>
+                          {v.variant_type}: {v.option_value}
+                          {v.price_modifier && parseFloat(v.price_modifier) !== 0 && (
+                            <span className={parseFloat(v.price_modifier) > 0 ? 'text-green-600' : 'text-red-600'}>
+                              ({parseFloat(v.price_modifier) > 0 ? '+' : ''}{format_currency(parseFloat(v.price_modifier))})
+                            </span>
+                          )}
+                          {i < item.variants.length - 1 && ', '}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </td>
-                <td className="text-right py-3">{item.quantity}</td>
-                <td className="text-right py-3">{format_currency(item.product.price)}</td>
-                <td className="text-right py-3 font-medium">{format_currency(item.lineTotal)}</td>
+                <td className="text-center">{item.quantity}</td>
+                <td className="text-right">{format_currency(item.product.price)}</td>
+                <td className="text-right font-medium">{format_currency(item.lineTotal)}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="mb-8">
-        <div className="flex justify-between py-2">
-          <span>Subtotal</span>
-          <span>{format_currency(orderData.totals.subtotal)}</span>
-        </div>
-        <div className="flex justify-between py-2">
-          <span>Shipping</span>
-          <span>{orderData.totals.shipping === 0 ? 'Free' : format_currency(orderData.totals.shipping)}</span>
-        </div>
-        <div className="flex justify-between py-2">
-          <span>Tax</span>
-          <span>{format_currency(orderData.totals.tax)}</span>
-        </div>
-        {orderData.totals.discount > 0 && (
-          <div className="flex justify-between py-2 text-green-600">
-            <span>Discount {orderData.totals.discountCode && `(${orderData.totals.discountCode})`}</span>
-            <span>-{format_currency(orderData.totals.discount)}</span>
+      {/* Totals */}
+      <div className="border-t-2 border-gray-200 pt-4 mb-6">
+        <div className="space-y-2 max-w-xs ml-auto">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Subtotal</span>
+            <span>{format_currency(orderData.totals.subtotal)}</span>
           </div>
-        )}
-        <div className="flex justify-between py-4 border-t-2 border-gray-300 font-bold text-lg">
-          <span>TOTAL</span>
-          <span>{format_currency(orderData.totals.grandTotal)}</span>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Shipping</span>
+            <span>{orderData.totals.shipping === 0 ? 'Free' : format_currency(orderData.totals.shipping)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Tax</span>
+            <span>{format_currency(orderData.totals.tax)}</span>
+          </div>
+          {orderData.totals.discount > 0 && (
+            <div className="flex justify-between text-sm text-green-600">
+              <span>Discount {orderData.totals.discountCode && `(${orderData.totals.discountCode})`}</span>
+              <span>-{format_currency(orderData.totals.discount)}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-lg font-bold pt-2 receipt-total-line">
+            <span>TOTAL</span>
+            <span className="text-primary">{format_currency(orderData.totals.grandTotal)}</span>
+          </div>
         </div>
       </div>
 
-      <div className="text-center text-sm text-gray-500 border-t pt-6">
-        <p className="mb-2">Thank you for your purchase at {comp_name}!</p>
-        <p>For questions about your order, contact us at {comp_phone}</p>
-        <p className="mt-4 text-xs">This is your official receipt. Please keep for your records.</p>
+      {/* Footer */}
+      <div className="text-center text-sm text-gray-500 border-t-2 border-gray-200 pt-6 mt-6">
+        <p className="font-medium text-gray-700 mb-2">Thank you for your purchase!</p>
+        <p className="text-xs">For questions about your order, contact us at {comp_phone}</p>
+        <p className="text-xs mt-4">This is your official receipt. Please keep for your records.</p>
+        <p className="text-xs text-gray-400 mt-2">Generated on {new Date().toLocaleString()}</p>
       </div>
     </div>
   ));
@@ -319,7 +379,6 @@ const OrderConfirmation = () => {
     <>
       <Layout>
         <div className="relative overflow-hidden">
-          {/* Background decorative elements */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
           <div className="absolute top-20 right-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl hidden md:block" />
           <div className="absolute bottom-20 left-10 w-80 h-80 bg-accent/5 rounded-full blur-3xl hidden md:block" />
@@ -348,7 +407,7 @@ const OrderConfirmation = () => {
                     onClick={openReceiptPage}
                     className="gap-2"
                   >
-                    <FileText className="h-4 w-4" />
+                    <ReceiptIcon className="h-4 w-4" />
                     Receipt
                   </Button>
                 </motion.div>
@@ -368,7 +427,7 @@ const OrderConfirmation = () => {
 
               {/* Main Content */}
               <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
-                {/* Left Column - Main Success & Items */}
+                {/* Left Column */}
                 <div className="lg:col-span-2 space-y-6 md:space-y-8">
                   {/* Success Card */}
                   <motion.div
@@ -378,16 +437,10 @@ const OrderConfirmation = () => {
                     className="bg-gradient-to-br from-card via-card/95 to-card/90 rounded-2xl md:rounded-3xl p-6 md:p-8 shadow-elevated border border-border/50 backdrop-blur-sm"
                   >
                     <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-                      {/* Success Icon */}
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ 
-                          type: "spring", 
-                          stiffness: 200, 
-                          damping: 15,
-                          delay: 0.2 
-                        }}
+                        transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.2 }}
                         className="relative"
                       >
                         <div className="h-24 w-24 md:h-32 md:w-32 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center shadow-lg">
@@ -396,7 +449,6 @@ const OrderConfirmation = () => {
                         </div>
                       </motion.div>
 
-                      {/* Success Message */}
                       <div className="flex-1 text-center md:text-left">
                         <motion.h1
                           initial={{ opacity: 0, y: 20 }}
@@ -418,7 +470,6 @@ const OrderConfirmation = () => {
                           A detailed confirmation has been sent to {orderData.customer.email}.
                         </motion.p>
 
-                        {/* Desktop Action Buttons */}
                         {!isMobile && (
                           <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -426,27 +477,15 @@ const OrderConfirmation = () => {
                             transition={{ delay: 0.5 }}
                             className="flex flex-wrap gap-3"
                           >
-                            <Button
-                              onClick={openReceiptPage}
-                              variant="outline"
-                              className="gap-2"
-                            >
-                              <FileText className="h-4 w-4" />
+                            <Button onClick={openReceiptPage} variant="outline" className="gap-2">
+                              <ReceiptIcon className="h-4 w-4" />
                               View Receipt
                             </Button>
-                            <Button
-                              onClick={handlePrint}
-                              variant="outline"
-                              className="gap-2"
-                            >
+                            <Button onClick={handlePrint} variant="outline" className="gap-2">
                               <Printer className="h-4 w-4" />
                               Print
                             </Button>
-                            <Button
-                              onClick={handleShareOrder}
-                              variant="outline"
-                              className="gap-2"
-                            >
+                            <Button onClick={handleShareOrder} variant="outline" className="gap-2">
                               <Share2 className="h-4 w-4" />
                               Share
                             </Button>
@@ -455,7 +494,6 @@ const OrderConfirmation = () => {
                       </div>
                     </div>
 
-                    {/* Mobile Bottom Actions */}
                     {isMobile && (
                       <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -463,21 +501,11 @@ const OrderConfirmation = () => {
                         transition={{ delay: 0.5 }}
                         className="mt-6 pt-6 border-t border-border/50 flex flex-wrap gap-3 justify-center"
                       >
-                        <Button
-                          onClick={openReceiptPage}
-                          variant="outline"
-                          size="sm"
-                          className="gap-2 flex-1 min-w-[120px]"
-                        >
-                          <FileText className="h-4 w-4" />
+                        <Button onClick={openReceiptPage} variant="outline" size="sm" className="gap-2 flex-1 min-w-[120px]">
+                          <ReceiptIcon className="h-4 w-4" />
                           Receipt
                         </Button>
-                        <Button
-                          onClick={handlePrint}
-                          variant="outline"
-                          size="sm"
-                          className="gap-2 flex-1 min-w-[120px]"
-                        >
+                        <Button onClick={handlePrint} variant="outline" size="sm" className="gap-2 flex-1 min-w-[120px]">
                           <Printer className="h-4 w-4" />
                           Print
                         </Button>
@@ -491,7 +519,7 @@ const OrderConfirmation = () => {
                     )}
                   </motion.div>
 
-                  {/* Order Items Section */}
+                  {/* Order Items */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -590,7 +618,7 @@ const OrderConfirmation = () => {
                     </div>
                   </motion.div>
 
-                  {/* Expandable Order Details */}
+                  {/* Order Details Toggle */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -623,7 +651,6 @@ const OrderConfirmation = () => {
                           className="overflow-hidden"
                         >
                           <div className="grid md:grid-cols-2 gap-4 md:gap-6 pt-4 md:pt-6 mt-4 md:mt-6 border-t border-border/50">
-                            {/* Customer Info */}
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 mb-2">
                                 <User className="h-5 w-5 text-primary" />
@@ -647,7 +674,6 @@ const OrderConfirmation = () => {
                               </div>
                             </div>
 
-                            {/* Delivery Info */}
                             <div className="space-y-3">
                               <div className="flex items-center gap-2 mb-2">
                                 {orderData.fulfillment.method === 'shipping' ? (
@@ -685,7 +711,6 @@ const OrderConfirmation = () => {
                               )}
                             </div>
 
-                            {/* Payment Info */}
                             <div className="space-y-3 md:col-span-2">
                               <div className="flex items-center gap-2 mb-2">
                                 <CreditCard className="h-5 w-5 text-primary" />
@@ -731,7 +756,7 @@ const OrderConfirmation = () => {
                   </motion.div>
                 </div>
 
-                {/* Right Column - Order Summary & Actions */}
+                {/* Right Column */}
                 <div className="space-y-6 md:space-y-8">
                   {/* Order Summary */}
                   <motion.div
@@ -784,7 +809,6 @@ const OrderConfirmation = () => {
                       </div>
                     </div>
 
-                    {/* Order Status */}
                     <div className="p-3 md:p-4 bg-gradient-to-r from-primary/5 to-accent/5 rounded-xl border border-primary/20 mb-4 md:mb-6">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-sm text-muted-foreground">Order Status</span>
@@ -804,20 +828,12 @@ const OrderConfirmation = () => {
                       </div>
                     </div>
 
-                    {/* Quick Actions */}
                     <div className="space-y-2">
-                      <Button 
-                        onClick={openReceiptPage} 
-                        className="w-full gap-2"
-                      >
-                        <FileText className="h-4 w-4" />
+                      <Button onClick={openReceiptPage} className="w-full gap-2">
+                        <ReceiptIcon className="h-4 w-4" />
                         View Receipt
                       </Button>
-                      <Button 
-                        onClick={handlePrint} 
-                        variant="outline" 
-                        className="w-full gap-2"
-                      >
+                      <Button onClick={handlePrint} variant="outline" className="w-full gap-2">
                         <Printer className="h-4 w-4" />
                         Print Receipt
                       </Button>
@@ -825,8 +841,7 @@ const OrderConfirmation = () => {
                   </motion.div>
 
                   {/* Support Card */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                  <motion.div                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9 }}
                     className="bg-gradient-to-r from-blue-50 to-blue-50/50 rounded-2xl p-4 md:p-6 border border-blue-200/50"
@@ -849,13 +864,7 @@ const OrderConfirmation = () => {
                         </a>
                       </Button>
                       <Button asChild variant="outline" className="w-full gap-2 justify-start">
-                        <a href={`https://wa.me/${comp_phone.replace(/[^0-9]/g, '')}`}>
-                          <ExternalLink className="h-4 w-4" />
-                          WhatsApp Chat
-                        </a>
-                      </Button>
-                      <Button asChild variant="outline" className="w-full gap-2 justify-start">
-                        <a href="mailto:support@example.com">
+                        <a href={`mailto:${comp_email || 'support@example.com'}`}>
                           <Mail className="h-4 w-4" />
                           Email Support
                         </a>
@@ -921,7 +930,7 @@ const OrderConfirmation = () => {
         </div>
       </Layout>
 
-      {/* Full-page Slide-in Receipt */}
+      {/* Full-page Slide-in Receipt - Redesigned */}
       <AnimatePresence>
         {showReceiptPage && (
           <motion.div
@@ -931,7 +940,7 @@ const OrderConfirmation = () => {
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[100] bg-background overflow-hidden"
           >
-            {/* Receipt Header - Sticky */}
+            {/* Sticky Header */}
             <div className="sticky top-0 z-20 bg-card border-b border-border/50 backdrop-blur-sm">
               <div className="container max-w-6xl mx-auto px-4 md:px-6">
                 <div className="flex items-center justify-between h-16">
@@ -945,15 +954,16 @@ const OrderConfirmation = () => {
                   </Button>
                   
                   <div className="flex items-center gap-3">
-                    <h1 className="font-display text-xl md:text-2xl">
-                      Order Receipt
-                    </h1>
-                    <Badge variant="secondary" className="text-xs md:text-sm">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                      <ReceiptIcon className="h-4 w-4 text-white" />
+                    </div>
+                    <h1 className="font-display text-xl md:text-2xl">Receipt</h1>
+                    <Badge variant="secondary" className="text-xs md:text-sm hidden sm:inline-block">
                       #{orderData.order.orderNumber}
                     </Badge>
                   </div>
                   
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 md:gap-2">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -986,313 +996,295 @@ const OrderConfirmation = () => {
             </div>
 
             {/* Receipt Content */}
-            <div className="h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="h-[calc(100vh-4rem)] overflow-y-auto bg-gradient-to-br from-gray-50 to-white">
               <div className="container max-w-4xl mx-auto px-4 md:px-6 py-8">
                 {/* Hidden printable receipt */}
                 <div className="hidden">
                   <Receipt ref={receiptRef} />
                 </div>
 
-                {/* Receipt Header */}
+                {/* Visible Receipt */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="text-center mb-8"
+                  className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
                 >
-                  <div className="mb-4">
-                    <h1 className="font-display text-4xl md:text-5xl mb-2 bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent">
-                      {comp_name}
-                    </h1>
-                    <p className="text-muted-foreground">Premium Beauty & Cosmetics</p>
+                  {/* Receipt Header - Premium Design */}
+                  <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-b border-gray-200 p-6 md:p-8">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-2xl shadow-lg flex-shrink-0">
+                          ✨
+                        </div>
+                        <div>
+                          <h2 className="font-display text-2xl md:text-3xl font-bold text-gray-900">{comp_name}</h2>
+                          <p className="text-gray-600 text-sm">Premium Beauty & Cosmetics</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">Receipt #{orderData.receipt.receiptNumber}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {new Date(orderData.order.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="inline-flex flex-col md:flex-row items-center gap-4 md:gap-8 px-6 py-3 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-2xl">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Receipt #</p>
-                      <p className="font-display text-lg font-bold">{orderData.receipt.receiptNumber}</p>
+
+                  {/* Order Info Bar */}
+                  <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-6 flex-wrap">
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Order #</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-gray-900">{orderData.order.orderNumber}</p>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={handleCopyOrderNumber}
+                          >
+                            <Copy className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="hidden md:block w-px h-8 bg-gray-200" />
+                      <div>
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Status</p>
+                        <Badge className={`
+                          ${orderData.order.status.order === 'processing' 
+                            ? 'bg-blue-100 text-blue-800 hover:bg-blue-100'
+                            : orderData.order.status.order === 'completed'
+                            ? 'bg-green-100 text-green-800 hover:bg-green-100'
+                            : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                          }
+                        `}>
+                          {orderData.order.status.order}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="h-8 w-px bg-border hidden md:block" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Order #</p>
-                      <p className="font-display text-lg font-bold">{orderData.order.orderNumber}</p>
-                    </div>
-                    <div className="h-8 w-px bg-border hidden md:block" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Date</p>
-                      <p className="font-medium">
-                        {new Date(orderData.order.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Total</p>
+                      <p className="font-display text-2xl font-bold text-primary">
+                        {format_currency(orderData.totals.grandTotal)}
                       </p>
                     </div>
                   </div>
+
+                  {/* Customer Info */}
+                  <div className="px-6 py-4 border-b border-gray-100">
+                    <div className="flex items-center gap-2 mb-3">
+                      <User className="h-4 w-4 text-gray-400" />
+                      <h3 className="font-medium text-sm text-gray-700">Customer Information</h3>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <p className="text-gray-500 text-xs">Name</p>
+                        <p className="font-medium text-gray-900">{orderData.customer.name}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Email</p>
+                        <p className="font-medium text-gray-900 truncate">{orderData.customer.email}</p>
+                      </div>
+                      {orderData.customer.phone && (
+                        <div>
+                          <p className="text-gray-500 text-xs">Phone</p>
+                          <p className="font-medium text-gray-900">{orderData.customer.phone}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Items Table */}
+                  <div className="px-6 py-4 border-b border-gray-100">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Package className="h-4 w-4 text-gray-400" />
+                      <h3 className="font-medium text-sm text-gray-700">Items ({orderData.items.length})</h3>
+                    </div>
+                    
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                            <th className="text-center py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Qty</th>
+                            <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                            <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {orderData.items.map((item, index) => (
+                            <tr key={index}>
+                              <td className="py-3">
+                                <div className="flex items-start gap-3">
+                                  <img
+                                    src={resolveSrc(item.product.image)}
+                                    alt={item.product.name}
+                                    className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0"
+                                  />
+                                  <div>
+                                    <p className="font-medium text-sm text-gray-900">{item.product.name}</p>
+                                    {item.variants && item.variants.length > 0 && (
+                                      <div className="text-xs text-gray-500 mt-0.5">
+                                        {item.variants.map((v, i) => (
+                                          <span key={i}>
+                                            {v.variant_type}: {v.option_value}
+                                            {v.price_modifier && parseFloat(v.price_modifier) !== 0 && (
+                                              <span className={parseFloat(v.price_modifier) > 0 ? 'text-green-600' : 'text-red-600'}>
+                                                ({parseFloat(v.price_modifier) > 0 ? '+' : ''}{format_currency(parseFloat(v.price_modifier))})
+                                              </span>
+                                            )}
+                                            {i < item.variants.length - 1 && ', '}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="text-center py-3">
+                                <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 text-sm font-medium">
+                                  {item.quantity}
+                                </span>
+                              </td>
+                              <td className="text-right py-3 text-sm text-gray-600">{format_currency(item.product.price)}</td>
+                              <td className="text-right py-3 font-medium text-gray-900">{format_currency(item.lineTotal)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Totals */}
+                  <div className="px-6 py-4 bg-gray-50">
+                    <div className="max-w-xs ml-auto space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Subtotal</span>
+                        <span>{format_currency(orderData.totals.subtotal)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600 flex items-center gap-1">
+                          <Truck className="h-3.5 w-3.5" />
+                          Shipping
+                        </span>
+                        <span>{orderData.totals.shipping === 0 ? 'Free' : format_currency(orderData.totals.shipping)}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Tax</span>
+                        <span>{format_currency(orderData.totals.tax)}</span>
+                      </div>
+                      {orderData.totals.discount > 0 && (
+                        <div className="flex justify-between text-sm text-green-600">
+                          <span className="flex items-center gap-1">
+                            <Tag className="h-3.5 w-3.5" />
+                            Discount {orderData.totals.discountCode && `(${orderData.totals.discountCode})`}
+                          </span>
+                          <span>-{format_currency(orderData.totals.discount)}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between text-lg font-bold pt-3 border-t-2 border-gray-200">
+                        <span className="text-gray-900">TOTAL</span>
+                        <span className="text-primary">{format_currency(orderData.totals.grandTotal)}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Payment & Delivery */}
+                  <div className="px-6 py-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <CreditCard className="h-4 w-4 text-gray-400" />
+                        <h4 className="font-medium text-sm text-gray-700">Payment</h4>
+                      </div>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Method</span>
+                          <span className="font-medium capitalize">{orderData.payment.method}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500">Status</span>
+                          <Badge className={`
+                            text-xs
+                            ${orderData.payment.status === 'paid' 
+                              ? 'bg-green-100 text-green-800 hover:bg-green-100' 
+                              : orderData.payment.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                              : 'bg-red-100 text-red-800 hover:bg-red-100'
+                            }
+                          `}>
+                            {orderData.payment.status}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        {orderData.fulfillment.method === 'shipping' ? (
+                          <Truck className="h-4 w-4 text-gray-400" />
+                        ) : (
+                          <Store className="h-4 w-4 text-gray-400" />
+                        )}
+                        <h4 className="font-medium text-sm text-gray-700">
+                          {orderData.fulfillment.method === 'shipping' ? 'Delivery' : 'Pickup'}
+                        </h4>
+                      </div>
+                      <div className="space-y-1 text-sm">
+                        {orderData.fulfillment.method === 'shipping' && orderData.shippingAddress ? (
+                          <>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Address</span>
+                              <span className="font-medium text-right">
+                                {orderData.shippingAddress.street}<br />
+                                {orderData.shippingAddress.city}, {orderData.shippingAddress.province}<br />
+                                {orderData.shippingAddress.postal}
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-sm text-gray-600">
+                            Ready for in-store pickup
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer */}
+                  <div className="bg-gray-50 px-6 py-4 text-center border-t border-gray-200">
+                    <p className="text-sm text-gray-600 font-medium">Thank you for your purchase at {comp_name}!</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      For questions, contact us at {comp_phone}
+                    </p>
+                    <p className="text-xs text-gray-400 mt-2">
+                      This is your official receipt. Please keep for your records.
+                    </p>
+                  </div>
                 </motion.div>
 
-                {/* Customer Info */}
+                {/* Action Buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="mb-8"
+                  className="mt-6 flex flex-wrap gap-3 justify-center"
                 >
-                  <div className="flex items-center gap-2 mb-4">
-                    <User className="h-5 w-5 text-primary" />
-                    <h2 className="font-display text-xl">Customer Information</h2>
-                  </div>
-                  <div className="grid md:grid-cols-2 gap-6 p-6 bg-gradient-to-r from-card/50 to-card/30 rounded-2xl border border-border/50">
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Full Name</p>
-                      <p className="font-medium text-lg">{orderData.customer.name}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground mb-1">Email Address</p>
-                      <p className="font-medium text-lg">{orderData.customer.email}</p>
-                    </div>
-                    {orderData.customer.phone && (
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Phone Number</p>
-                        <p className="font-medium text-lg">{orderData.customer.phone}</p>
-                      </div>
-                    )}
-                    {orderData.shippingAddress && (
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">Shipping Address</p>
-                        <p className="font-medium">
-                          {orderData.shippingAddress.name}<br />
-                          {orderData.shippingAddress.street}<br />
-                          {orderData.shippingAddress.city}, {orderData.shippingAddress.province}<br />
-                          {orderData.shippingAddress.postal}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-
-                {/* Order Items */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className="mb-8"
-                >
-                  <div className="flex items-center gap-2 mb-4">
-                    <Package className="h-5 w-5 text-primary" />
-                    <h2 className="font-display text-xl">Items Purchased</h2>
-                    <Badge variant="outline" className="ml-2">
-                      {orderData.items.length} items
-                    </Badge>
-                  </div>
-                  
-                  <div className="rounded-2xl border border-border/50 overflow-hidden">
-                    <div className="bg-gradient-to-r from-card/80 to-card/60 p-4 border-b border-border/50">
-                      <div className="grid grid-cols-12 gap-4 text-sm text-muted-foreground">
-                        <div className="col-span-6 md:col-span-7">Product</div>
-                        <div className="col-span-2 text-right">Qty</div>
-                        <div className="col-span-2 text-right hidden md:block">Price</div>
-                        <div className="col-span-4 md:col-span-1 text-right">Total</div>
-                      </div>
-                    </div>
-                    
-                    <div className="divide-y divide-border/30">
-                      {orderData.items.map((item, index) => (
-                        <motion.div
-                          key={item.product.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.05 * index }}
-                          className="p-4 hover:bg-gradient-to-r from-background/50 to-background/30 transition-colors"
-                        >
-                          <div className="grid grid-cols-12 gap-4 items-center">
-                            <div className="col-span-6 md:col-span-7">
-                              <div className="flex items-start gap-3">
-                                <img
-                                  src={resolveSrc(item.product.image)}
-                                  alt={item.product.name}
-                                  className="w-12 h-12 rounded-lg object-cover border border-border"
-                                />
-                                <div>
-                                  <h4 className="font-medium">{item.product.name}</h4>
-                                  {item.variants && item.variants.length > 0 && (
-                                    <div className="mt-1">
-                                      {item.variants.map((variant, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="text-xs text-muted-foreground"
-                                        >
-                                          {variant.variant_type}: {variant.option_value}
-                                          {variant.price_modifier && parseFloat(variant.price_modifier) !== 0 && (
-                                            <span className={parseFloat(variant.price_modifier) > 0 ? 'text-green-600' : 'text-red-600'}>
-                                              ({parseFloat(variant.price_modifier) > 0 ? '+' : ''}{format_currency(parseFloat(variant.price_modifier))})
-                                            </span>
-                                          )}
-                                          {idx < item.variants.length - 1 && ', '}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="col-span-2 text-right">
-                              <span className="font-medium">{item.quantity}</span>
-                            </div>
-                            <div className="col-span-2 text-right hidden md:block">
-                              <span className="text-muted-foreground">{format_currency(item.product.price)}</span>
-                            </div>
-                            <div className="col-span-4 md:col-span-1 text-right">
-                              <span className="font-display font-bold">{format_currency(item.lineTotal)}</span>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Payment Summary */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="mb-8"
-                >
-                  <div className="flex items-center gap-2 mb-4">
-                    <CreditCard className="h-5 w-5 text-primary" />
-                    <h2 className="font-display text-xl">Payment Summary</h2>
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="p-6 bg-gradient-to-r from-card/50 to-card/30 rounded-2xl border border-border/50">
-                        <div className="space-y-3">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Subtotal</span>
-                            <span className="font-medium">{format_currency(orderData.totals.subtotal)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground flex items-center gap-2">
-                              <Truck className="h-4 w-4" />
-                              Shipping
-                            </span>
-                            <span className="font-medium">
-                              {orderData.totals.shipping === 0 ? 'Free' : format_currency(orderData.totals.shipping)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Tax (GST)</span>
-                            <span className="font-medium">{format_currency(orderData.totals.tax)}</span>
-                          </div>
-                          {orderData.totals.discount > 0 && (
-                            <div className="flex justify-between text-green-600">
-                              <span className="flex items-center gap-2">
-                                <Tag className="h-4 w-4" />
-                                Discount {orderData.totals.discountCode && `(${orderData.totals.discountCode})`}
-                              </span>
-                              <span className="font-medium">-{format_currency(orderData.totals.discount)}</span>
-                            </div>
-                          )}
-                          <div className="pt-4 border-t border-border/50">
-                            <div className="flex justify-between items-center">
-                              <span className="font-display text-lg">Total</span>
-                              <span className="font-display text-2xl text-primary">
-                                {format_currency(orderData.totals.grandTotal)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="p-6 bg-gradient-to-r from-green-50/50 to-green-50/30 rounded-2xl border border-green-200/50">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                            <CheckCircle2 className="h-5 w-5 text-green-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium">Payment Status</h3>
-                            <p className="text-xs text-muted-foreground">
-                              {orderData.payment.method === 'cash' ? 'To be paid on pickup' : 'Paid with card'}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge className={`
-                          w-full justify-center py-2 text-sm
-                          ${orderData.payment.status === 'paid' 
-                            ? 'bg-green-100 text-green-800 hover:bg-green-100' 
-                            : orderData.payment.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-                            : 'bg-red-100 text-red-800 hover:bg-red-100'
-                          }
-                        `}>
-                          {orderData.payment.status.toUpperCase()}
-                        </Badge>
-                      </div>
-                      
-                      <div className="p-6 bg-gradient-to-r from-blue-50/50 to-blue-50/30 rounded-2xl border border-blue-200/50">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <Calendar className="h-5 w-5 text-blue-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-medium">Order Timeline</h3>
-                            <p className="text-xs text-muted-foreground">Placed on {new Date(orderData.order.createdAt).toLocaleDateString()}</p>
-                          </div>
-                        </div>
-                        <div className="text-sm space-y-2">
-                          <div className="flex justify-between">
-                            <span>Current Status</span>
-                            <span className="font-medium capitalize">{orderData.order.status.order}</span>
-                          </div>
-                          {orderData.fulfillment.method === 'shipping' && (
-                            <div className="flex justify-between">
-                              <span>Estimated Delivery</span>
-                              <span className="font-medium">3-5 business days</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Receipt Footer */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="text-center"
-                >
-                  <div className="p-8 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border border-primary/20 rounded-2xl">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center mx-auto mb-4">
-                      <ShieldCheck className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="font-display text-xl mb-2">Official Receipt</h3>
-                    <p className="text-muted-foreground mb-4 max-w-md mx-auto">
-                      This is your official receipt for Order #{orderData.order.orderNumber}. 
-                      Please save or print this receipt for your records.
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-6">
-                      For any questions, contact us at {comp_phone}
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <Button onClick={handlePrint} className="gap-2">
-                        <Printer className="h-4 w-4" />
-                        Print Receipt
-                      </Button>
-                      <Button onClick={handleDownloadReceipt} variant="outline" className="gap-2">
-                        <Download className="h-4 w-4" />
-                        Download PDF
-                      </Button>
-                      <Button onClick={closeReceiptPage} variant="ghost" className="gap-2">
-                        <ArrowLeft className="h-4 w-4" />
-                        Back to Order
-                      </Button>
-                    </div>
-                  </div>
+                  <Button onClick={handlePrint} className="gap-2">
+                    <Printer className="h-4 w-4" />
+                    Print Receipt
+                  </Button>
+                  <Button onClick={handleDownloadReceipt} variant="outline" className="gap-2">
+                    <Download className="h-4 w-4" />
+                    Download PDF
+                  </Button>
+                  <Button onClick={closeReceiptPage} variant="ghost" className="gap-2">
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Order
+                  </Button>
                 </motion.div>
               </div>
             </div>

@@ -24,6 +24,7 @@
 
         $orderNumber = generate_tracking_number();
 
+        // FIXED: Removed duplicate 'processing' from VALUES and fixed placeholders count
         $orderStmt = $conn->prepare("
             INSERT INTO orders (
                 order_number,
@@ -45,7 +46,7 @@
                 order_status,
                 created_at
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'processing', NOW()
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW()
             )
         ");
 
@@ -63,8 +64,10 @@
             $subtotal,
             $tax,
             $discount_amount,
-            $discount_code,
-            $total
+            $discount_code,      // Added this missing value
+            $total,
+            'pending',           // payment_status
+            'processing'         // order_status
         ]);
 
         $order_id = (int) $conn->lastInsertId();
@@ -164,3 +167,4 @@
         "error" => $error,
         "data"  => $data
     ]);
+?>

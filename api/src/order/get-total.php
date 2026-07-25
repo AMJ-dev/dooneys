@@ -1,5 +1,27 @@
 <?php
-    $gst_rate = (float)$site_settings->store_gst;
+    // Use global site_settings from payment-intent.php
+    global $site_settings;
+    
+    // If $site_settings is not set, fetch it
+    if (!isset($site_settings) || empty($site_settings)) {
+        $get_settings = $conn->prepare("SELECT * FROM store_settings LIMIT 1");
+        $get_settings->execute();
+        $site_settings = $get_settings->fetch(PDO::FETCH_OBJ);
+    }
+    
+    // Check if site_settings exists before using
+    if (!$site_settings) {
+        throw new Exception("Store settings not found");
+    }
+
+    // Use null coalescing to handle undefined properties
+    $gst_rate = (float)($site_settings->store_gst ?? 18.00);
+    $shipment_postal_code = $site_settings->shipment_postal_code ?? '';
+    $shipment_city = $site_settings->shipment_city ?? '';
+    $shipment_province = $site_settings->shipment_province ?? '';
+    $shipment_country = $site_settings->shipment_country ?? 'CA';
+    $store_free_shipping = isset($site_settings->store_free_shipping) ? ($site_settings->store_free_shipping == "1" || $site_settings->store_free_shipping == 1) : true;
+    $store_free_shipping_threshold = (float)($site_settings->store_free_shipping_threshold ?? 0);
 
     $fulfillment = $_POST['fulfillment_method'] ?? 'shipping';
     $payment     = $_POST['payment_method'] ?? 'card';
@@ -144,18 +166,17 @@
             } elseif ($discount->discount_type === 'free_shipping') {
                 $has_free_shipping_discount = true;
                 $discount_amount = 0;
-            }
+            } 
         }
     }
     
     $shipping_cost = 0;
     if ($fulfillment === 'shipping') {
-        // Check store free shipping
+        // Check store free shipping with proper null coalescing
         $is_store_free_shipping = false;
-        if ($site_settings->store_free_shipping == "1") {
-            $free_shipping_threshold = (float)$site_settings->store_free_shipping_threshold;
-            if ($free_shipping_threshold > 0) {
-                $is_store_free_shipping = ($subtotal >= $free_shipping_threshold);
+        if ($store_free_shipping) {
+            if ($store_free_shipping_threshold > 0) {
+                $is_store_free_shipping = ($subtotal >= $store_free_shipping_threshold);
             } else {
                 // If threshold is 0, ALL orders get free shipping
                 $is_store_free_shipping = true;
@@ -164,18 +185,18 @@
         
         // Check free shipping discount
         $is_free_shipping_discount = false;
-        if ($has_free_shipping_discount && $discount) {
-            $minPurchase = (float)$discount->min_purchase_amount;
+        if ($has_free_shipping_discount && isset($discount)) {
+            $minPurchase = (float)($discount->min_purchase_amount ?? 0);
             $is_free_shipping_discount = ($minPurchase <= 0 || $subtotal >= $minPurchase);
         }
         
         if ($is_store_free_shipping || $is_free_shipping_discount) {
             $shipping_cost = 0;
         } else {
-            $origin_postal = $site_settings->shipment_postal_code ?? null;
-            $origin_city = $site_settings->shipment_city ?? null;
-            $origin_province = $site_settings->shipment_province ?? null;
-            $origin_country = $site_settings->shipment_country ?? 'CA';
+            $origin_postal = $shipment_postal_code;
+            $origin_city = $shipment_city;
+            $origin_province = $shipment_province;
+            $origin_country = $shipment_country;
 
             $dest_postal = $address->postal_code ?? null;
             $dest_province = $address->province ?? null;
@@ -235,10 +256,21 @@
                 "height" => round($height, 2)
             ];
 
-            if($_POST["selected_shipping"]["carrier_id"] == "canada_post") $shipping_result = canada_post_rate($origin, $destination, $pkg);
-            elseif($_POST["selected_shipping"]["carrier_id"] == "fedex") $shipping_result = fedex_rate($origin, $destination, $pkg);
-            elseif($_POST["selected_shipping"]["carrier_id"] == "dhl") $shipping_result = dhl_rate($origin, $destination, $pkg);
-            $shipping_cost = $shipping_result['price'];
+            // Check if selected_shipping exists before using it
+            $selected_carrier = $_POST['selected_shipping']['carrier_id'] ?? '';
+            
+            if ($selected_carrier == "canada_post") {
+                $shipping_result = canada_post_rate($origin, $destination, $pkg);
+            } elseif ($selected_carrier == "fedex") {
+                $shipping_result = fedex_rate($origin, $destination, $pkg);
+            } elseif ($selected_carrier == "dhl") {
+                $shipping_result = dhl_rate($origin, $destination, $pkg);
+            } else {
+                // Default to Canada Post if no carrier selected
+                $shipping_result = canada_post_rate($origin, $destination, $pkg);
+            }
+            
+            $shipping_cost = $shipping_result['price'] ?? 0;
         }
     }
 

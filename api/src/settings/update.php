@@ -7,15 +7,31 @@
     try {
 
         function bool_val(string $key): int {
-            return isset($_POST[$key]) &&
-                (
-                    $_POST[$key] === "true" ||
-                    $_POST[$key] === "1" ||
-                    $_POST[$key] === 1 ||
-                    $_POST[$key] === true
-                )
-                ? 1
-                : 0;
+            if (!isset($_POST[$key])) {
+                return 0;
+            }
+            
+            $value = $_POST[$key];
+            
+            // Handle various formats that might come from checkboxes
+            if (is_string($value)) {
+                $value = strtolower(trim($value));
+                if ($value === "on" || $value === "true" || $value === "1") {
+                    return 1;
+                }
+            } else if (is_bool($value) || is_numeric($value)) {
+                if ($value === true || $value === 1 || $value === "1") {
+                    return 1;
+                }
+            }
+            
+            return 0;
+        }
+
+        // Clean string function to remove all whitespace
+        function clean_string($value) {
+            if ($value === null) return '';
+            return preg_replace('/[\r\n\t\s]+/', '', trim($value));
         }
 
         $stmt = $conn->prepare("
@@ -64,14 +80,15 @@
             WHERE id = 1
             LIMIT 1
         ");
+        
         // General
         $stmt->bindValue(":store_gst", $_POST["store_gst"] ?? "0");
         $stmt->bindValue(":store_free_shipping", bool_val("store_free_shipping"), PDO::PARAM_BOOL);
         $stmt->bindValue(":store_free_shipping_threshold", (float)($_POST["store_free_shipping_threshold"] ?? 0));
 
-        // Stripe
-        $stmt->bindValue(":stripe_secret_key", trim($_POST["stripe_secret_key"] ?? ""));
-        $stmt->bindValue(":stripe_publishable_key", trim($_POST["stripe_publishable_key"] ?? ""));
+        // Stripe - Clean both keys to remove any whitespace, newlines, etc.
+        $stmt->bindValue(":stripe_secret_key", clean_string($_POST["stripe_secret_key"] ?? ""));
+        $stmt->bindValue(":stripe_publishable_key", clean_string($_POST["stripe_publishable_key"] ?? ""));
 
         // Canada Post
         $stmt->bindValue(":canadapost_customer_number", trim($_POST["canadapost_customer_number"] ?? ""));
@@ -104,7 +121,10 @@
         $stmt->bindValue(":support_request_notification", bool_val("support_request_notification"), PDO::PARAM_BOOL);
         $stmt->bindValue(":product_review_notification", bool_val("product_review_notification"), PDO::PARAM_BOOL);
 
-        $stmt->execute();
+        // Execute the update
+        if (!$stmt->execute()) {
+            throw new Exception("Failed to update settings");
+        }
 
         // Fetch updated settings
         $fetch = $conn->prepare("SELECT * FROM store_settings WHERE id = 1 LIMIT 1");
@@ -137,3 +157,4 @@
         "error" => $error,
         "data"  => $data
     ]);
+?>
