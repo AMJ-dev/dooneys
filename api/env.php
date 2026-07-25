@@ -9,9 +9,9 @@
     date_default_timezone_set("America/Edmonton");
 
     if (session_status() === PHP_SESSION_NONE) session_start();
-    $url="localhost/doonneys";
+    $url="localhost/dooneys";
     $baseURL="http://$url/";
-    $db_name = "doonneys";
+    $db_name = "dooneys";
     $AppName="Doonneys Beauty";
     $db_user = "cyberpros";
     $db_pass = "Group2022@"; 

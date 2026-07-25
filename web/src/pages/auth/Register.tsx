@@ -169,9 +169,9 @@ const Register = () => {
 
   return (
     <Layout>
-      <section className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-background to-primary/5">
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <section className="min-h-screen flex items-center justify-center px-4 py-6 bg-gradient-to-br from-background via-background to-primary/5">
+        {/* Animated background elements - hidden on mobile */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block">
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
@@ -199,93 +199,25 @@ const Register = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-4xl grid md:grid-cols-2 gap-8 items-center"
+          className="w-full max-w-md mx-auto"
         >
-          {/* Left Side - Branding & Benefits */}
+          {/* Mobile Brand Header */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="hidden md:block"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-center mb-5 md:hidden"
           >
-            <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-2xl backdrop-blur-sm rounded-3xl overflow-hidden">
-              <CardContent className="p-10">
-                <div className="space-y-8">
-                  {/* Brand Logo/Header */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 bg-gradient-to-r from-primary to-accent rounded-2xl">
-                      <Heart className="h-8 w-8 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h2 className="font-display text-3xl font-bold">Join Doonneys Beauty</h2>
-                      <p className="text-sm text-muted-foreground">Premium Beauty Experience</p>
-                    </div>
-                  </div>
-
-                  {/* Benefits List */}
-                  <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <Gift className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg mb-1">Welcome Gift</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Get 15% off your first purchase
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <Sparkles className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg mb-1">Exclusive Access</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Early access to new collections and sales
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <Shield className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg mb-1">Secure Account</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Your data is protected with enterprise-grade security
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <Smartphone className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg mb-1">Personalized Experience</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Tailored recommendations just for you
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Testimonial */}
-                  <div className="mt-8 p-6 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl border border-primary/10">
-                    <p className="italic text-foreground/80 mb-3">
-                      "Joining Doonneys Beauty was the best decision! The exclusive offers and personalized service are amazing."
-                    </p>
-                    <p className="text-sm font-medium">- Emily R., Premium Member</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="inline-flex items-center gap-2 mb-2">
+              <div className="p-2 bg-gradient-to-r from-primary to-accent rounded-xl">
+                <Heart className="h-6 w-6 text-primary-foreground" />
+              </div>
+            </div>
+            <h1 className="font-display text-2xl font-bold">Join Doonneys Beauty</h1>
+            <p className="text-sm text-muted-foreground">Premium Beauty Experience</p>
           </motion.div>
 
-          {/* Right Side - Registration Form */}
+          {/* Registration Form */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -294,43 +226,44 @@ const Register = () => {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            {/* Glow Effect */}
+            {/* Glow Effect - hidden on mobile */}
             <div className={cn(
               "absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/20 to-transparent rounded-3xl blur-xl transition-opacity duration-500",
-              isHovered ? "opacity-70" : "opacity-30"
+              isHovered ? "opacity-70" : "opacity-30",
+              "hidden md:block"
             )} />
 
-            <Card className="relative bg-gradient-to-b from-card/90 to-card/50 backdrop-blur-sm border-border/50 shadow-2xl rounded-3xl overflow-hidden">
-              <CardHeader className="text-center pb-6">
+            <Card className="relative bg-gradient-to-b from-card/90 to-card/50 backdrop-blur-sm border-border/50 shadow-xl rounded-2xl overflow-hidden">
+              <CardHeader className="text-center pb-3 pt-5 px-5">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.4 }}
-                  className="mx-auto mb-4"
+                  className="mx-auto mb-2"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
-                    <User className="h-8 w-8 text-primary-foreground" />
+                  <div className="w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+                    <User className="h-7 w-7 text-primary-foreground" />
                   </div>
                 </motion.div>
-                <CardTitle className="font-display text-3xl md:text-4xl">
+                <CardTitle className="font-display text-2xl">
                   Create Your Account
                 </CardTitle>
-                <CardDescription className="text-lg">
+                <CardDescription className="text-sm mt-1">
                   Join our premium beauty community
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className="pb-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
+              <CardContent className="pb-3 px-5">
+                <form onSubmit={handleSubmit} className="space-y-3.5">
                   {/* Name Fields */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">First Name</Label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium">First Name</Label>
                       <div className="relative group">
                         <Input
                           placeholder="John"
                           className={cn(
-                            "pl-12 h-12 rounded-xl border-2 bg-background/50",
+                            "pl-9 h-10 sm:h-11 text-sm rounded-lg border-2 bg-background/50",
                             "transition-all duration-300",
                             "focus:border-primary focus:ring-2 focus:ring-primary/20",
                             "group-hover:border-primary/50",
@@ -340,23 +273,23 @@ const Register = () => {
                           onChange={(e) => handleChange('first_name', e.target.value)}
                           required
                         />
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                       </div>
                       {errors.first_name && (
-                        <p className="text-xs text-destructive flex items-center gap-1">
+                        <p className="text-[10px] text-destructive flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" />
                           {errors.first_name}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Last Name</Label>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium">Last Name</Label>
                       <div className="relative group">
                         <Input
                           placeholder="Doe"
                           className={cn(
-                            "pl-12 h-12 rounded-xl border-2 bg-background/50",
+                            "pl-9 h-10 sm:h-11 text-sm rounded-lg border-2 bg-background/50",
                             "transition-all duration-300",
                             "focus:border-primary focus:ring-2 focus:ring-primary/20",
                             "group-hover:border-primary/50",
@@ -366,10 +299,10 @@ const Register = () => {
                           onChange={(e) => handleChange('last_name', e.target.value)}
                           required
                         />
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                       </div>
                       {errors.last_name && (
-                        <p className="text-xs text-destructive flex items-center gap-1">
+                        <p className="text-[10px] text-destructive flex items-center gap-1">
                           <AlertCircle className="h-3 w-3" />
                           {errors.last_name}
                         </p>
@@ -378,14 +311,14 @@ const Register = () => {
                   </div>
 
                   {/* Email */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Email Address</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Email Address</Label>
                     <div className="relative group">
                       <Input
                         type="email"
                         placeholder="you@example.com"
                         className={cn(
-                          "pl-12 h-12 rounded-xl border-2 bg-background/50",
+                          "pl-9 h-10 sm:h-11 text-sm rounded-lg border-2 bg-background/50",
                           "transition-all duration-300",
                           "focus:border-primary focus:ring-2 focus:ring-primary/20",
                           "group-hover:border-primary/50",
@@ -395,10 +328,10 @@ const Register = () => {
                         onChange={(e) => handleChange('email', e.target.value)}
                         required
                       />
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                     </div>
                     {errors.email && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
+                      <p className="text-[10px] text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
                         {errors.email}
                       </p>
@@ -406,14 +339,14 @@ const Register = () => {
                   </div>
 
                   {/* Phone Number */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Phone Number</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Phone Number</Label>
                     <div className="relative group">
                       <Input
                         type="tel"
                         placeholder="+1 (825) 000-0000"
                         className={cn(
-                          "pl-12 h-12 rounded-xl border-2 bg-background/50",
+                          "pl-9 h-10 sm:h-11 text-sm rounded-lg border-2 bg-background/50",
                           "transition-all duration-300",
                           "focus:border-primary focus:ring-2 focus:ring-primary/20",
                           "group-hover:border-primary/50",
@@ -423,10 +356,10 @@ const Register = () => {
                         onChange={(e) => handleChange('mobile_number', e.target.value)}
                         required
                       />
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                     </div>
                     {errors.mobile_number && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
+                      <p className="text-[10px] text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
                         {errors.mobile_number}
                       </p>
@@ -434,14 +367,14 @@ const Register = () => {
                   </div>
 
                   {/* Password */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Password</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Password</Label>
                     <div className="relative group">
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         className={cn(
-                          "pl-12 pr-12 h-12 rounded-xl border-2 bg-background/50",
+                          "pl-9 pr-9 h-10 sm:h-11 text-sm rounded-lg border-2 bg-background/50",
                           "transition-all duration-300",
                           "focus:border-primary focus:ring-2 focus:ring-primary/20",
                           "group-hover:border-primary/50",
@@ -451,11 +384,11 @@ const Register = () => {
                         onChange={(e) => handleChange('password', e.target.value)}
                         required
                       />
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-lg transition-colors"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-lg transition-colors"
                       >
                         {showPassword ? (
                           <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -468,8 +401,8 @@ const Register = () => {
                     {/* Password Strength */}
                     {formData.password && (
                       <div className="space-y-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span>Password strength:</span>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="text-muted-foreground">Password strength:</span>
                           <span className={cn(
                             "font-medium",
                             passwordStrength === 4 && "text-green-600",
@@ -479,7 +412,7 @@ const Register = () => {
                             {passwordStrengthText()}
                           </span>
                         </div>
-                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-1 bg-muted rounded-full overflow-hidden">
                           <div 
                             className={cn("h-full transition-all duration-300", passwordStrengthColor())}
                             style={{ width: `${passwordStrength * 25}%` }}
@@ -489,7 +422,7 @@ const Register = () => {
                     )}
                     
                     {errors.password && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
+                      <p className="text-[10px] text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
                         {errors.password}
                       </p>
@@ -497,14 +430,14 @@ const Register = () => {
                   </div>
 
                   {/* Confirm Password */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Confirm Password</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium">Confirm Password</Label>
                     <div className="relative group">
                       <Input
                         type={showConfirmPassword ? "text" : "password"}
                         placeholder="••••••••"
                         className={cn(
-                          "pl-12 pr-12 h-12 rounded-xl border-2 bg-background/50",
+                          "pl-9 pr-9 h-10 sm:h-11 text-sm rounded-lg border-2 bg-background/50",
                           "transition-all duration-300",
                           "focus:border-primary focus:ring-2 focus:ring-primary/20",
                           "group-hover:border-primary/50",
@@ -514,11 +447,11 @@ const Register = () => {
                         onChange={(e) => handleChange('cpassword', e.target.value)}
                         required
                       />
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-lg transition-colors"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-lg transition-colors"
                       >
                         {showConfirmPassword ? (
                           <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -528,7 +461,7 @@ const Register = () => {
                       </button>
                     </div>
                     {errors.cpassword && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
+                      <p className="text-[10px] text-destructive flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
                         {errors.cpassword}
                       </p>
@@ -536,22 +469,22 @@ const Register = () => {
                   </div>
 
                   {/* Terms & Conditions */}
-                  <div className="space-y-3">
-                    <div className="flex items-start space-x-2">
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-start space-x-2.5">
                       <button
                         type="button"
                         onClick={() => setTermsAccepted(!termsAccepted)}
                         className={cn(
-                          "mt-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
+                          "mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0",
                           termsAccepted 
                             ? "bg-primary border-primary text-primary-foreground" 
                             : "border-border hover:border-primary"
                         )}
                       >
-                        {termsAccepted && <Check className="h-3 w-3" />}
+                        {termsAccepted && <Check className="h-2.5 w-2.5" />}
                       </button>
                       <div className="flex-1">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">
                           I agree to the{" "}
                           <a href="#" className="text-primary hover:underline font-medium">
                             Terms of Service
@@ -562,7 +495,7 @@ const Register = () => {
                           </a>
                         </p>
                         {errors.terms && (
-                          <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                          <p className="text-[10px] text-destructive mt-0.5 flex items-center gap-1">
                             <AlertCircle className="h-3 w-3" />
                             {errors.terms}
                           </p>
@@ -576,11 +509,11 @@ const Register = () => {
                     type="submit"
                     disabled={loading}
                     className={cn(
-                      "w-full h-14 text-base font-medium rounded-xl",
+                      "w-full h-11 sm:h-12 text-sm font-medium rounded-lg",
                       "bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90",
                       "shadow-lg hover:shadow-xl transition-all duration-300",
                       "disabled:opacity-50 disabled:cursor-not-allowed",
-                      "group"
+                      "group mt-1"
                     )}
                   >
                     <AnimatePresence mode="wait">
@@ -590,9 +523,9 @@ const Register = () => {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
-                          className="flex items-center gap-3"
+                          className="flex items-center gap-2"
                         >
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                           Creating Account...
                         </motion.div>
                       ) : (
@@ -601,10 +534,10 @@ const Register = () => {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
-                          className="flex items-center gap-3"
+                          className="flex items-center gap-2"
                         >
                           Create Premium Account
-                          <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -612,7 +545,7 @@ const Register = () => {
                 </form>
               </CardContent>
 
-              <CardFooter className="border-t border-border/50 pt-6">
+              <CardFooter className="border-t border-border/50 pt-3.5 px-5 pb-5">
                 <div className="w-full text-center">
                   <p className="text-sm text-muted-foreground">
                     Already have an account?{" "}
@@ -623,59 +556,59 @@ const Register = () => {
                       Sign in here
                     </Link>
                   </p>
-                  <p className="text-xs text-muted-foreground mt-3">
+                  <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
                     By creating an account, you agree to receive offers and updates
                   </p>
                 </div>
               </CardFooter>
             </Card>
           </motion.div>
-        </motion.div>
 
-        {/* Mobile Benefits Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="md:hidden mt-8 w-full max-w-md"
-        >
-          <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 rounded-2xl">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Gift className="h-5 w-5 text-primary" />
+          {/* Mobile Benefits */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-4 md:hidden"
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-card/50 backdrop-blur-sm rounded-xl p-3 border border-border/30">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-primary/10 rounded-lg flex-shrink-0">
+                    <Gift className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-sm">15% Off</h3>
-                    <p className="text-xs text-muted-foreground">First order</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-sm">Early Access</h3>
-                    <p className="text-xs text-muted-foreground">New arrivals</p>
+                    <h3 className="font-medium text-xs">15% Off</h3>
+                    <p className="text-[10px] text-muted-foreground">First order</p>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              <div className="bg-card/50 backdrop-blur-sm rounded-xl p-3 border border-border/30">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-primary/10 rounded-lg flex-shrink-0">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-xs">Early Access</h3>
+                    <p className="text-[10px] text-muted-foreground">New arrivals</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
-        {/* Security Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
-        >
-          <div className="flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-lg">
-            <Shield className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">256-bit SSL Encrypted</span>
-          </div>
+          {/* Security Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="mt-5 flex justify-center"
+          >
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-md">
+              <Shield className="h-3 w-3 text-primary" />
+              <span className="text-[10px] font-medium">256-bit SSL Encrypted</span>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
     </Layout>

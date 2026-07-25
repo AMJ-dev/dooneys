@@ -12,7 +12,6 @@ import {
   Shield,
   CheckCircle,
   Fingerprint,
-  Smartphone,
   Heart
 } from "lucide-react";
 import Layout from "@/components/layout/Layout";
@@ -86,9 +85,9 @@ const Login = () => {
 
   return (
     <Layout>
-      <section className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-background to-primary/5">
+      <section className="min-h-screen flex items-center justify-center px-4 py-6 bg-gradient-to-br from-background via-background to-primary/5">
         {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden sm:block">
           {[...Array(8)].map((_, i) => (
             <motion.div
               key={i}
@@ -116,81 +115,25 @@ const Login = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="w-full max-w-4xl grid md:grid-cols-2 gap-8 items-center"
+          className="w-full max-w-md mx-auto"
         >
-          {/* Left Side - Branding & Info */}
+          {/* Mobile Brand Header */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="hidden md:block"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-center mb-6 md:hidden"
           >
-            <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-2xl backdrop-blur-sm rounded-3xl overflow-hidden">
-              <CardContent className="p-10">
-                <div className="space-y-8">
-                  {/* Brand Logo/Header */}
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 bg-gradient-to-r from-primary to-accent rounded-2xl">
-                      <Heart className="h-8 w-8 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <h2 className="font-display text-3xl font-bold">Doonneys Beauty</h2>
-                      <p className="text-sm text-muted-foreground">Premium Beauty Experience</p>
-                    </div>
-                  </div>
-
-                  {/* Features List */}
-                  <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <Sparkles className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg mb-1">Exclusive Access</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Access premium beauty products and personalized recommendations
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <Shield className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg mb-1">Secure & Private</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Your data is encrypted and protected with enterprise-grade security
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-xl">
-                        <CheckCircle className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-lg mb-1">Personalized Experience</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Tailored beauty recommendations based on your preferences
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Testimonial */}
-                  <div className="mt-8 p-6 bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl border border-primary/10">
-                    <p className="italic text-foreground/80 mb-3">
-                      "The most luxurious beauty shopping experience I've ever had!"
-                    </p>
-                    <p className="text-sm font-medium">- Sarah M., VIP Member</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="inline-flex items-center gap-2 mb-2">
+              <div className="p-2 bg-gradient-to-r from-primary to-accent rounded-xl">
+                <Heart className="h-6 w-6 text-primary-foreground" />
+              </div>
+            </div>
+            <h1 className="font-display text-2xl font-bold">Doonneys Beauty</h1>
+            <p className="text-sm text-muted-foreground">Premium Beauty Experience</p>
           </motion.div>
 
-          {/* Right Side - Login Form */}
+          {/* Login Form */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -202,35 +145,36 @@ const Login = () => {
             {/* Glow Effect */}
             <div className={cn(
               "absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/20 to-transparent rounded-3xl blur-xl transition-opacity duration-500",
-              isHovered ? "opacity-70" : "opacity-30"
+              isHovered ? "opacity-70" : "opacity-30",
+              "hidden md:block"
             )} />
 
-            <Card className="relative bg-gradient-to-b from-card/90 to-card/50 backdrop-blur-sm border-border/50 shadow-2xl rounded-3xl overflow-hidden">
-              <CardHeader className="text-center pb-6">
+            <Card className="relative bg-gradient-to-b from-card/90 to-card/50 backdrop-blur-sm border-border/50 shadow-xl rounded-2xl overflow-hidden">
+              <CardHeader className="text-center pb-4 pt-6 px-5">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.4 }}
-                  className="mx-auto mb-4"
+                  className="mx-auto mb-3"
                 >
-                  <div className="w-16 h-16 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
-                    <Fingerprint className="h-8 w-8 text-primary-foreground" />
+                  <div className="w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+                    <Fingerprint className="h-7 w-7 text-primary-foreground" />
                   </div>
                 </motion.div>
-                <CardTitle className="font-display text-3xl md:text-4xl">
+                <CardTitle className="font-display text-2xl">
                   Welcome Back
                 </CardTitle>
-                <CardDescription className="text-lg">
+                <CardDescription className="text-sm mt-1">
                   Sign in to your premium account
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className="pb-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
+              <CardContent className="pb-4 px-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Email Input */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium flex items-center gap-1.5">
+                      <Mail className="h-3.5 w-3.5" />
                       Email Address
                     </Label>
                     <div className="relative group">
@@ -238,7 +182,7 @@ const Login = () => {
                         type="email"
                         placeholder="you@example.com"
                         className={cn(
-                          "pl-12 h-14 text-base rounded-xl border-2 bg-background/50",
+                          "pl-9 h-11 text-sm rounded-lg border-2 bg-background/50",
                           "transition-all duration-300",
                           "focus:border-primary focus:ring-2 focus:ring-primary/20",
                           "group-hover:border-primary/50"
@@ -247,14 +191,14 @@ const Login = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                       />
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                     </div>
                   </div>
 
                   {/* Password Input */}
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium flex items-center gap-2">
-                      <Lock className="h-4 w-4" />
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-medium flex items-center gap-1.5">
+                      <Lock className="h-3.5 w-3.5" />
                       Password
                     </Label>
                     <div className="relative group">
@@ -262,7 +206,7 @@ const Login = () => {
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         className={cn(
-                          "pl-12 pr-12 h-14 text-base rounded-xl border-2 bg-background/50",
+                          "pl-9 pr-9 h-11 text-sm rounded-lg border-2 bg-background/50",
                           "transition-all duration-300",
                           "focus:border-primary focus:ring-2 focus:ring-primary/20",
                           "group-hover:border-primary/50"
@@ -271,40 +215,40 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                       />
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors duration-300 group-hover:text-primary" />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-lg transition-colors"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-lg transition-colors"
                       >
                         {showPassword ? (
-                          <EyeOff className="h-5 w-5 text-muted-foreground" />
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
                         ) : (
-                          <Eye className="h-5 w-5 text-muted-foreground" />
+                          <Eye className="h-4 w-4 text-muted-foreground" />
                         )}
                       </button>
                     </div>
                   </div>
 
                   {/* Remember Me & Forgot Password */}
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between pt-1">
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="remember"
                         checked={rememberMe}
                         onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                        className="border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        className="border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary h-4 w-4"
                       />
                       <Label
                         htmlFor="remember"
-                        className="text-sm font-medium cursor-pointer"
+                        className="text-xs font-medium cursor-pointer"
                       >
                         Remember me
                       </Label>
                     </div>
                     <Link
                       to="/forgot-password"
-                      className="text-sm font-medium text-primary hover:text-primary/80 transition-colors hover:underline"
+                      className="text-xs font-medium text-primary hover:text-primary/80 transition-colors hover:underline"
                     >
                       Forgot password?
                     </Link>
@@ -315,7 +259,7 @@ const Login = () => {
                     type="submit"
                     disabled={loading}
                     className={cn(
-                      "w-full h-14 text-base font-medium rounded-xl",
+                      "w-full h-11 text-sm font-medium rounded-lg",
                       "bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90",
                       "shadow-lg hover:shadow-xl transition-all duration-300",
                       "disabled:opacity-50 disabled:cursor-not-allowed"
@@ -330,7 +274,7 @@ const Login = () => {
                           exit={{ opacity: 0, scale: 0.8 }}
                           className="flex items-center gap-2"
                         >
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                           Signing In...
                         </motion.div>
                       ) : (
@@ -339,10 +283,10 @@ const Login = () => {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.8 }}
-                          className="flex items-center gap-3"
+                          className="flex items-center gap-2"
                         >
                           Continue to Your Account
-                          <ArrowRight className="h-5 w-5" />
+                          <ArrowRight className="h-4 w-4" />
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -350,9 +294,9 @@ const Login = () => {
                 </form>
               </CardContent>
 
-              <CardFooter className="border-t border-border/50 pt-6">
-                <div className="w-full text-center text-sm">
-                  <p className="text-muted-foreground">
+              <CardFooter className="border-t border-border/50 pt-4 px-5 pb-5">
+                <div className="w-full text-center">
+                  <p className="text-sm text-muted-foreground">
                     Don't have an account?{" "}
                     <Link
                       to="/register"
@@ -361,7 +305,7 @@ const Login = () => {
                       Create account
                     </Link>
                   </p>
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
                     By continuing, you agree to our{" "}
                     <a href="/terms" className="text-primary hover:underline">Terms</a>{" "}
                     and{" "}
@@ -371,54 +315,56 @@ const Login = () => {
               </CardFooter>
             </Card>
           </motion.div>
-        </motion.div>
 
-        {/* Mobile-only Features Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="md:hidden mt-8 w-full max-w-md"
-        >
-          <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 rounded-2xl">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Shield className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Secure Login</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your security is our priority
-                  </p>
+          {/* Mobile Features */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-5 md:hidden"
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-card/50 backdrop-blur-sm rounded-xl p-3 border border-border/30">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-primary/10 rounded-lg flex-shrink-0">
+                    <Shield className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-xs">Secure Login</h3>
+                    <p className="text-[10px] text-muted-foreground leading-tight">
+                      Your security first
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Premium Access</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Exclusive benefits await
-                  </p>
+              <div className="bg-card/50 backdrop-blur-sm rounded-xl p-3 border border-border/30">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-primary/10 rounded-lg flex-shrink-0">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-xs">Premium Access</h3>
+                    <p className="text-[10px] text-muted-foreground leading-tight">
+                      Exclusive benefits
+                    </p>
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+            </div>
+          </motion.div>
 
-        {/* Security Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
-        >
-          <div className="flex items-center gap-2 px-4 py-2 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-lg">
-            <Shield className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium">256-bit SSL Encrypted</span>
-          </div>
+          {/* Security Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="mt-6 flex justify-center"
+          >
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-card/80 backdrop-blur-sm rounded-full border border-border/50 shadow-md">
+              <Shield className="h-3 w-3 text-primary" />
+              <span className="text-[10px] font-medium">256-bit SSL Encrypted</span>
+            </div>
+          </motion.div>
         </motion.div>
       </section>
     </Layout>
