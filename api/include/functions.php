@@ -850,44 +850,44 @@
         $p = $order['parcel'];
 
         $xml = <<<XML
-    <?xml version="1.0" encoding="UTF-8"?>
-    <shipment xmlns="http://www.canadapost.ca/ws/shipment-v8">
-        <customer-number>{$canadapost_api['customer_number']}</customer-number>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <shipment xmlns="http://www.canadapost.ca/ws/shipment-v8">
+            <customer-number>{$canadapost_api['customer_number']}</customer-number>
 
-        <sender>
-            <name>{$s['name']}</name>
-            <phone-number>{$s['phone']}</phone-number>
-            <address-details>
-                <address-line-1>{$s['address']}</address-line-1>
-                <city>{$s['city']}</city>
-                <prov-state>{$s['state']}</prov-state>
-                <postal-code>{$s['postal']}</postal-code>
-                <country-code>{$s['country']}</country-code>
-            </address-details>
-        </sender>
+            <sender>
+                <name>{$s['name']}</name>
+                <phone-number>{$s['phone']}</phone-number>
+                <address-details>
+                    <address-line-1>{$s['address']}</address-line-1>
+                    <city>{$s['city']}</city>
+                    <prov-state>{$s['state']}</prov-state>
+                    <postal-code>{$s['postal']}</postal-code>
+                    <country-code>{$s['country']}</country-code>
+                </address-details>
+            </sender>
 
-        <destination>
-            <domestic>
-                <name>{$r['name']}</name>
-                <address>
-                    <address-line-1>{$r['address']}</address-line-1>
-                    <city>{$r['city']}</city>
-                    <prov-state>{$r['state']}</prov-state>
-                    <postal-code>{$r['postal']}</postal-code>
-                </address>
-            </domestic>
-        </destination>
+            <destination>
+                <domestic>
+                    <name>{$r['name']}</name>
+                    <address>
+                        <address-line-1>{$r['address']}</address-line-1>
+                        <city>{$r['city']}</city>
+                        <prov-state>{$r['state']}</prov-state>
+                        <postal-code>{$r['postal']}</postal-code>
+                    </address>
+                </domestic>
+            </destination>
 
-        <parcel-characteristics>
-            <weight>{$p['weight']}</weight>
-            <dimensions>
-                <length>{$p['length']}</length>
-                <width>{$p['width']}</width>
-                <height>{$p['height']}</height>
-            </dimensions>
-        </parcel-characteristics>
-    </shipment>
-    XML;
+            <parcel-characteristics>
+                <weight>{$p['weight']}</weight>
+                <dimensions>
+                    <length>{$p['length']}</length>
+                    <width>{$p['width']}</width>
+                    <height>{$p['height']}</height>
+                </dimensions>
+            </parcel-characteristics>
+        </shipment>
+        XML;
 
         $ch = curl_init("https://soa-gw.canadapost.ca/rs/shipments");
         curl_setopt_array($ch, [

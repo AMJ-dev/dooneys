@@ -23,4 +23,3 @@
     };
     $privacy_url = "{$baseURL}privacy";
     $year = date("Y");
-    

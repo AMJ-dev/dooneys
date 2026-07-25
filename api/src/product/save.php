@@ -129,7 +129,7 @@
         }
 
         $conn->commit();
-        $data = ['id' => $product_id];
+        $data = ['id' => $product_id]; 
 
     } catch (Throwable $e) {
         if ($conn->inTransaction()) $conn->rollBack();
