@@ -129,7 +129,7 @@ export default function AnimatedRoutes() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:link1/:link2" element={<ResetPassword />} />
             <Route path="/admin-login" element={<AdminLogin />} />
-
+            {/* <Route path="track-order" element={<TrackOrder />} /> */}
             <Route 
               path="/account" 
               element={
@@ -143,6 +143,7 @@ export default function AnimatedRoutes() {
               <Route path="orders" element={<OrdersPage />} />
               <Route path="order-details/:id" element={<OrderDetails />} />
               <Route path="track-order" element={<TrackOrder />} />
+              <Route path="track-order/:order_no" element={<TrackOrder />} />
               <Route path="addresses" element={<AddressesPage />} />
               <Route path="wishlist" element={<WishlistPage />} />
               <Route path="settings" element={<SettingsPage />} />

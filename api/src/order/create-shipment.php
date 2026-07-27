@@ -10,7 +10,6 @@
     $get_items = $conn->prepare("SELECT product_id, quantity FROM order_items WHERE order_id = :id");
     $get_items->execute([":id" => $order->id]);
     while($item = $get_items->fetch(PDO::FETCH_OBJ)){
-        // echo $item->product_id. " ";
         $get_product = $conn->prepare("SELECT `weight`, `item_height`, `item_width`, `item_depth` FROM products WHERE id = :id LIMIT 1");
         $get_product->execute([":id" => $item->product_id]);
         if($get_product->rowCount() > 0) {

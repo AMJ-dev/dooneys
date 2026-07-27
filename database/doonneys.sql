@@ -684,17 +684,5 @@ CREATE TABLE `wishlists` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 INSERT INTO `wishlists` VALUES (2,1,6,'2026-01-08 15:05:00'),(3,1,5,'2026-01-09 19:37:38');
-/*!50001 DROP VIEW IF EXISTS `orders_with_source`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_unicode_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`localhost` SQL SECURITY DEFINER */
-/*!50001 VIEW `orders_with_source` AS select `o`.`id` AS `id`,`o`.`order_number` AS `order_number`,`o`.`order_source` AS `order_source`,`o`.`user_id` AS `user_id`,`o`.`address_id` AS `address_id`,`o`.`pickup_id` AS `pickup_id`,`o`.`recipient_first_name` AS `recipient_first_name`,`o`.`recipient_last_name` AS `recipient_last_name`,`o`.`recipient_phone` AS `recipient_phone`,`o`.`recipient_email` AS `recipient_email`,`o`.`fulfillment_method` AS `fulfillment_method`,`o`.`payment_method` AS `payment_method`,`o`.`card_brand` AS `card_brand`,`o`.`last4` AS `last4`,`o`.`shipping_carrier` AS `shipping_carrier`,`o`.`shipping_eta` AS `shipping_eta`,`o`.`subtotal` AS `subtotal`,`o`.`shipping_cost` AS `shipping_cost`,`o`.`tax_amount` AS `tax_amount`,`o`.`discount_amount` AS `discount_amount`,`o`.`discount_code` AS `discount_code`,`o`.`total_amount` AS `total_amount`,`o`.`currency` AS `currency`,`o`.`payment_status` AS `payment_status`,`o`.`order_status` AS `order_status`,`o`.`created_at` AS `created_at`,`o`.`updated_at` AS `updated_at`,`o`.`tracking_number` AS `tracking_number`,`o`.`shipping_label` AS `shipping_label`,`o`.`shipped_at` AS `shipped_at`,`o`.`shipment_status` AS `shipment_status`,(case when (`o`.`order_source` = 'checkout') then 'Website Checkout' when (`o`.`order_source` = 'pos') then 'Point of Sale' when (`o`.`order_source` = 'admin') then 'Admin Panel' else 'Unknown' end) AS `order_source_display` from `orders` `o` */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
+
 SET FOREIGN_KEY_CHECKS=1;SET UNIQUE_CHECKS=1;

@@ -91,6 +91,7 @@ RewriteRule ^confirm-payment/$ src/order/confirm-payment.php [NC]
 RewriteRule ^update-payment-status/$ src/order/update-payment-status.php [NC]
 RewriteRule ^get-order-details/([0-9]+)/$ src/order/details.php?id=$1 [NC]
 RewriteRule ^get-order/([0-9]+)/$ src/order/single.php?id=$1 [NC]
+RewriteRule ^track-order/([a-zA-Z0-9-]+)/$ src/order/track.php?order_no=$1 [NC]
 RewriteRule ^update-order-status/$ src/order/update-order-status.php [NC]
  
 RewriteRule ^test-stripe-connection/$ src/test-connections/stripe.php [NC]

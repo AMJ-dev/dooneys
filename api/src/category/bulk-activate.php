@@ -6,7 +6,7 @@
 
     try {
         $conn->beginTransaction();
-        $upd = $conn->prepare("UPDATE categories SET status = 'active'");
+        $upd = $conn->prepare("UPDATE categories SET `status` = 'active'");
         $upd->execute();
 
         $conn->commit();

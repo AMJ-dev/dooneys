@@ -133,6 +133,7 @@ export interface Order {
   total: number;
   shippingAddress: string;
   trackingData?: any;
+  orderNumber: string;
 }
 
 export interface CartItem {

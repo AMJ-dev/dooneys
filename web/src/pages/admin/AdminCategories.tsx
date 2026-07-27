@@ -163,9 +163,7 @@ const AdminCategories = () => {
       .slice(0, 5);
     
     const attentionCategories = categories.filter(cat => 
-      cat.status === "inactive" || 
-      cat.conversionRate < 1 ||
-      cat.productCount === 0
+      cat.status === "inactive" 
     );
 
     return {
@@ -503,7 +501,7 @@ const AdminCategories = () => {
 
         {/* Attention Required Section */}
         {stats.attentionCategories > 0 && (
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}

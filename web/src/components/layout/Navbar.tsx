@@ -32,6 +32,7 @@ const navLinks = [
   { name: "Shop", path: "/shop", icon: ShoppingCart },
   { name: "Deals & New", path: "/deals", icon: Star },
   { name: "About", path: "/about", icon: Sparkles },
+  // { name: "Track Order", path: "/track-order", icon: Package },
   { name: "Contact", path: "/contact", icon: Mail },
 ];
 

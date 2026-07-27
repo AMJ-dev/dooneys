@@ -55,13 +55,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -70,7 +63,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -176,8 +168,6 @@ const mapStatus = (status: string): keyof typeof statusConfig => {
 
 const OrdersPage = () => {
   const navigate = useNavigate();
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -187,7 +177,7 @@ const OrdersPage = () => {
 
   useEffect(() => {
     fetch_order();
-  }, []);
+  }, []); 
 
   const fetch_order = async () => {
     try {
@@ -207,24 +197,10 @@ const OrdersPage = () => {
     }
   };
 
-  const handleTrackOrder = async (order: Order) => {
-    try {
-      const res = await http.get(`/track-order/${order.id}/`);
-      const resp: ApiResp = res.data;
-      
-      if (!resp.error && resp.data) {
-        setSelectedOrder({
-          ...order,
-          trackingData: resp.data
-        });
-        setIsTrackingOpen(true);
-      } else {
-        toast.info("Tracking information is not available yet. Please check back later.");
-      }
-    } catch (error) {
-      console.error("Error fetching tracking:", error);
-      toast.info("Tracking information will be available once your order is shipped.");
-    }
+  const handleTrackOrder = (order: Order) => {
+    // Navigate to the tracking page with the order number
+    const orderNumber = order.orderNumber || order.id;
+    navigate(`/account/track-order/${orderNumber}`);
   };
 
   const filteredOrders = orders.filter(order => {
@@ -237,9 +213,9 @@ const OrdersPage = () => {
     if (searchQuery.trim() !== "") {
       const query = searchQuery.toLowerCase();
       const matchesOrderId = order.orderNumber?.toLowerCase().includes(query) || 
-                            order.id.toLowerCase().includes(query);
+                            order.id?.toLowerCase().includes(query);
       const matchesItems = order.items?.some(item => 
-        item.name.toLowerCase().includes(query)
+        item.name?.toLowerCase().includes(query)
       );
       
       if (!matchesOrderId && !matchesItems) {
@@ -283,7 +259,7 @@ const OrdersPage = () => {
   };
 
   const getSpendingStats = () => {
-    const totalSpent = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+    const totalSpent = orders.reduce((sum, order) => sum + (parseFloat(order.total) || 0), 0);
     const averageOrderValue = orders.length > 0 ? totalSpent / orders.length : 0;
     const deliveredOrders = orders.filter(o => mapStatus(o.status) === "delivered").length;
     
@@ -358,6 +334,7 @@ const OrdersPage = () => {
             <Button 
               size="default" 
               className="gap-2 rounded-xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300 group w-full sm:w-auto text-sm sm:text-base"
+              onClick={() => navigate('/shop')}
             >
               <Sparkle className="h-4 w-4 sm:h-5 sm:w-5 group-hover:rotate-12 transition-transform" />
               <span>Continue Shopping</span>
@@ -604,13 +581,14 @@ const OrdersPage = () => {
           </div>
           <h3 className="font-display text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3">No Orders Found</h3>
           <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 md:mb-8 max-w-xs md:max-w-md mx-auto px-4">
-            {searchQuery || statusFilter !== "all" 
+            {searchQuery || activeTab !== "all" 
               ? "Try different search terms or filters"
               : "Start your beauty journey with our premium collection"}
           </p>
           <Button 
             size="default" 
             className="gap-3 rounded-xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/20 text-sm sm:text-base"
+            onClick={() => navigate('/shop')}
           >
             <Sparkle className="h-4 w-4 sm:h-5 sm:w-5" />
             Browse Collection
@@ -811,7 +789,7 @@ const OrdersPage = () => {
                             <span className="hidden sm:inline">Details</span>
                           </Button>
                           
-                          {statusKey !== "cancelled" && statusKey !== "delivered" && (
+                          {statusKey !== "cancelled" && (
                             <Button
                               size="sm"
                               className="gap-1 rounded-lg bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-md shadow-primary/20 text-xs sm:text-sm h-8 sm:h-9 px-2 sm:px-3"
@@ -842,188 +820,6 @@ const OrdersPage = () => {
           </AnimatePresence>
         </div>
       )}
-
-      {/* Glassy Tracking Dialog - Simplified for mobile */}
-      <Dialog open={isTrackingOpen} onOpenChange={setIsTrackingOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden p-0 rounded-xl sm:rounded-2xl md:rounded-3xl border border-white/40 bg-white/50 backdrop-blur-xl shadow-2xl mx-4 sm:mx-0">
-          {selectedOrder && (
-            <div className="flex flex-col h-full">
-              <DialogHeader className="relative p-4 sm:p-6 md:p-8 bg-gradient-to-br from-white/60 via-white/40 to-white/60 border-b border-white/40">
-                <div className="absolute inset-0 bg-gradient-primary opacity-5" />
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
-                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
-                        <TruckIcon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
-                      </div>
-                      <div>
-                        <DialogTitle className="font-display text-lg sm:text-xl md:text-2xl font-bold text-foreground">
-                          Order Tracking
-                        </DialogTitle>
-                        <DialogDescription className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-                          Track order #{selectedOrder.orderNumber || selectedOrder.id}
-                        </DialogDescription>
-                      </div>
-                    </div>
-                    
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setIsTrackingOpen(false)}
-                      className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 rounded-xl bg-white/40 backdrop-blur-sm border border-white/40 hover:bg-white/60"
-                    >
-                      <X className="h-4 w-4 sm:h-4 sm:w-4 md:h-5 md:w-5" />
-                    </Button>
-                  </div>
-                  
-                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-4">
-                    <Badge className="bg-gradient-to-r from-primary to-accent text-white text-[10px] sm:text-xs md:text-sm">
-                      {statusConfig[mapStatus(selectedOrder.status)].label}
-                    </Badge>
-                    <div className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">
-                      Placed on {new Date(selectedOrder.date).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-              </DialogHeader>
-
-              <ScrollArea className="flex-1 p-3 sm:p-4 md:p-6">
-                <div className="space-y-4 sm:space-y-6">
-                  <Card className="overflow-hidden border-white/40 bg-gradient-to-br from-white/50 to-white/30 backdrop-blur-xl">
-                    <CardContent className="p-3 sm:p-4 md:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 sm:mb-4 md:mb-6">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div className={`h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-lg sm:rounded-xl ${statusConfig[mapStatus(selectedOrder.status)].iconBg} border ${statusConfig[mapStatus(selectedOrder.status)].borderColor} flex items-center justify-center`}>
-                            <StatusIcon className={`h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ${statusConfig[mapStatus(selectedOrder.status)].color}`} />
-                          </div>
-                          <div>
-                            <h3 className="font-display text-sm sm:text-base md:text-lg font-semibold">Current Status</h3>
-                            <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground">Live updates</p>
-                          </div>
-                        </div>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-1.5 rounded-lg border-white/40 hover:border-primary/40 w-full sm:w-auto text-xs sm:text-sm"
-                          onClick={() => fetch_order().then(() => toast.success("Status refreshed"))}
-                        >
-                          <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
-                          Refresh
-                        </Button>
-                      </div>
-                      
-                      {selectedOrder.trackingData ? (
-                        <div className="space-y-3 sm:space-y-4 md:space-y-6">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
-                            <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/10">
-                              <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mb-0.5 sm:mb-1 md:mb-2">Tracking Number</p>
-                              <p className="font-mono font-bold text-xs sm:text-sm md:text-lg break-all">{selectedOrder.trackingData.trackingNumber}</p>
-                            </div>
-                            <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 border border-primary/10">
-                              <p className="text-[10px] sm:text-xs md:text-sm text-muted-foreground mb-0.5 sm:mb-1 md:mb-2">Carrier</p>
-                              <p className="font-medium text-xs sm:text-sm md:text-lg">{selectedOrder.trackingData.carrier}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center py-4 sm:py-6 md:py-8">
-                          <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-3 sm:mb-4 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                            <Clock className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-primary/30" />
-                          </div>
-                          <h4 className="font-display text-sm sm:text-base md:text-lg mb-1 sm:mb-2">Preparing Your Order</h4>
-                          <p className="text-xs sm:text-sm text-muted-foreground px-4">
-                            Your items are being prepared. Tracking will appear once shipped.
-                          </p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  <Card className="overflow-hidden border border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
-                    <CardContent className="p-3 sm:p-4 md:p-6">
-                      <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 md:gap-6">
-                        <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
-                          <Users className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-display text-sm sm:text-base md:text-lg font-semibold mb-1 sm:mb-2 md:mb-3">Need Help?</h4>
-                          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4 md:mb-6">
-                            Our support team is here to help with any questions.
-                          </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-                            <Button variant="outline" className="gap-2 rounded-xl h-auto py-2 sm:py-3 justify-start hover:border-primary/40 hover:bg-primary/5 text-xs sm:text-sm px-2 sm:px-3">
-                              <Phone className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-                              <div className="text-left">
-                                <p className="font-medium text-xs sm:text-sm">Call Us</p>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground">24/7 Support</p>
-                              </div>
-                            </Button>
-                            <Button variant="outline" className="gap-2 rounded-xl h-auto py-2 sm:py-3 justify-start hover:border-primary/40 hover:bg-primary/5 text-xs sm:text-sm px-2 sm:px-3">
-                              <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-                              <div className="text-left">
-                                <p className="font-medium text-xs sm:text-sm">Email</p>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground">Quick Response</p>
-                              </div>
-                            </Button>
-                            <Button variant="outline" className="gap-2 rounded-xl h-auto py-2 sm:py-3 justify-start hover:border-primary/40 hover:bg-primary/5 text-xs sm:text-sm px-2 sm:px-3">
-                              <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-                              <div className="text-left">
-                                <p className="font-medium text-xs sm:text-sm">Live Chat</p>
-                                <p className="text-[10px] sm:text-xs text-muted-foreground">Instant Help</p>
-                              </div>
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </ScrollArea>
-
-              <div className="p-3 sm:p-4 md:p-6 border-t border-white/40 bg-gradient-to-br from-white/50 to-white/30">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 md:gap-4">
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-4">
-                    <Button 
-                      variant="outline" 
-                      className="gap-1.5 rounded-xl border-white/40 hover:border-primary/40 text-xs sm:text-sm px-2 sm:px-3"
-                      onClick={() => handleViewDetails(selectedOrder)}
-                    >
-                      <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-                      Details
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="gap-1.5 rounded-xl border-white/40 hover:border-primary/40 text-xs sm:text-sm px-2 sm:px-3"
-                      onClick={() => toast.success("Invoice shared")}
-                    >
-                      <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                      Share
-                    </Button>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2 md:gap-3">
-                    <Button 
-                      variant="outline" 
-                      className="gap-1.5 rounded-xl border-white/40 hover:border-primary/40 text-xs sm:text-sm px-2 sm:px-3"
-                      onClick={() => setIsTrackingOpen(false)}
-                    >
-                      Close
-                    </Button>
-                    <Button 
-                      className="gap-1.5 rounded-xl bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-md shadow-primary/20 text-xs sm:text-sm px-2 sm:px-3"
-                      onClick={() => toast.success("Invoice downloading...")}
-                    >
-                      <Download className="h-3 w-3 sm:h-4 sm:w-4" />
-                      Invoice
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
